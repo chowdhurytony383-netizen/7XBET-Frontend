@@ -1,0 +1,13 @@
+.admin-users-page { max-width: 1360px; }
+.admin-filter-bar { padding: 18px; display: grid; grid-template-columns: 1.6fr 1fr 1fr auto; align-items: end; gap: 14px; }
+.admin-table-card { padding: 0; overflow: hidden; }
+.table-scroll { width: 100%; overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; min-width: 980px; }
+.admin-table th, .admin-table td { padding: 16px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+.admin-table th { color: #cbd5e1; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
+.admin-table td span:not(.pill) { display: block; color: var(--muted); margin-top: 4px; }
+.admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.admin-actions .btn { min-height: 38px; padding: 0 12px; font-size: .85rem; }
+.table-loader { min-height: 160px; display: grid; place-items: center; }
+.empty-row { text-align: center !important; color: var(--muted); padding: 36px !important; }
+@media (max-width: 960px) { .admin-filter-bar { grid-template-columns: 1fr; } }

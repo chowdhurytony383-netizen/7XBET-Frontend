@@ -1,0 +1,64 @@
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.logo-seven {
+  font-size: 2.2rem;
+  line-height: 1;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -0.12em;
+  color: #ffffff;
+  text-shadow:
+    0 3px 0 #9ca3af,
+    0 8px 18px rgba(0, 0, 0, .45);
+  transform: skewX(-14deg);
+}
+
+.logo-main {
+  display: grid;
+  line-height: 1;
+}
+
+.logo-main strong {
+  font-size: 1.65rem;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -0.06em;
+  background: linear-gradient(180deg, #2ee7ff 0%, #008cff 42%, #0047d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 8px 24px rgba(0, 128, 255, .38),
+    0 2px 0 rgba(255, 255, 255, .18);
+  transform: skewX(-10deg);
+}
+
+.logo-main small {
+  margin-top: 5px;
+  color: #9ecbff;
+  font-size: .55rem;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .logo-seven {
+    font-size: 1.9rem;
+  }
+
+  .logo-main strong {
+    font-size: 1.35rem;
+  }
+
+  .logo-main small {
+    display: none;
+  }
+}

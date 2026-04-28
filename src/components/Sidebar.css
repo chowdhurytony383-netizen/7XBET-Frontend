@@ -1,0 +1,222 @@
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 16px 0 18px;
+  border-right: 1px solid rgba(255,255,255,.07);
+  background: #171d2b;
+  backdrop-filter: blur(20px);
+  z-index: 30;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.sidebar-top {
+  padding: 0 18px 18px;
+  margin-bottom: 4px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section-label {
+  padding: 16px 18px 8px;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+
+.sidebar-link,
+.sidebar-logout,
+.sidebar-toggle {
+  width: 100%;
+  min-height: 58px;
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,.055);
+  color: #d7dbea;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px;
+  text-align: left;
+  text-decoration: none;
+  transition: 0.18s ease;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sidebar-link-left {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+
+.sidebar-link-left span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-link svg,
+.sidebar-toggle svg,
+.sidebar-logout svg {
+  color: #a8aec4;
+  flex: 0 0 auto;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active,
+.sidebar-toggle:hover,
+.sidebar-logout:hover {
+  background: rgba(255,255,255,.045);
+  color: #fff;
+}
+
+.sidebar-link.active {
+  box-shadow: inset 4px 0 0 #22c55e;
+}
+
+.sidebar-link:hover svg,
+.sidebar-link.active svg,
+.sidebar-toggle:hover svg,
+.sidebar-logout:hover svg {
+  color: #fff;
+}
+
+.sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0 10px;
+  background: rgba(255,255,255,.018);
+  border-top: 1px solid rgba(255,255,255,.045);
+  border-bottom: 1px solid rgba(255,255,255,.045);
+}
+
+.sidebar-sublink,
+.sidebar-button {
+  border: 0;
+  background: transparent;
+  color: #cfd5e8;
+  text-decoration: none;
+  text-align: left;
+  padding: 12px 18px 12px 52px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sidebar-sublink:hover,
+.sidebar-button:hover {
+  color: #fff;
+  background: rgba(255,255,255,.035);
+}
+
+.settings-block {
+  padding: 8px 0 12px;
+}
+
+.sidebar-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 12px 52px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.sidebar-setting-row span:last-child {
+  color: #aab3ca;
+}
+
+.sidebar-setting-row input[type='checkbox'] {
+  width: 42px;
+  height: 23px;
+  appearance: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,.20);
+  position: relative;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.sidebar-setting-row input[type='checkbox']::before {
+  content: '';
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  transition: .18s ease;
+}
+
+.sidebar-setting-row input[type='checkbox']:checked {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+}
+
+.sidebar-setting-row input[type='checkbox']:checked::before {
+  transform: translateX(19px);
+}
+
+.sidebar-footer-info {
+  border-top: 1px solid rgba(255,255,255,.055);
+  margin-top: 10px;
+  padding: 16px 18px;
+  color: #d8dcec;
+}
+
+.sidebar-time-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.sidebar-date-text {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.sidebar-logout {
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+}
+
+.sidebar-scrim {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .app-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 310px;
+    transform: translateX(-110%);
+    transition: transform .22s ease;
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    border: 0;
+    background: rgba(0,0,0,.55);
+  }
+}

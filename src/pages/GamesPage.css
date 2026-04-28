@@ -1,0 +1,23 @@
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.games-filter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.games-filter input {
+  width: min(100%, 360px);
+  min-height: 46px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(8,19,27,.75);
+  color: #fff;
+  padding: 0 16px;
+  outline: none;
+}
+@media (max-width: 900px) {
+  .games-grid { grid-template-columns: 1fr; }
+}

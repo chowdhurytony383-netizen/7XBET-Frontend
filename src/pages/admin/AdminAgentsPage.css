@@ -1,0 +1,36 @@
+.admin-agent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-agent-card {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-agent-card h3 {
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.agent-credential-box {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(124, 29, 255, .14);
+  border: 1px solid rgba(168, 85, 247, .32);
+}
+
+.agent-credential-box span {
+  color: #dbeafe;
+}
+
+@media (max-width: 900px) {
+  .admin-agent-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,131 @@
+.live-sports-section {
+  display: grid;
+  gap: 18px;
+}
+.view-all-link {
+  color: #b7c4ff;
+  font-weight: 700;
+}
+.live-sports-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(340px, .75fr);
+  gap: 24px;
+  align-items: start;
+}
+.live-match-list {
+  display: grid;
+  gap: 10px;
+}
+.live-match-row {
+  display: grid;
+  grid-template-columns: 330px 92px minmax(280px, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 86px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: #20232f;
+}
+.live-match-info {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.live-league-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #fff;
+  font-size: .86rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ball-dot { color: #dbeafe; font-size: .8rem; }
+.live-teams {
+  display: grid;
+  gap: 6px;
+  color: #fff;
+}
+.live-teams span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.live-score-box {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255,255,255,.08);
+  padding-left: 12px;
+}
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 5px;
+  background: #ff3b86;
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 800;
+}
+.live-score-values {
+  display: grid;
+  gap: 6px;
+  color: #dbe6ff;
+  font-weight: 800;
+}
+.live-odds-grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(54px, 1fr));
+  gap: 8px;
+  min-width: 0;
+  border-left: 1px solid rgba(255,255,255,.08);
+  padding-left: 14px;
+}
+.odd-cell {
+  min-height: 42px;
+  border: 0;
+  border-radius: 5px;
+  background: #565c73;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: transform .16s ease, filter .16s ease;
+}
+.odd-cell:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+.odd-cell small {
+  color: #dce4ff;
+  font-size: .68rem;
+  font-weight: 800;
+}
+.odd-cell strong {
+  font-size: .84rem;
+}
+.no-odds {
+  color: var(--muted);
+  align-self: center;
+}
+.more-markets {
+  color: #96a2c8;
+  font-size: .82rem;
+}
+@media (max-width: 1250px) {
+  .live-sports-grid { grid-template-columns: 1fr; }
+  .live-match-row { grid-template-columns: 1fr; }
+  .live-score-box, .live-odds-grid { border-left: 0; padding-left: 0; }
+  .live-score-box { justify-content: start; grid-template-columns: auto auto; }
+  .live-odds-grid { grid-template-columns: repeat(3, minmax(70px, 1fr)); }
+}
+@media (max-width: 620px) {
+  .live-odds-grid { grid-template-columns: repeat(2, minmax(70px, 1fr)); }
+}

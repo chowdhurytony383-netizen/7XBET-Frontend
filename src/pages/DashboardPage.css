@@ -1,0 +1,15 @@
+.dashboard-chart {
+  padding: 18px;
+  min-height: 360px;
+}
+.dashboard-chart h3 {
+  margin: 0 0 16px;
+}
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 18px;
+}
+@media (max-width: 1100px) {
+  .dashboard-panels { grid-template-columns: 1fr; }
+}

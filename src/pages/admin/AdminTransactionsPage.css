@@ -1,0 +1,26 @@
+.admin-transactions-page { max-width: 1360px; }
+.admin-transaction-filter { padding: 18px; display: grid; grid-template-columns: 1.6fr 1fr auto; align-items: end; gap: 14px; }
+.admin-transaction-table td:nth-child(4) span { max-width: 260px; overflow-wrap: anywhere; }
+@media (max-width: 860px) { .admin-transaction-filter { grid-template-columns: 1fr; } }
+
+.admin-filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 0 0 16px;
+}
+
+.admin-filter-row select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, .78);
+  color: var(--text);
+  padding: 11px 12px;
+}
+
+@media (max-width: 760px) {
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+  }
+}

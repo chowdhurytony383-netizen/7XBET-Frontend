@@ -1,0 +1,28 @@
+.wallet-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wallet-balance-card {
+  padding: 28px;
+  display: grid;
+  gap: 12px;
+  background:
+    linear-gradient(135deg, rgba(34,197,94,.16), rgba(96,165,250,.08)),
+    rgba(15,33,47,.9);
+}
+.wallet-balance-card span {
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .78rem;
+}
+.wallet-balance-card strong {
+  font-size: clamp(2.3rem, 6vw, 5rem);
+  letter-spacing: -.06em;
+}
+.wallet-balance-card p {
+  color: var(--muted);
+  margin: 0;
+}

@@ -1,0 +1,15 @@
+.verification-page { max-width: 1120px; }
+.verification-status-card { padding: 18px 22px; display: flex; align-items: center; gap: 14px; }
+.verification-status-card span { display: block; color: var(--muted); margin-bottom: 4px; }
+.verification-status-card strong { font-size: 1.25rem; }
+.verification-form { padding: 24px; display: grid; gap: 24px; }
+.verification-section-title h3 { margin: 0 0 6px; font-size: 1.2rem; }
+.verification-section-title p { margin: 0; color: var(--muted); }
+.verification-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.verification-grid .wide { grid-column: 1 / -1; }
+.upload-box { min-height: 124px; display: grid; place-items: center; gap: 8px; padding: 18px; border: 1px dashed rgba(148,163,184,.34); border-radius: 18px; background: rgba(255,255,255,.045); color: var(--text); text-align: center; }
+.upload-box input { display: none; }
+.upload-box small { color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.verification-submit { justify-self: end; min-width: 220px; }
+.center-card { min-height: 300px; display: grid; place-items: center; }
+@media (max-width: 760px) { .verification-grid { grid-template-columns: 1fr; } .verification-submit { width: 100%; } }

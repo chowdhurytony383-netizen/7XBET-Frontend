@@ -1,0 +1,29 @@
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+.page-eyebrow {
+  color: #9ee8b7;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.page-header h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+.page-header p {
+  color: var(--muted);
+  max-width: 720px;
+  line-height: 1.65;
+  margin: 0;
+}
+.page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 780px) {
+  .page-header { align-items: stretch; flex-direction: column; }
+}

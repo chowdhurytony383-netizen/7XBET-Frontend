@@ -1,0 +1,13 @@
+.empty-state {
+  min-height: 210px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 28px;
+  border: 1px dashed var(--border);
+  border-radius: 22px;
+  background: rgba(255,255,255,.035);
+}
+.empty-state svg { color: var(--muted); }
+.empty-state h3 { margin: 12px 0 8px; }
+.empty-state p { color: var(--muted); margin: 0; max-width: 380px; line-height: 1.6; }
