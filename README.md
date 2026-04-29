@@ -103,7 +103,6 @@ These pages are available from the sidebar without login and are ready to receiv
 - `/crash`
 - `/live-casino`
 - `/slots`
-- `/betongames`
 - `/bonuses`
 - `/bonuses/welcome-bonus`
 - `/bonuses/cashback`
