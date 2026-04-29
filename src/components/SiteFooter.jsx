@@ -28,7 +28,7 @@ const footerColumns = [
       ['Esports', '/esports'],
       ['Live Casino', '/live-casino'],
       ['Slots', '/slots'],
-      ['BetOnGames', '/betongames'],
+
     ],
   },
   {
@@ -63,7 +63,7 @@ export default function SiteFooter() {
 
           <p>
             For questions or suggestions, please visit{' '}
-            <a href="mailto:support@7xbet.com">support@7xbet.com</a>
+            <a href="mailto:support-en@7xbet.asia">support-en@7xbet.asia</a>
           </p>
         </div>
 
