@@ -500,3 +500,138 @@
     display: none;
   }
 }
+
+@media (max-width: 680px) {
+  .auth-page,
+  .register-page,
+  .registration-page {
+    padding: 12px 10px !important;
+    min-height: auto !important;
+  }
+
+  .auth-card,
+  .register-card,
+  .registration-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 18px !important;
+    border-radius: 22px !important;
+    gap: 12px !important;
+  }
+
+  .auth-card h1,
+  .register-card h1,
+  .registration-card h1 {
+    font-size: 2rem !important;
+    line-height: 1 !important;
+    margin: 0 0 8px !important;
+  }
+
+  .auth-card > p,
+  .register-card > p,
+  .registration-card > p {
+    font-size: .92rem !important;
+    line-height: 1.45 !important;
+    margin: 0 0 12px !important;
+  }
+
+  .fast-signup,
+  .one-click-box,
+  .quick-register-card {
+    padding: 14px !important;
+    border-radius: 18px !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .fast-signup small,
+  .one-click-box small,
+  .quick-register-card small {
+    font-size: .72rem !important;
+    letter-spacing: .12em !important;
+  }
+
+  .fast-signup h2,
+  .one-click-box h2,
+  .quick-register-card h2,
+  .fast-signup h3,
+  .one-click-box h3,
+  .quick-register-card h3 {
+    font-size: 1rem !important;
+    line-height: 1.1 !important;
+    margin: 4px 0 !important;
+  }
+
+  .fast-signup p,
+  .one-click-box p,
+  .quick-register-card p {
+    font-size: .78rem !important;
+    line-height: 1.35 !important;
+    margin: 0 0 10px !important;
+  }
+
+  .one-click-btn,
+  .fast-signup button,
+  .quick-register-card button {
+    min-height: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    font-size: .95rem !important;
+  }
+
+  .social-login,
+  .auth-social,
+  .register-social {
+    gap: 8px !important;
+  }
+
+  .social-login button,
+  .auth-social button,
+  .register-social button,
+  .google-btn,
+  .facebook-btn {
+    min-height: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    font-size: .9rem !important;
+  }
+
+  .divider,
+  .auth-divider,
+  .register-divider {
+    margin: 10px 0 !important;
+    font-size: .72rem !important;
+    letter-spacing: .12em !important;
+  }
+
+  .form-group,
+  .input-group,
+  .register-form-group {
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .form-group label,
+  .input-group label,
+  .register-form-group label {
+    font-size: .82rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  input,
+  select,
+  textarea,
+  .custom-select,
+  .select-box {
+    min-height: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    font-size: .9rem !important;
+    padding: 0 14px !important;
+  }
+
+  .register-form,
+  .auth-form {
+    gap: 8px !important;
+  }
+}
