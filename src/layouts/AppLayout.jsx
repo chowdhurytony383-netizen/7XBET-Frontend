@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar.jsx';
 import Topbar from '../components/Topbar.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import './AppLayout.css';
 
