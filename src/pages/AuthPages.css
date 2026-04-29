@@ -1185,4 +1185,168 @@
     min-height: 52px !important;
     font-size: 1rem !important;
   }
+/* Login page clean layout */
+.login-card {
+  display: grid;
+  gap: 18px;
+}
+
+.login-card-header {
+  display: grid;
+  gap: 8px;
+}
+
+.login-card-header h2 {
+  margin: 0;
+}
+
+.login-card-header p {
+  margin: 0;
+}
+
+.login-form-fields {
+  display: grid;
+  gap: 14px;
+}
+
+/* Mobile login layout fix */
+@media (max-width: 680px) {
+  .auth-card.login-card {
+    width: calc(100vw - 8px) !important;
+    max-width: calc(100vw - 8px) !important;
+    margin: 0 auto !important;
+    padding: 18px 16px !important;
+    border-radius: 22px !important;
+    gap: 14px !important;
+  }
+
+  .login-card-header h2 {
+    font-size: 2rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+  }
+
+  .login-card-header p {
+    max-width: 100% !important;
+    font-size: .95rem !important;
+    line-height: 1.45 !important;
+    margin: 0 !important;
+  }
+
+  .login-social-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .login-social-grid .social-auth-btn {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 0 8px !important;
+    border-radius: 13px !important;
+    font-size: .82rem !important;
+    line-height: 1.1 !important;
+    gap: 7px !important;
+  }
+
+  .login-social-grid .social-auth-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .login-form-fields {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .login-card .input-group {
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+
+  .login-card .input-group label {
+    font-size: .86rem !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+  }
+
+  .login-card .input-group input {
+    width: 100% !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    border-radius: 13px !important;
+    font-size: .9rem !important;
+    padding: 0 13px !important;
+  }
+
+  .login-card .password-field input {
+    padding-right: 46px !important;
+  }
+
+  .login-card .password-field button {
+    right: 7px !important;
+    bottom: 6px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 10px !important;
+  }
+
+  .login-card .btn-full {
+    min-height: 44px !important;
+    height: 44px !important;
+    border-radius: 13px !important;
+    font-size: .95rem !important;
+    margin: 0 !important;
+  }
+
+  .login-links {
+    margin-top: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    font-size: .78rem !important;
+    text-align: center !important;
+  }
+
+  .login-links a {
+    line-height: 1.25 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .auth-card.login-card {
+    padding: 14px 12px !important;
+    gap: 12px !important;
+  }
+
+  .login-card-header h2 {
+    font-size: 1.75rem !important;
+  }
+
+  .login-card-header p {
+    font-size: .82rem !important;
+  }
+
+  .login-social-grid .social-auth-btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: .74rem !important;
+  }
+
+  .login-card .input-group input {
+    height: 40px !important;
+    min-height: 40px !important;
+    font-size: .82rem !important;
+  }
+
+  .login-card .btn-full {
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .login-links {
+    font-size: .7rem !important;
+  }
 }
