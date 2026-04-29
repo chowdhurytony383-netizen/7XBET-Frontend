@@ -673,3 +673,21 @@
     font-size: 0.7rem !important;
   }
 }
+@media (max-width: 680px) {
+  .auth-page {
+    padding: 6px !important;
+  }
+
+  .auth-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .auth-card.register-card {
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
+    margin: 0 auto !important;
+    padding: 14px !important;
+    border-radius: 20px !important;
+  }
+}
