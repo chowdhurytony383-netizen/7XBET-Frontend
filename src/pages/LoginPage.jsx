@@ -13,18 +13,32 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ email: '', password: '' });
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const updateField = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  const updateField = (event) => {
+    const { name, value } = event.target;
+
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
 
   const continueWithProvider = (provider) => {
     const targetUrl = AuthAPI.socialAuthUrl(provider);
+
     if (!targetUrl) {
       toast.error(`${provider} login URL is not configured`);
       return;
     }
+
     window.location.href = targetUrl;
   };
 
@@ -39,6 +53,7 @@ export default function LoginPage() {
         userId: form.email,
         password: form.password,
       });
+
       toast.success('Login successful');
       navigate(location.state?.from?.pathname || '/', { replace: true });
     } catch (error) {
@@ -52,48 +67,88 @@ export default function LoginPage() {
     <section className="auth-page">
       <div className="auth-visual">
         <Logo />
+
         <h1>Sign in to your account.</h1>
-        <p>Login with email, User ID, Google, Facebook, or use the agent login for agent accounts.</p>
+
+        <p>
+          Login with email, User ID, Google, Facebook, or use the agent login for
+          agent accounts.
+        </p>
       </div>
 
       <div className="auth-panel">
-        <form className="auth-card form-grid" onSubmit={submit}>
-          <div>
+        <form className="auth-card login-card" onSubmit={submit}>
+          <div className="login-card-header">
             <h2>Login</h2>
             <p>Enter your email or generated User ID to continue.</p>
           </div>
 
-          <div className="social-auth-grid">
-            <button className="social-auth-btn google" type="button" onClick={() => continueWithProvider('google')}>
+          <div className="social-auth-grid login-social-grid">
+            <button
+              className="social-auth-btn google"
+              type="button"
+              onClick={() => continueWithProvider('google')}
+            >
               <FaGoogle />
-              Google Login
+              <span>Google Login</span>
             </button>
-            <button className="social-auth-btn facebook" type="button" onClick={() => continueWithProvider('facebook')}>
+
+            <button
+              className="social-auth-btn facebook"
+              type="button"
+              onClick={() => continueWithProvider('facebook')}
+            >
               <FaFacebookF />
-              Facebook Login
+              <span>Facebook Login</span>
             </button>
           </div>
 
-          <div className="auth-divider"><span>or login manually</span></div>
-
-          <div className="input-group">
-            <label htmlFor="email">Email or User ID</label>
-            <input id="email" name="email" value={form.email} onChange={updateField} required autoComplete="username" />
+          <div className="auth-divider">
+            <span>or login manually</span>
           </div>
 
-          <div className="input-group password-field">
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type={showPassword ? 'text' : 'password'} value={form.password} onChange={updateField} required autoComplete="current-password" />
-            <button type="button" onClick={() => setShowPassword((current) => !current)}>
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+          <div className="login-form-fields">
+            <div className="input-group">
+              <label htmlFor="email">Email or User ID</label>
+
+              <input
+                id="email"
+                name="email"
+                value={form.email}
+                onChange={updateField}
+                required
+                autoComplete="username"
+              />
+            </div>
+
+            <div className="input-group password-field">
+              <label htmlFor="password">Password</label>
+
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={updateField}
+                required
+                autoComplete="current-password"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button className="btn btn-primary btn-full" type="submit" disabled={submitting}>
             {submitting ? 'Signing in...' : 'Login'}
           </button>
 
-          <div className="auth-links">
+          <div className="auth-links login-links">
             <Link to="/forgot-password">Forgot password?</Link>
             <Link to="/register">Create account</Link>
             <Link to="/agent/login">Agent login</Link>
