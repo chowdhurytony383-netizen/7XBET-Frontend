@@ -225,78 +225,73 @@
 }
 @media (max-width: 640px) {
   .home-hero {
-    min-height: auto;
-    gap: 16px;
-    padding: 18px;
-    border-radius: 24px;
-  }
-
-  .home-hero-copy {
-    align-content: start;
+    padding: 12px;
+    gap: 10px;
+    border-radius: 20px;
   }
 
   .home-hero-copy .section-kicker,
   .home-hero-copy .eyebrow {
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
   }
 
   .home-hero-copy h1 {
-    margin: 10px 0 12px;
-    font-size: clamp(2.1rem, 13vw, 3.2rem);
-    line-height: 0.95;
-    letter-spacing: -0.055em;
+    margin: 6px 0 8px;
+    font-size: clamp(1.65rem, 10vw, 2.35rem);
+    line-height: 0.94;
   }
 
   .home-hero-copy p {
-    font-size: 0.96rem;
-    line-height: 1.65;
-    margin-bottom: 16px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    margin-bottom: 10px;
   }
 
   .home-actions {
-    gap: 10px;
+    gap: 7px;
   }
 
   .home-actions .btn,
   .home-actions a,
   .home-actions button {
-    min-height: 48px;
-    padding: 0 18px;
-    border-radius: 16px;
-    font-size: 0.95rem;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 13px;
+    font-size: 0.78rem;
   }
 
   .home-hero-image img {
-    height: 220px;
-    border-radius: 22px;
+    height: 135px;
+    border-radius: 16px;
   }
 }
 
 @media (max-width: 420px) {
   .home-hero {
-    padding: 14px;
-    border-radius: 22px;
+    padding: 10px;
+    gap: 8px;
+    border-radius: 18px;
   }
 
   .home-hero-copy h1 {
-    font-size: clamp(1.95rem, 12vw, 2.7rem);
+    font-size: clamp(1.55rem, 9vw, 2.05rem);
   }
 
   .home-hero-copy p {
-    font-size: 0.9rem;
-    line-height: 1.55;
+    font-size: 0.74rem;
+    line-height: 1.42;
   }
 
   .home-actions .btn,
   .home-actions a,
   .home-actions button {
-    min-height: 44px;
-    padding: 0 15px;
-    font-size: 0.9rem;
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.74rem;
   }
 
   .home-hero-image img {
-    height: 185px;
+    height: 120px;
   }
 }
