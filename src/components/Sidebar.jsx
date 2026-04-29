@@ -40,7 +40,6 @@ const mainNavItems = [
   { to: '/crash', label: 'Crash', icon: Rocket },
   { to: '/live-casino', label: 'Live Casino', icon: Dice5 },
   { to: '/slots', label: 'Slots', icon: Cherry },
-  { to: '/betongames', label: 'BetOnGames', icon: Layers3 },
   { to: '/tournaments', label: 'Tournaments', icon: Medal },
   { to: '/customer-support', label: 'Customer Support', icon: MessageCircle },
 ];
