@@ -220,3 +220,12 @@
     background: rgba(0,0,0,.55);
   }
 }
+
+.footer-social-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 1000;
+  font-family: Arial, sans-serif;
+}
