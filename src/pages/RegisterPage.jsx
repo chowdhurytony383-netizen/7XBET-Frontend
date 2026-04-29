@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Copy, Eye, EyeOff, MousePointerClick, Search, X } from 'lucide-react';
+import { Eye, EyeOff, MousePointerClick, Search } from 'lucide-react';
 import { FaFacebookF, FaGoogle } from 'react-icons/fa';
 import Logo from '../components/Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -9,6 +9,8 @@ import { AuthAPI } from '../api/auth.js';
 import { getApiError } from '../api/client.js';
 import { countries, currencyLabel, defaultCountry } from '../utils/countries.js';
 import './AuthPages.css';
+
+const ONE_CLICK_CREDENTIALS_KEY = 'oneClickCredentials';
 
 export default function RegisterPage() {
   const { register, oneClickRegister } = useAuth();
@@ -34,7 +36,6 @@ export default function RegisterPage() {
   const [quickSubmitting, setQuickSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [showQuickForm, setShowQuickForm] = useState(false);
-  const [createdAccount, setCreatedAccount] = useState(null);
   const [countrySearch, setCountrySearch] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -137,6 +138,11 @@ export default function RegisterPage() {
     }
   };
 
+  const saveOneClickCredentials = (credentials) => {
+    sessionStorage.setItem(ONE_CLICK_CREDENTIALS_KEY, JSON.stringify(credentials));
+    window.dispatchEvent(new Event('one-click-credentials-created'));
+  };
+
   const registerWithOneClick = async () => {
     if (!quickForm.acceptedTerms) {
       toast.error('Please accept the terms and conditions');
@@ -155,28 +161,21 @@ export default function RegisterPage() {
       });
 
       const account = response.data?.data || {};
+      const login = account.login || account.user?.userId || account.user?.login || account.user?.username;
+      const password = account.password;
 
-      setCreatedAccount({
-        login: account.login || account.user?.userId,
-        password: account.password,
-      });
+      if (!login || !password) {
+        toast.error('User ID or password was not returned from server');
+        return;
+      }
 
+      saveOneClickCredentials({ login, password });
       toast.success('Registration completed');
     } catch (error) {
       toast.error(getApiError(error, 'One click registration failed'));
     } finally {
       setQuickSubmitting(false);
     }
-  };
-
-  const copyCredentials = async () => {
-    if (!createdAccount) return;
-
-    await navigator.clipboard.writeText(
-      `Login: ${createdAccount.login}\nPassword: ${createdAccount.password}`
-    );
-
-    toast.success('Login and password copied');
   };
 
   const continueWithProvider = (provider) => {
@@ -487,52 +486,6 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-
-      {createdAccount && (
-        <div className="credential-modal-backdrop">
-          <div className="credential-modal">
-            <button
-              className="credential-close"
-              type="button"
-              onClick={() => setCreatedAccount(null)}
-            >
-              <X size={30} />
-            </button>
-
-            <h2>Thanks for the registration</h2>
-
-            <div className="credential-box">
-              <div>
-                <span>Login:</span>
-                <strong>{createdAccount.login}</strong>
-              </div>
-
-              <div className="credential-divider" />
-
-              <div>
-                <span>Password:</span>
-                <strong>{createdAccount.password}</strong>
-              </div>
-
-              <button type="button" onClick={copyCredentials}>
-                <Copy size={22} />
-              </button>
-            </div>
-
-            <button className="credential-action" type="button" onClick={copyCredentials}>
-              Copy Login and Password
-            </button>
-
-            <button className="credential-action" type="button" onClick={() => window.print()}>
-              Save as picture / screenshot
-            </button>
-
-            <small className="credential-note">
-              Please save your login and password. Password is shown only once.
-            </small>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
