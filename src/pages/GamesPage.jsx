@@ -47,7 +47,6 @@ export default function GamesPage() {
       <PageHeader
         eyebrow="Game lobby"
         title="Games"
-        description="Only backend games are shown here. Add, edit or deactivate game records in the backend/admin system to control this page."
         actions={<button className="btn btn-soft" onClick={loadGames}><RefreshCw size={18} /> Refresh</button>}
       />
       <div className="games-filter">
