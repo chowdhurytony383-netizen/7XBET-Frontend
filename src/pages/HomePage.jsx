@@ -14,6 +14,7 @@ import EmptyState from '../components/EmptyState.jsx';
 import SportsCategoryStrip from '../components/SportsCategoryStrip.jsx';
 import LiveSportsSection from '../components/LiveSportsSection.jsx';
 import './HomePage.css';
+import FooterSection from "../components/FooterSection";
 
 function normalizeList(payload, keys = []) {
   if (Array.isArray(payload)) return payload;
