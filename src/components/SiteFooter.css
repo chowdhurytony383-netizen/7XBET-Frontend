@@ -129,6 +129,22 @@
   font-weight: 900;
 }
 
+.footer-social-icon,
+.footer-app-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 1000;
+  font-family: Arial, sans-serif;
+}
+
+.footer-app-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 2rem;
+}
+
 .site-footer-info {
   max-width: 1180px;
   margin: 42px auto 0;

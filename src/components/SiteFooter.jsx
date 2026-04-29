@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Apple, Send, Smartphone } from 'lucide-react';
 import './SiteFooter.css';
 
 const footerColumns = [
@@ -96,7 +95,7 @@ export default function SiteFooter() {
 
               <li>
                 <a href="https://t.me" target="_blank" rel="noreferrer">
-                  <Send size={18} />
+                  <span className="footer-social-icon">↗</span>
                   Telegram
                 </a>
               </li>
@@ -107,7 +106,7 @@ export default function SiteFooter() {
             <h3>Apps</h3>
 
             <Link to="/mobile/android" className="app-download-card">
-              <Smartphone size={42} />
+              <span className="footer-app-icon">▣</span>
               <span>
                 Download for
                 <strong>Android</strong>
@@ -115,7 +114,7 @@ export default function SiteFooter() {
             </Link>
 
             <Link to="/mobile/ios" className="app-download-card">
-              <Apple size={42} />
+              <span className="footer-app-icon">●</span>
               <span>
                 Download for
                 <strong>iOS</strong>
