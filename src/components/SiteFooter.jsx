@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Apple, Facebook, Send, Smartphone } from 'lucide-react';
+import { Apple, Send, Smartphone } from 'lucide-react';
 import './SiteFooter.css';
 
 const footerColumns = [
@@ -9,7 +9,7 @@ const footerColumns = [
       ['Careers', '/other/careers'],
       ['About us', '/other/about'],
       ['Terms and Conditions', '/other/terms'],
-      ['Contacts', '/support'],
+      ['Contacts', '/customer-support'],
       ['Affiliate Program', '/other/affiliate'],
       ['Terms of Service', '/other/terms-of-service'],
       ['Bet Acceptance Rules', '/other/bet-rules'],
@@ -27,9 +27,9 @@ const footerColumns = [
     links: [
       ['Sports', '/sports'],
       ['Esports', '/esports'],
-      ['Live Casino', '/casino/live'],
-      ['Slots', '/casino/slots'],
-      ['BetOnGames', '/bet-on-games'],
+      ['Live Casino', '/live-casino'],
+      ['Slots', '/slots'],
+      ['BetOnGames', '/betongames'],
     ],
   },
   {
@@ -46,7 +46,7 @@ const footerColumns = [
     title: 'Useful links',
     links: [
       ['Mobile version', '/mobile'],
-      ['Bet slip check', '/bets/slip'],
+      ['Bet slip check', '/bet-slip'],
       ['Blog', '/blog'],
     ],
   },
@@ -89,7 +89,7 @@ export default function SiteFooter() {
             <ul>
               <li>
                 <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                  <Facebook size={18} />
+                  <span className="footer-social-icon">f</span>
                   Facebook
                 </a>
               </li>
