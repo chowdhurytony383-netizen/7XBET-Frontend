@@ -38,24 +38,32 @@ export default function RegisterPage() {
   const [countrySearch, setCountrySearch] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const selectedManualCountry = useMemo(
-    () => countries.find((item) => item.code === form.countryCode) || defaultCountry,
-    [form.countryCode]
-  );
+  const selectedManualCountry = useMemo(() => {
+    return countries.find((item) => item.code === form.countryCode) || defaultCountry;
+  }, [form.countryCode]);
 
-  const selectedQuickCountry = useMemo(
-    () => countries.find((item) => item.code === quickForm.countryCode) || defaultCountry,
-    [quickForm.countryCode]
-  );
+  const selectedQuickCountry = useMemo(() => {
+    return countries.find((item) => item.code === quickForm.countryCode) || defaultCountry;
+  }, [quickForm.countryCode]);
 
   const filteredCountries = useMemo(() => {
     const search = countrySearch.trim().toLowerCase();
+
     if (!search) return countries;
-    return countries.filter((country) => (
-      country.name.toLowerCase().includes(search)
-      || country.code.toLowerCase().includes(search)
-      || country.currency.toLowerCase().includes(search)
-    ));
+
+    return countries.filter((country) => {
+      const countryName = country.name?.toLowerCase() || '';
+      const countryCode = country.code?.toLowerCase() || '';
+      const countryCurrency = country.currency?.toLowerCase() || '';
+      const countryCurrencyLabel = currencyLabel(country.currency)?.toLowerCase() || '';
+
+      return (
+        countryName.includes(search) ||
+        countryCode.includes(search) ||
+        countryCurrency.includes(search) ||
+        countryCurrencyLabel.includes(search)
+      );
+    });
   }, [countrySearch]);
 
   const updateField = (event) => {
@@ -63,11 +71,20 @@ export default function RegisterPage() {
 
     if (name === 'countryCode') {
       const country = countries.find((item) => item.code === value) || defaultCountry;
-      setForm((current) => ({ ...current, countryCode: country.code, currency: country.currency }));
+
+      setForm((current) => ({
+        ...current,
+        countryCode: country.code,
+        currency: country.currency,
+      }));
+
       return;
     }
 
-    setForm((current) => ({ ...current, [name]: value }));
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
   const chooseQuickCountry = (country) => {
@@ -76,6 +93,7 @@ export default function RegisterPage() {
       countryCode: country.code,
       currency: country.currency,
     }));
+
     setCountrySearch('');
   };
 
@@ -103,8 +121,13 @@ export default function RegisterPage() {
         referralCode: form.referralCode,
       });
 
-      const nextMessage = response.data?.message || 'Account created. Check your inbox for verification.';
-      const loginId = response.data?.data?.login || response.data?.data?.user?.userId;
+      const nextMessage =
+        response.data?.message || 'Account created. Check your inbox for verification.';
+
+      const loginId =
+        response.data?.data?.login ||
+        response.data?.data?.user?.userId;
+
       setMessage(loginId ? `${nextMessage} Your User ID: ${loginId}` : nextMessage);
       toast.success('Registration successful');
     } catch (error) {
@@ -132,6 +155,7 @@ export default function RegisterPage() {
       });
 
       const account = response.data?.data || {};
+
       setCreatedAccount({
         login: account.login || account.user?.userId,
         password: account.password,
@@ -147,12 +171,17 @@ export default function RegisterPage() {
 
   const copyCredentials = async () => {
     if (!createdAccount) return;
-    await navigator.clipboard.writeText(`Login: ${createdAccount.login}\nPassword: ${createdAccount.password}`);
+
+    await navigator.clipboard.writeText(
+      `Login: ${createdAccount.login}\nPassword: ${createdAccount.password}`
+    );
+
     toast.success('Login and password copied');
   };
 
   const continueWithProvider = (provider) => {
     const targetUrl = AuthAPI.socialAuthUrl(provider);
+
     if (!targetUrl) {
       toast.error(`${provider} registration URL is not configured`);
       return;
@@ -165,13 +194,18 @@ export default function RegisterPage() {
     <section className="auth-page">
       <div className="auth-visual">
         <Logo />
+
         <h1>Create your account.</h1>
-        <p>Register with User ID, country-based currency, one click credentials, or Google/Facebook authentication.</p>
+
+        <p>
+          Register with User ID, country-based currency, one click credentials,
+          or Google/Facebook authentication.
+        </p>
       </div>
 
       <div className="auth-panel">
         <div className="auth-card register-card">
-          <div>
+          <div className="register-card-header">
             <h2>Registration</h2>
             <p>Every registration method creates a unique User ID automatically.</p>
           </div>
@@ -180,9 +214,17 @@ export default function RegisterPage() {
             <div>
               <span className="quick-register-label">Fast signup</span>
               <strong>One Click Registration</strong>
-              <small>Select country, add referral code if available, then receive User ID and password instantly.</small>
+              <small>
+                Select country, add referral code if available, then receive User ID and
+                password instantly.
+              </small>
             </div>
-            <button className="btn btn-primary quick-register-btn" type="button" onClick={() => setShowQuickForm((current) => !current)}>
+
+            <button
+              className="btn btn-primary quick-register-btn"
+              type="button"
+              onClick={() => setShowQuickForm((current) => !current)}
+            >
               <MousePointerClick size={18} />
               One Click
             </button>
@@ -193,8 +235,10 @@ export default function RegisterPage() {
               <div className="country-picker">
                 <div className="input-group">
                   <label htmlFor="quickCountrySearch">Country</label>
+
                   <div className="country-search-box">
                     <Search size={17} />
+
                     <input
                       id="quickCountrySearch"
                       value={countrySearch}
@@ -205,18 +249,26 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="country-option-list">
-                  {filteredCountries.slice(0, 14).map((country) => (
-                    <button
-                      key={country.code}
-                      type="button"
-                      className={`country-option ${country.code === quickForm.countryCode ? 'selected' : ''}`}
-                      onClick={() => chooseQuickCountry(country)}
-                    >
-                      <span>{country.flag}</span>
-                      <strong>{country.name}</strong>
-                      <small>{country.currency}</small>
-                    </button>
-                  ))}
+                  {filteredCountries.length ? (
+                    filteredCountries.map((country) => (
+                      <button
+                        key={country.code}
+                        type="button"
+                        className={`country-option ${
+                          country.code === quickForm.countryCode ? 'selected' : ''
+                        }`}
+                        onClick={() => chooseQuickCountry(country)}
+                      >
+                        <span>{country.flag}</span>
+
+                        <strong>{country.name}</strong>
+
+                        <small>{country.currency}</small>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="country-empty">No country found</div>
+                  )}
                 </div>
               </div>
 
@@ -227,17 +279,24 @@ export default function RegisterPage() {
 
               <div className="bonus-card">
                 <div className="bonus-thumb">100%</div>
+
                 <div>
                   <strong>Bonus for sports</strong>
                   <span>First deposit bonus up to 14000 BDT</span>
                 </div>
+
                 <span className="bonus-arrow">›</span>
               </div>
 
               <input
                 className="promo-input"
                 value={quickForm.referralCode}
-                onChange={(event) => setQuickForm((current) => ({ ...current, referralCode: event.target.value }))}
+                onChange={(event) =>
+                  setQuickForm((current) => ({
+                    ...current,
+                    referralCode: event.target.value,
+                  }))
+                }
                 placeholder="Enter referral / promo code (optional)"
               />
 
@@ -245,42 +304,82 @@ export default function RegisterPage() {
                 <input
                   type="checkbox"
                   checked={quickForm.acceptedTerms}
-                  onChange={(event) => setQuickForm((current) => ({ ...current, acceptedTerms: event.target.checked }))}
+                  onChange={(event) =>
+                    setQuickForm((current) => ({
+                      ...current,
+                      acceptedTerms: event.target.checked,
+                    }))
+                  }
                 />
+
                 <span>
-                  By ticking this box, the user declares to have read, understood and accepted the{' '}
-                  <a href="/other/rules" target="_blank" rel="noreferrer">General Terms and Conditions</a>
+                  By ticking this box, the user declares to have read, understood and
+                  accepted the{' '}
+                  <a href="/other/rules" target="_blank" rel="noreferrer">
+                    General Terms and Conditions
+                  </a>
                 </span>
               </label>
 
-              <button className="complete-register-btn" type="button" onClick={registerWithOneClick} disabled={quickSubmitting}>
+              <button
+                className="complete-register-btn"
+                type="button"
+                onClick={registerWithOneClick}
+                disabled={quickSubmitting}
+              >
                 {quickSubmitting ? 'Creating account...' : 'Complete Registration'}
               </button>
             </div>
           )}
 
           <div className="social-auth-grid">
-            <button className="social-auth-btn google" type="button" onClick={() => continueWithProvider('google')}>
+            <button
+              className="social-auth-btn google"
+              type="button"
+              onClick={() => continueWithProvider('google')}
+            >
               <FaGoogle />
               Continue with Google
             </button>
-            <button className="social-auth-btn facebook" type="button" onClick={() => continueWithProvider('facebook')}>
+
+            <button
+              className="social-auth-btn facebook"
+              type="button"
+              onClick={() => continueWithProvider('facebook')}
+            >
               <FaFacebookF />
               Continue with Facebook
             </button>
           </div>
 
-          <div className="auth-divider"><span>or register manually</span></div>
+          <div className="auth-divider">
+            <span>or register manually</span>
+          </div>
 
           <form className="form-grid" onSubmit={submit}>
             <div className="input-group">
               <label htmlFor="name">Full Name</label>
-              <input id="name" name="name" value={form.name} onChange={updateField} required autoComplete="name" />
+
+              <input
+                id="name"
+                name="name"
+                value={form.name}
+                onChange={updateField}
+                required
+                autoComplete="name"
+              />
             </div>
 
             <div className="input-group">
               <label htmlFor="countryCode">Country</label>
-              <select id="countryCode" name="countryCode" value={form.countryCode} onChange={updateField} required>
+
+              <select
+                id="countryCode"
+                name="countryCode"
+                value={form.countryCode}
+                onChange={updateField}
+                required
+              >
                 {countries.map((country) => (
                   <option key={country.code} value={country.code}>
                     {country.flag} {country.name}
@@ -291,37 +390,94 @@ export default function RegisterPage() {
 
             <div className="input-group">
               <label htmlFor="currency">Currency</label>
-              <input id="currency" name="currency" value={currencyLabel(form.currency)} readOnly />
+
+              <input
+                id="currency"
+                name="currency"
+                value={currencyLabel(form.currency)}
+                readOnly
+              />
             </div>
 
             <div className="input-group">
               <label htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" value={form.email} onChange={updateField} required autoComplete="email" />
+
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={updateField}
+                required
+                autoComplete="email"
+              />
             </div>
 
             <div className="input-group password-field">
               <label htmlFor="password">Password</label>
-              <input id="password" name="password" type={showPassword ? 'text' : 'password'} value={form.password} onChange={updateField} required autoComplete="new-password" />
-              <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={updateField}
+                required
+                autoComplete="new-password"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <div className="input-group password-field">
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <input id="confirmPassword" name="confirmPassword" type={showPassword ? 'text' : 'password'} value={form.confirmPassword} onChange={updateField} required autoComplete="new-password" />
-              <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showPassword ? 'text' : 'password'}
+                value={form.confirmPassword}
+                onChange={updateField}
+                required
+                autoComplete="new-password"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
-            <div className="input-group">
+            <div className="input-group referral-group">
               <label htmlFor="referralCode">Referral code (optional)</label>
-              <input id="referralCode" name="referralCode" value={form.referralCode} onChange={updateField} />
+
+              <input
+                id="referralCode"
+                name="referralCode"
+                value={form.referralCode}
+                onChange={updateField}
+              />
             </div>
 
-            <button className="btn btn-primary btn-full" type="submit" disabled={submitting}>
+            <button
+              className="btn btn-primary btn-full"
+              type="submit"
+              disabled={submitting}
+            >
               {submitting ? 'Creating account...' : 'Register'}
             </button>
           </form>
 
-          {message && <div className="auth-message">{message}</div>}
+          {message ? <div className="auth-message">{message}</div> : null}
 
           <div className="auth-links">
             <Link to="/login">Already have an account?</Link>
@@ -333,7 +489,11 @@ export default function RegisterPage() {
       {createdAccount && (
         <div className="credential-modal-backdrop">
           <div className="credential-modal">
-            <button className="credential-close" type="button" onClick={() => setCreatedAccount(null)}>
+            <button
+              className="credential-close"
+              type="button"
+              onClick={() => setCreatedAccount(null)}
+            >
               <X size={30} />
             </button>
 
