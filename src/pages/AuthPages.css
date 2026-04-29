@@ -740,3 +740,127 @@
     min-height: 40px !important;
   }
 }
+/* One click register mobile clean layout */
+@media (max-width: 680px) {
+  .one-click-panel {
+    width: 100% !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    gap: 12px !important;
+    background: rgba(11, 15, 26, .72) !important;
+  }
+
+  .country-picker {
+    gap: 8px !important;
+  }
+
+  .country-search-box {
+    min-height: 42px !important;
+    height: 42px !important;
+    border-radius: 13px !important;
+    padding: 0 10px !important;
+  }
+
+  .country-search-box input {
+    font-size: .88rem !important;
+  }
+
+  .country-option-list {
+    max-height: 260px !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+  }
+
+  .country-option {
+    grid-template-columns: 32px minmax(0, 1fr) auto !important;
+    gap: 9px !important;
+    padding: 10px 12px !important;
+  }
+
+  .country-option span {
+    font-size: 1.1rem !important;
+  }
+
+  .country-option strong {
+    min-width: 0 !important;
+    font-size: .9rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .country-option small {
+    font-size: .72rem !important;
+  }
+
+  .country-empty {
+    padding: 16px !important;
+    color: #aab6ca !important;
+    text-align: center !important;
+    font-weight: 800 !important;
+  }
+
+  .one-click-select {
+    min-height: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    padding: 0 14px !important;
+    font-size: .88rem !important;
+  }
+
+  .bonus-card {
+    min-height: 72px !important;
+    grid-template-columns: 56px 1fr auto !important;
+    gap: 10px !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .bonus-thumb {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+    font-size: .88rem !important;
+  }
+
+  .bonus-card strong {
+    font-size: .9rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .bonus-card span {
+    font-size: .8rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .bonus-arrow {
+    font-size: 1.6rem !important;
+  }
+
+  .promo-input {
+    min-height: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    padding: 0 14px !important;
+    font-size: .88rem !important;
+  }
+
+  .terms-row {
+    grid-template-columns: 22px 1fr !important;
+    gap: 10px !important;
+    font-size: .8rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .terms-row input {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .complete-register-btn {
+    min-height: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: .96rem !important;
+  }
+}
