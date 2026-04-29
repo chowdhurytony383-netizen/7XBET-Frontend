@@ -223,75 +223,53 @@
     padding: 0 14px;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 560px) {
   .home-hero {
-    padding: 12px;
-    gap: 10px;
-    border-radius: 20px;
-  }
-
-  .home-hero-copy .section-kicker,
-  .home-hero-copy .eyebrow {
-    font-size: 0.6rem;
-    letter-spacing: 0.14em;
+    width: 100%;
+    margin: 0;
+    padding: 16px 14px 14px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    gap: 12px;
   }
 
   .home-hero-copy h1 {
-    margin: 6px 0 8px;
-    font-size: clamp(1.65rem, 10vw, 2.35rem);
-    line-height: 0.94;
+    font-size: clamp(2rem, 11vw, 3.35rem);
+    margin: 10px 0 12px;
   }
 
   .home-hero-copy p {
-    font-size: 0.78rem;
-    line-height: 1.45;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    line-height: 1.55;
   }
 
   .home-actions {
-    gap: 7px;
-  }
-
-  .home-actions .btn,
-  .home-actions a,
-  .home-actions button {
-    min-height: 36px;
-    padding: 0 12px;
-    border-radius: 13px;
-    font-size: 0.78rem;
-  }
-
-  .home-hero-image img {
-    height: 135px;
-    border-radius: 16px;
-  }
-}
-
-@media (max-width: 420px) {
-  .home-hero {
-    padding: 10px;
     gap: 8px;
-    border-radius: 18px;
   }
 
-  .home-hero-copy h1 {
-    font-size: clamp(1.55rem, 9vw, 2.05rem);
+  .home-actions .btn {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 14px;
   }
 
-  .home-hero-copy p {
-    font-size: 0.74rem;
-    line-height: 1.42;
+  .home-brand-card {
+    min-height: 145px;
+    border-radius: 20px;
+    gap: 6px;
   }
 
-  .home-actions .btn,
-  .home-actions a,
-  .home-actions button {
-    min-height: 34px;
-    padding: 0 10px;
-    font-size: 0.74rem;
+  .home-brand-logo span {
+    font-size: clamp(2.6rem, 13vw, 3.5rem);
   }
 
-  .home-hero-image img {
-    height: 120px;
+  .home-brand-logo strong {
+    font-size: clamp(2.35rem, 12vw, 3.25rem);
+  }
+
+  .home-brand-card p {
+    font-size: .56rem;
+    letter-spacing: .11em;
   }
 }
