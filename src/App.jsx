@@ -50,6 +50,7 @@ import AgentLoginPage from './pages/AgentLoginPage.jsx';
 import AgentDashboardPage from './pages/AgentDashboardPage.jsx';
 import AgentPaymentMethodsPage from './pages/agent/AgentPaymentMethodsPage.jsx';
 import AgentRequestsPage from './pages/agent/AgentRequestsPage.jsx';
+import FooterSection from "./components/FooterSection";
 
 export default function App() {
   return (
@@ -121,5 +122,7 @@ export default function App() {
       <Route path="/home" element={<Navigate to="/" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    <FooterSection />
+  </>
   );
 }
