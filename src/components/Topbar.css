@@ -68,3 +68,29 @@
   .topbar-wallet { display: none; }
   .topbar-auth-link { padding-inline: 12px; }
 }
+@media (max-width: 680px) {
+  .topbar {
+    min-height: 48px !important;
+    height: 48px;
+    padding: 4px 12px !important;
+    gap: 8px;
+  }
+
+  .topbar-menu {
+    width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+  }
+
+  .topbar-auth-link,
+  .topbar .btn,
+  .topbar a,
+  .topbar button {
+    min-height: 36px !important;
+    height: 36px;
+    padding: 0 12px !important;
+    border-radius: 16px;
+    font-size: 0.82rem;
+  }
+}
