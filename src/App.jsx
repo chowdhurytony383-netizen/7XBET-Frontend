@@ -57,10 +57,12 @@ import AdminAgentPaymentMethodsPage from './pages/admin/AdminAgentPaymentMethods
 import AdminAgentRequestsPage from './pages/admin/AdminAgentRequestsPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="games" element={<GamesPage />} />
@@ -121,8 +123,11 @@ export default function App() {
         </Route>
       </Route>
 
-      <Route path="/home" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+
+      <OneClickCredentialModal />
+    </>
   );
 }
