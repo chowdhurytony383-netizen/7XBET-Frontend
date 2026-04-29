@@ -6,12 +6,24 @@ import './Topbar.css';
 
 function getDisplayName(user) {
   if (!user) return 'User';
-  return user.fullName || user.name || user.username || user.userId || user.login || user.email || 'User';
+  if (user.fullName || user.name || user.username) return user.fullName || user.name || user.username;
+  const generatedId = user.userId || user.login;
+  if (generatedId) return `User ${generatedId}`;
+  return user.email || 'User';
 }
 
 function getVerificationStatus(user) {
   if (!user) return '';
   return user.verificationStatus || user.kyc?.status || (user.isVerified ? 'verified' : 'not_submitted');
+}
+
+function TopbarBrand() {
+  return (
+    <Link className="topbar-brand" to="/" aria-label="7XBET home">
+      <span className="topbar-brand-seven">7</span>
+      <span className="topbar-brand-xbet">XBET</span>
+    </Link>
+  );
 }
 
 export default function Topbar({ onMenuClick }) {
@@ -24,9 +36,7 @@ export default function Topbar({ onMenuClick }) {
           <Menu size={22} />
         </button>
 
-        <Link className="topbar-brand" to="/" aria-label="7XBET home">
-          7XBET
-        </Link>
+        <TopbarBrand />
 
         <div className="topbar-spacer" />
 
@@ -50,9 +60,7 @@ export default function Topbar({ onMenuClick }) {
         <Menu size={22} />
       </button>
 
-      <Link className="topbar-brand" to="/" aria-label="7XBET home">
-        7XBET
-      </Link>
+      <TopbarBrand />
 
       <div className="topbar-spacer" />
 
