@@ -1,260 +1,268 @@
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
-  min-height: 74px;
-  padding: 14px 28px;
+  z-index: 30;
+  min-height: 78px;
   display: flex;
   align-items: center;
   gap: 14px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(7, 18, 26, .82);
+  padding: 14px 24px;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.16);
+  background:
+    radial-gradient(circle at 18% 50%, rgba(34, 197, 94, 0.14), transparent 16rem),
+    radial-gradient(circle at 82% 20%, rgba(59, 130, 246, 0.18), transparent 18rem),
+    linear-gradient(180deg, rgba(7, 18, 26, 0.96), rgba(9, 24, 35, 0.92));
   backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+}
+
+.topbar-menu,
+.topbar-brand,
+.topbar-balance-card,
+.topbar-user-card,
+.topbar-auth-link {
+  min-height: 48px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.topbar-menu {
+  width: 48px;
+  justify-content: center;
+  padding: 0;
+  background: linear-gradient(180deg, rgba(18, 44, 67, 0.98), rgba(12, 32, 47, 0.98));
+  color: #f8fafc;
+}
+
+.topbar-brand {
+  padding: 0 20px;
+  background:
+    radial-gradient(circle at 30% 50%, rgba(96, 165, 250, 0.14), transparent 10rem),
+    linear-gradient(180deg, rgba(11, 31, 48, 0.98), rgba(8, 24, 38, 0.98));
+  color: #ffffff;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.topbar-brand span {
+  font-size: 1.55rem;
+  line-height: 1;
 }
 
 .topbar-spacer {
   flex: 1;
 }
 
-.topbar-menu,
-.topbar-brand,
-.topbar-wallet,
-.topbar-user,
-.topbar-auth-link {
-  min-height: 42px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #fff;
-  border: 1px solid var(--border);
-  background: rgba(15, 33, 47, .92);
-  text-decoration: none;
-}
-
-.topbar-menu {
-  display: none;
-  width: 42px;
-  padding: 0;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.topbar-brand {
-  padding: 0 18px;
-  justify-content: center;
-  font-weight: 1000;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04);
-}
-
-.topbar-brand span {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.topbar-wallet {
-  padding: 0 14px;
-  display: inline-flex;
-  align-items: center;
+.topbar-balance-card {
   gap: 10px;
-  min-width: 162px;
+  padding: 0 16px;
+  min-width: 210px;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(34, 197, 94, 0.12), transparent 8rem),
+    linear-gradient(180deg, rgba(11, 31, 48, 0.98), rgba(8, 24, 38, 0.98));
+  color: #fff;
 }
 
-.topbar-wallet-icon {
-  width: 28px;
-  height: 28px;
+.topbar-balance-icon {
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   display: inline-grid;
   place-items: center;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbeafe;
   flex: 0 0 auto;
 }
 
-.topbar-wallet-text {
+.topbar-balance-copy {
   display: grid;
   line-height: 1.05;
 }
 
-.topbar-wallet-text small {
-  color: var(--muted);
-  font-size: .72rem;
-  font-weight: 700;
+.topbar-balance-copy small {
+  color: #dbeafe;
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
-.topbar-wallet-text strong {
-  font-size: .92rem;
+.topbar-balance-copy strong {
+  margin-top: 2px;
+  font-size: 1rem;
   font-weight: 900;
-  color: #fff;
+  color: #ffffff;
 }
 
-.topbar-user {
-  padding: 0 12px 0 8px;
-  display: inline-flex;
-  align-items: center;
+.topbar-user-card {
   gap: 10px;
+  padding: 0 14px 0 10px;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15), transparent 8rem),
+    linear-gradient(180deg, rgba(11, 31, 48, 0.98), rgba(8, 24, 38, 0.98));
+  color: #fff;
+  min-width: 225px;
 }
 
 .topbar-avatar {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
   display: inline-grid;
   place-items: center;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
   flex: 0 0 auto;
 }
 
-.topbar-user-meta {
+.topbar-user-copy {
   display: grid;
   line-height: 1.05;
+  min-width: 0;
 }
 
-.topbar-user-meta strong {
-  font-size: .9rem;
-  font-weight: 800;
-  color: #fff;
+.topbar-user-copy strong {
+  font-size: 0.93rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.topbar-user-meta small {
-  display: flex;
+.topbar-user-copy small {
+  margin-top: 3px;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: .72rem;
+  color: #dbeafe;
+  font-size: 0.72rem;
+  white-space: nowrap;
 }
 
 .topbar-auth-link {
-  padding-inline: 16px;
+  gap: 8px;
+  padding: 0 16px;
 }
 
-@media (max-width: 980px) {
+.topbar-auth-link span {
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
   .topbar {
-    padding: 12px 18px;
+    padding: 12px 16px;
+    gap: 10px;
   }
 
-  .topbar-menu {
-    display: inline-flex;
+  .topbar-balance-card {
+    min-width: 180px;
+  }
+
+  .topbar-user-card {
+    min-width: 180px;
+  }
+
+  .topbar-brand span {
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 680px) {
   .topbar {
-    min-height: 58px;
-    padding: 8px 8px;
+    min-height: 70px;
+    padding: 10px 8px;
     gap: 8px;
   }
 
   .topbar-menu {
-    display: inline-flex;
     width: 40px;
-    height: 40px;
     min-height: 40px;
-    padding: 0;
   }
 
   .topbar-brand {
     min-height: 40px;
-    height: 40px;
     padding: 0 14px;
-    border-radius: 14px;
-    flex: 0 0 auto;
   }
 
   .topbar-brand span {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
-  .topbar-wallet {
+  .topbar-balance-card {
     min-height: 40px;
-    height: 40px;
-    min-width: 0;
+    min-width: 138px;
     padding: 0 10px;
     gap: 8px;
-    border-radius: 14px;
-    flex: 0 1 auto;
-    max-width: 150px;
   }
 
-  .topbar-wallet-icon {
+  .topbar-balance-icon {
     width: 24px;
     height: 24px;
   }
 
-  .topbar-wallet-text {
-    display: grid;
-    line-height: 1;
-    min-width: 0;
+  .topbar-balance-copy small {
+    font-size: 0.56rem;
   }
 
-  .topbar-wallet-text small {
-    font-size: .62rem;
-    white-space: nowrap;
+  .topbar-balance-copy strong {
+    font-size: 0.76rem;
   }
 
-  .topbar-wallet-text strong {
-    font-size: .74rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .topbar-user {
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
+  .topbar-user-card {
     min-height: 40px;
-    border-radius: 14px;
-    justify-content: center;
-    padding: 0;
-    gap: 0;
+    min-width: auto;
+    padding: 0 10px 0 8px;
   }
 
   .topbar-avatar {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
 
-  .topbar-user-meta {
-    display: none;
+  .topbar-user-copy strong {
+    font-size: 0.72rem;
+    max-width: 92px;
+  }
+
+  .topbar-user-copy small {
+    font-size: 0.56rem;
   }
 
   .topbar-auth-link {
     min-height: 40px;
-    height: 40px;
-    padding-inline: 12px;
-    border-radius: 14px;
-    font-size: .82rem;
+    padding: 0 12px;
+    font-size: 0.8rem;
   }
 }
 
 @media (max-width: 420px) {
   .topbar {
-    gap: 6px;
     padding: 8px 6px;
+    gap: 6px;
   }
 
   .topbar-brand {
-    padding: 0 12px;
+    padding: 0 10px;
   }
 
   .topbar-brand span {
-    font-size: .95rem;
+    font-size: 0.85rem;
   }
 
-  .topbar-wallet {
-    max-width: 128px;
+  .topbar-balance-card {
+    min-width: 122px;
     padding: 0 8px;
   }
 
-  .topbar-wallet-text small {
-    font-size: .58rem;
+  .topbar-user-card {
+    padding: 0 8px 0 6px;
   }
 
-  .topbar-wallet-text strong {
-    font-size: .7rem;
+  .topbar-user-copy strong {
+    max-width: 72px;
   }
 }
