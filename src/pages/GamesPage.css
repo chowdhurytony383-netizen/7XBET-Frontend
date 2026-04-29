@@ -21,3 +21,67 @@
 @media (max-width: 900px) {
   .games-grid { grid-template-columns: 1fr; }
 }
+@media (max-width: 768px) {
+  .games-grid,
+  .available-games-grid,
+  .game-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .game-card,
+  .available-game-card,
+  .game-item {
+    min-width: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden;
+  }
+
+  .game-card-image,
+  .available-game-card-image,
+  .game-card-media,
+  .game-item img {
+    width: 100%;
+    height: 118px !important;
+    object-fit: cover;
+    display: block;
+  }
+
+  .game-card-body,
+  .available-game-card-body,
+  .game-card-content {
+    padding: 12px !important;
+  }
+
+  .game-card h3,
+  .available-game-card h3,
+  .game-card-title {
+    font-size: 1rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .game-card p,
+  .available-game-card p,
+  .game-card-desc {
+    font-size: 0.82rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 10px !important;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .game-card .btn,
+  .available-game-card .btn,
+  .game-card a,
+  .game-card button {
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 0.82rem !important;
+    border-radius: 12px !important;
+  }
+}
