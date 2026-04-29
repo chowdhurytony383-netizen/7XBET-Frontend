@@ -78,3 +78,40 @@
   .sports-strip-scroll { grid-auto-columns: 104px; }
   .sport-tile { min-height: 112px; }
 }
+@media (max-width: 720px) {
+  .sports-strip-section {
+    gap: 6px !important;
+  }
+
+  .sports-strip-section .section-row-title h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .sports-strip-section .section-row-actions {
+    font-size: 1.35rem !important;
+  }
+
+  .sports-strip-scroll {
+    grid-auto-columns: 74px !important;
+    gap: 8px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .sport-tile {
+    min-height: 76px !important;
+    border-radius: 10px !important;
+    gap: 5px !important;
+  }
+
+  .sport-tile-initial {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 13px !important;
+    font-size: 1.35rem !important;
+  }
+
+  .sport-tile span:last-child {
+    font-size: .72rem !important;
+    padding: 0 4px !important;
+  }
+}
