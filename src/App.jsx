@@ -14,7 +14,6 @@ import BetSlipPage from './pages/BetSlipPage.jsx';
 import CrashPage from './pages/CrashPage.jsx';
 import LiveCasinoPage from './pages/LiveCasinoPage.jsx';
 import SlotsPage from './pages/SlotsPage.jsx';
-import BetOnGamesPage from './pages/BetOnGamesPage.jsx';
 import BonusesPage from './pages/BonusesPage.jsx';
 import WelcomeBonusPage from './pages/WelcomeBonusPage.jsx';
 import CashbackPage from './pages/CashbackPage.jsx';
@@ -71,7 +70,6 @@ export default function App() {
         <Route path="crash" element={<CrashPage />} />
         <Route path="live-casino" element={<LiveCasinoPage />} />
         <Route path="slots" element={<SlotsPage />} />
-        <Route path="betongames" element={<BetOnGamesPage />} />
         <Route path="bonuses" element={<BonusesPage />} />
         <Route path="bonuses/welcome-bonus" element={<WelcomeBonusPage />} />
         <Route path="bonuses/cashback" element={<CashbackPage />} />
