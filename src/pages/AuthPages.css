@@ -501,137 +501,175 @@
   }
 }
 
+/* Register page mobile one-page compact layout */
 @media (max-width: 680px) {
-  .auth-page,
-  .register-page,
-  .registration-page {
-    padding: 12px 10px !important;
-    min-height: auto !important;
+  .auth-page {
+    min-height: 100dvh !important;
+    padding: 8px !important;
+    display: block !important;
   }
 
-  .auth-card,
-  .register-card,
-  .registration-card {
+  .auth-visual {
+    display: none !important;
+  }
+
+  .auth-panel {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 18px 18px !important;
-    border-radius: 22px !important;
-    gap: 12px !important;
+    display: block !important;
   }
 
-  .auth-card h1,
-  .register-card h1,
-  .registration-card h1 {
-    font-size: 2rem !important;
-    line-height: 1 !important;
-    margin: 0 0 8px !important;
-  }
-
-  .auth-card > p,
-  .register-card > p,
-  .registration-card > p {
-    font-size: .92rem !important;
-    line-height: 1.45 !important;
-    margin: 0 0 12px !important;
-  }
-
-  .fast-signup,
-  .one-click-box,
-  .quick-register-card {
-    padding: 14px !important;
+  .auth-card.register-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px !important;
     border-radius: 18px !important;
     gap: 8px !important;
-    margin-bottom: 10px !important;
   }
 
-  .fast-signup small,
-  .one-click-box small,
-  .quick-register-card small {
-    font-size: .72rem !important;
-    letter-spacing: .12em !important;
+  /* Header compact */
+  .auth-card.register-card h2 {
+    font-size: 1.45rem !important;
+    line-height: 1 !important;
+    margin: 0 0 4px !important;
   }
 
-  .fast-signup h2,
-  .one-click-box h2,
-  .quick-register-card h2,
-  .fast-signup h3,
-  .one-click-box h3,
-  .quick-register-card h3 {
-    font-size: 1rem !important;
-    line-height: 1.1 !important;
-    margin: 4px 0 !important;
+  .auth-card.register-card > div:first-child p {
+    font-size: 0.74rem !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
   }
 
-  .fast-signup p,
-  .one-click-box p,
-  .quick-register-card p {
-    font-size: .78rem !important;
-    line-height: 1.35 !important;
-    margin: 0 0 10px !important;
-  }
-
-  .one-click-btn,
-  .fast-signup button,
-  .quick-register-card button {
-    min-height: 42px !important;
-    height: 42px !important;
+  /* Quick signup compact */
+  .quick-register-box {
+    padding: 10px !important;
     border-radius: 14px !important;
-    font-size: .95rem !important;
-  }
-
-  .social-login,
-  .auth-social,
-  .register-social {
-    gap: 8px !important;
-  }
-
-  .social-login button,
-  .auth-social button,
-  .register-social button,
-  .google-btn,
-  .facebook-btn {
-    min-height: 42px !important;
-    height: 42px !important;
-    border-radius: 14px !important;
-    font-size: .9rem !important;
-  }
-
-  .divider,
-  .auth-divider,
-  .register-divider {
-    margin: 10px 0 !important;
-    font-size: .72rem !important;
-    letter-spacing: .12em !important;
-  }
-
-  .form-group,
-  .input-group,
-  .register-form-group {
     gap: 6px !important;
-    margin-bottom: 10px !important;
+    margin: 0 !important;
   }
 
-  .form-group label,
-  .input-group label,
-  .register-form-group label {
-    font-size: .82rem !important;
-    margin-bottom: 4px !important;
+  .quick-register-label {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.12em !important;
+    margin-bottom: 2px !important;
   }
 
-  input,
-  select,
-  textarea,
-  .custom-select,
-  .select-box {
-    min-height: 44px !important;
-    height: 44px !important;
-    border-radius: 14px !important;
-    font-size: .9rem !important;
-    padding: 0 14px !important;
+  .quick-register-box strong {
+    font-size: 0.92rem !important;
+    line-height: 1.1 !important;
   }
 
-  .register-form,
-  .auth-form {
+  .quick-register-box small {
+    font-size: 0.68rem !important;
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+  }
+
+  .quick-register-btn {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 12px !important;
+    border-radius: 10px !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Social compact */
+  .social-auth-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  .social-auth-btn {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+    font-size: 0.74rem !important;
+  }
+
+  .social-auth-btn svg,
+  .social-auth-btn i {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  /* Divider */
+  .auth-divider {
+    margin: 6px 0 !important;
+  }
+
+  .auth-divider span {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  /* FORM => 2 column */
+  .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
+  }
+
+  .input-group {
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+
+  .input-group label {
+    font-size: 0.72rem !important;
+    margin: 0 !important;
+  }
+
+  .input-group input,
+  .input-group select {
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Full width fields if needed */
+  .input-group.full-width,
+  .input-group.email-group,
+  .input-group.password-group,
+  .input-group.confirm-password-group,
+  .input-group.referral-group {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Password toggle smaller */
+  .password-toggle,
+  .input-action {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Submit */
+  .btn-full {
+    min-height: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+    font-size: 0.86rem !important;
+    grid-column: 1 / -1 !important;
+    margin-top: 2px !important;
+  }
+
+  /* Bottom links */
+  .auth-links {
+    margin-top: 2px !important;
+    font-size: 0.72rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .auth-message {
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+    font-size: 0.7rem !important;
   }
 }
