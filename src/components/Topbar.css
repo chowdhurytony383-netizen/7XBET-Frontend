@@ -1,26 +1,70 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 74px;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7,18,26,.82);
+  backdrop-filter: blur(18px);
+}
+.topbar-title { margin-right: auto; }
+.topbar-title span { display: block; color: var(--muted); font-size: .78rem; }
+.topbar-title strong { display: block; margin-top: 2px; font-size: .95rem; }
+.topbar-menu, .topbar-balance, .topbar-user {
+  min-height: 42px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: #fff;
+  background: rgba(15,33,47,.92);
+  border: 1px solid var(--border);
+}
+.topbar-menu { display: none; width: 42px; padding: 0; justify-content: center; }
+.topbar-user img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,.07); }
+@media (max-width: 980px) { .topbar-menu { display: inline-flex; } }
 @media (max-width: 680px) {
-  .topbar {
-    min-height: 48px !important;
-    height: 48px;
-    padding: 4px 12px !important;
-    gap: 8px;
-  }
-
-  .topbar-menu {
-    width: 36px !important;
-    height: 36px !important;
-    min-height: 36px !important;
-    padding: 0 !important;
-  }
-
-  .topbar-auth-link,
-  .topbar .btn,
-  .topbar a,
-  .topbar button {
-    min-height: 36px !important;
-    height: 36px;
-    padding: 0 12px !important;
-    border-radius: 16px;
-    font-size: 0.82rem;
-  }
+  .topbar { padding: 12px 16px; }
+  .topbar-title { display: none; }
+  .topbar-user span { display: none; }
+}
+.topbar-spacer { flex: 1; }
+.topbar-wallet {
+  min-height: 42px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: #fff;
+  background: rgba(15,33,47,.92);
+  border: 1px solid var(--border);
+}
+.topbar-wallet span { color: var(--muted); font-size: .78rem; }
+.topbar-wallet strong { font-size: .92rem; }
+.topbar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(255,255,255,.08);
+}
+.topbar-user small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: .74rem;
+}
+.topbar-auth-link { min-height: 42px; padding-inline: 16px; }
+@media (max-width: 680px) {
+  .topbar-wallet { display: none; }
+  .topbar-auth-link { padding-inline: 12px; }
 }
