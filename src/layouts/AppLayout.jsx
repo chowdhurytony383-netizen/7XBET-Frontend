@@ -35,7 +35,7 @@ export default function AppLayout() {
 
         <main className="main-content">
           <Outlet />
-          {!hideFooter && <SiteFooter />}
+          
         </main>
       </div>
     </div>
