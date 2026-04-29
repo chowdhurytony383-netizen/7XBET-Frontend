@@ -543,3 +543,8 @@
     font-weight: 700 !important;
   }
 }
+@media (max-width: 768px) {
+  .live-match-row {
+    border-radius: 3px !important;
+  }
+}
