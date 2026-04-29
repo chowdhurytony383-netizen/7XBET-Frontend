@@ -62,7 +62,7 @@ export default function SiteFooter() {
           </Link>
 
           <p>
-            For questions or suggestions, please visit{' '}
+            For questions or suggestions, please Contact us{' '}
             <a href="mailto:support-en@7xbet.asia">support-en@7xbet.asia</a>
           </p>
         </div>
