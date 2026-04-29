@@ -1,15 +1,18 @@
-import {
-  LogIn,
-  Menu,
-  ShieldCheck,
-  UserPlus,
-  UserRound,
-  Wallet,
-} from 'lucide-react';
+import { LogIn, Menu, ShieldCheck, UserPlus, UserRound, WalletCards } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
 import './Topbar.css';
+
+function getDisplayName(user) {
+  if (!user) return 'User';
+  return user.fullName || user.name || user.username || user.userId || user.login || user.email || 'User';
+}
+
+function getVerificationStatus(user) {
+  if (!user) return '';
+  return user.verificationStatus || user.kyc?.status || (user.isVerified ? 'verified' : 'not_submitted');
+}
 
 export default function Topbar({ onMenuClick }) {
   const { user } = useAuth();
@@ -17,87 +20,55 @@ export default function Topbar({ onMenuClick }) {
   if (!user) {
     return (
       <header className="topbar">
-        <button
-          className="topbar-menu"
-          onClick={onMenuClick}
-          aria-label="Open navigation"
-          type="button"
-        >
-          <Menu size={20} />
+        <button className="topbar-menu" onClick={onMenuClick} aria-label="Open navigation">
+          <Menu size={22} />
         </button>
 
-        <Link className="topbar-brand" to="/">
-          <span>7XBET</span>
+        <Link className="topbar-brand" to="/" aria-label="7XBET home">
+          7XBET
         </Link>
 
         <div className="topbar-spacer" />
 
         <Link className="btn btn-soft topbar-auth-link" to="/login">
-          <LogIn size={16} />
-          <span>Login</span>
+          <LogIn size={17} /> Login
         </Link>
 
         <Link className="btn btn-primary topbar-auth-link" to="/register">
-          <UserPlus size={16} />
-          <span>Register</span>
+          <UserPlus size={17} /> Register
         </Link>
       </header>
     );
   }
 
-  const displayName =
-    user.userId ||
-    user.login ||
-    user.fullName ||
-    user.name ||
-    user.username ||
-    user.email ||
-    'Account';
-
-  const verificationStatus =
-    user.verificationStatus ||
-    user.kyc?.status ||
-    (user.isVerified ? 'Verified' : 'Pending');
+  const displayName = getDisplayName(user);
+  const verificationStatus = getVerificationStatus(user);
 
   return (
-    <header className="topbar">
-      <button
-        className="topbar-menu"
-        onClick={onMenuClick}
-        aria-label="Open navigation"
-        type="button"
-      >
-        <Menu size={20} />
+    <header className="topbar topbar-logged-in">
+      <button className="topbar-menu" onClick={onMenuClick} aria-label="Open navigation">
+        <Menu size={22} />
       </button>
 
-      <Link className="topbar-brand" to="/">
-        <span>7XBET</span>
+      <Link className="topbar-brand" to="/" aria-label="7XBET home">
+        7XBET
       </Link>
 
       <div className="topbar-spacer" />
 
-      <Link className="topbar-balance-card" to="/wallet">
-        <span className="topbar-balance-icon">
-          <Wallet size={15} />
-        </span>
-
-        <span className="topbar-balance-copy">
+      <Link className="topbar-wallet" to="/wallet" aria-label="Main balance">
+        <span className="topbar-wallet-icon"><WalletCards size={16} /></span>
+        <span className="topbar-wallet-text">
           <small>Main Balance</small>
-          <strong>{formatCurrency(user.wallet ?? 0)}</strong>
+          <strong>{formatCurrency(user.wallet)}</strong>
         </span>
       </Link>
 
-      <Link className="topbar-user-card" to="/profile">
-        <span className="topbar-avatar">
-          <UserRound size={17} />
-        </span>
-
-        <span className="topbar-user-copy">
-          <strong>User {displayName}</strong>
-          <small>
-            <ShieldCheck size={12} />
-            {verificationStatus}
-          </small>
+      <Link className="topbar-user" to="/profile" aria-label="Profile">
+        <span className="topbar-avatar"><UserRound size={18} /></span>
+        <span className="topbar-user-info">
+          <strong>{displayName}</strong>
+          <small><ShieldCheck size={13} /> {verificationStatus}</small>
         </span>
       </Link>
     </header>
