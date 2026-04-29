@@ -226,7 +226,7 @@ export default function RegisterPage() {
               onClick={() => setShowQuickForm((current) => !current)}
             >
               <MousePointerClick size={18} />
-              One Click
+              {showQuickForm ? 'Manual Registration' : 'One Click'}
             </button>
           </div>
 
@@ -260,9 +260,7 @@ export default function RegisterPage() {
                         onClick={() => chooseQuickCountry(country)}
                       >
                         <span>{country.flag}</span>
-
                         <strong>{country.name}</strong>
-
                         <small>{country.currency}</small>
                       </button>
                     ))
@@ -332,150 +330,154 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <div className="social-auth-grid">
-            <button
-              className="social-auth-btn google"
-              type="button"
-              onClick={() => continueWithProvider('google')}
-            >
-              <FaGoogle />
-              Continue with Google
-            </button>
+          {!showQuickForm && (
+            <>
+              <div className="social-auth-grid">
+                <button
+                  className="social-auth-btn google"
+                  type="button"
+                  onClick={() => continueWithProvider('google')}
+                >
+                  <FaGoogle />
+                  Continue with Google
+                </button>
 
-            <button
-              className="social-auth-btn facebook"
-              type="button"
-              onClick={() => continueWithProvider('facebook')}
-            >
-              <FaFacebookF />
-              Continue with Facebook
-            </button>
-          </div>
+                <button
+                  className="social-auth-btn facebook"
+                  type="button"
+                  onClick={() => continueWithProvider('facebook')}
+                >
+                  <FaFacebookF />
+                  Continue with Facebook
+                </button>
+              </div>
 
-          <div className="auth-divider">
-            <span>or register manually</span>
-          </div>
+              <div className="auth-divider">
+                <span>or register manually</span>
+              </div>
 
-          <form className="form-grid" onSubmit={submit}>
-            <div className="input-group">
-              <label htmlFor="name">Full Name</label>
+              <form className="form-grid" onSubmit={submit}>
+                <div className="input-group">
+                  <label htmlFor="name">Full Name</label>
 
-              <input
-                id="name"
-                name="name"
-                value={form.name}
-                onChange={updateField}
-                required
-                autoComplete="name"
-              />
-            </div>
+                  <input
+                    id="name"
+                    name="name"
+                    value={form.name}
+                    onChange={updateField}
+                    required
+                    autoComplete="name"
+                  />
+                </div>
 
-            <div className="input-group">
-              <label htmlFor="countryCode">Country</label>
+                <div className="input-group">
+                  <label htmlFor="countryCode">Country</label>
 
-              <select
-                id="countryCode"
-                name="countryCode"
-                value={form.countryCode}
-                onChange={updateField}
-                required
-              >
-                {countries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.flag} {country.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+                  <select
+                    id="countryCode"
+                    name="countryCode"
+                    value={form.countryCode}
+                    onChange={updateField}
+                    required
+                  >
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.flag} {country.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            <div className="input-group">
-              <label htmlFor="currency">Currency</label>
+                <div className="input-group">
+                  <label htmlFor="currency">Currency</label>
 
-              <input
-                id="currency"
-                name="currency"
-                value={currencyLabel(form.currency)}
-                readOnly
-              />
-            </div>
+                  <input
+                    id="currency"
+                    name="currency"
+                    value={currencyLabel(form.currency)}
+                    readOnly
+                  />
+                </div>
 
-            <div className="input-group">
-              <label htmlFor="email">Email</label>
+                <div className="input-group">
+                  <label htmlFor="email">Email</label>
 
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={updateField}
-                required
-                autoComplete="email"
-              />
-            </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={updateField}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
 
-            <div className="input-group password-field">
-              <label htmlFor="password">Password</label>
+                <div className="input-group password-field">
+                  <label htmlFor="password">Password</label>
 
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={updateField}
-                required
-                autoComplete="new-password"
-              />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={updateField}
+                    required
+                    autoComplete="new-password"
+                  />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword((current) => !current)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
 
-            <div className="input-group password-field">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+                <div className="input-group password-field">
+                  <label htmlFor="confirmPassword">Confirm Password</label>
 
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
-                value={form.confirmPassword}
-                onChange={updateField}
-                required
-                autoComplete="new-password"
-              />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.confirmPassword}
+                    onChange={updateField}
+                    required
+                    autoComplete="new-password"
+                  />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword((current) => !current)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
 
-            <div className="input-group referral-group">
-              <label htmlFor="referralCode">Referral code (optional)</label>
+                <div className="input-group referral-group">
+                  <label htmlFor="referralCode">Referral code (optional)</label>
 
-              <input
-                id="referralCode"
-                name="referralCode"
-                value={form.referralCode}
-                onChange={updateField}
-              />
-            </div>
+                  <input
+                    id="referralCode"
+                    name="referralCode"
+                    value={form.referralCode}
+                    onChange={updateField}
+                  />
+                </div>
 
-            <button
-              className="btn btn-primary btn-full"
-              type="submit"
-              disabled={submitting}
-            >
-              {submitting ? 'Creating account...' : 'Register'}
-            </button>
-          </form>
+                <button
+                  className="btn btn-primary btn-full"
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Creating account...' : 'Register'}
+                </button>
+              </form>
+            </>
+          )}
 
           {message ? <div className="auth-message">{message}</div> : null}
 
