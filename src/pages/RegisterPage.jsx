@@ -8,6 +8,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { AuthAPI } from '../api/auth.js';
 import { getApiError } from '../api/client.js';
 import { countries, currencyLabel, defaultCountry } from '../utils/countries.js';
+import { getDefaultRegistrationCountry } from '../utils/currency.js';
+import { formatCurrency } from '../utils/format.js';
 import './AuthPages.css';
 
 const ONE_CLICK_CREDENTIALS_KEY = 'oneClickCredentials';
@@ -15,22 +17,24 @@ const ONE_CLICK_CREDENTIALS_KEY = 'oneClickCredentials';
 export default function RegisterPage() {
   const { register, oneClickRegister } = useAuth();
 
-  const [form, setForm] = useState({
+  const detectedCountry = useMemo(() => getDefaultRegistrationCountry() || defaultCountry, []);
+
+  const [form, setForm] = useState(() => ({
     name: '',
-    countryCode: defaultCountry.code,
-    currency: defaultCountry.currency,
+    countryCode: detectedCountry.code,
+    currency: detectedCountry.currency,
     email: '',
     password: '',
     confirmPassword: '',
     referralCode: '',
-  });
+  }));
 
-  const [quickForm, setQuickForm] = useState({
-    countryCode: defaultCountry.code,
-    currency: defaultCountry.currency,
+  const [quickForm, setQuickForm] = useState(() => ({
+    countryCode: detectedCountry.code,
+    currency: detectedCountry.currency,
     referralCode: '',
     acceptedTerms: false,
-  });
+  }));
 
   const [submitting, setSubmitting] = useState(false);
   const [quickSubmitting, setQuickSubmitting] = useState(false);
@@ -279,7 +283,7 @@ export default function RegisterPage() {
 
                 <div>
                   <strong>Bonus for sports</strong>
-                  <span>First deposit bonus up to 14000 BDT</span>
+                  <span>First deposit bonus up to {formatCurrency(14000, quickForm.currency)}</span>
                 </div>
 
                 <span className="bonus-arrow">›</span>
