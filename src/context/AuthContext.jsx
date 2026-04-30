@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AuthAPI } from '../api/auth.js';
+import { clearRememberedCurrency, rememberUserCurrency } from '../utils/currency.js';
 
 const AuthContext = createContext(null);
 
@@ -7,12 +8,18 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const applyUser = useCallback((nextUser) => {
+    setUser(nextUser);
+    if (nextUser) rememberUserCurrency(nextUser);
+    else clearRememberedCurrency();
+    return nextUser;
+  }, []);
+
   const refreshUser = useCallback(async () => {
     const response = await AuthAPI.me();
     const nextUser = response.data?.data || response.data?.user || null;
-    setUser(nextUser);
-    return nextUser;
-  }, []);
+    return applyUser(nextUser);
+  }, [applyUser]);
 
   const checkSession = useCallback(async () => {
     setLoading(true);
@@ -20,11 +27,11 @@ export function AuthProvider({ children }) {
       await AuthAPI.isAuthenticated();
       await refreshUser();
     } catch (_) {
-      setUser(null);
+      applyUser(null);
     } finally {
       setLoading(false);
     }
-  }, [refreshUser]);
+  }, [refreshUser, applyUser]);
 
   useEffect(() => {
     checkSession();
@@ -33,10 +40,10 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (payload) => {
     const response = await AuthAPI.login(payload);
     const responseUser = response.data?.data?.user || null;
-    if (responseUser) setUser(responseUser);
+    if (responseUser) applyUser(responseUser);
     await refreshUser().catch(() => null);
     return response;
-  }, [refreshUser]);
+  }, [refreshUser, applyUser]);
 
   const register = useCallback(async (payload) => {
     const response = await AuthAPI.register(payload);
@@ -47,16 +54,17 @@ export function AuthProvider({ children }) {
   const oneClickRegister = useCallback(async (payload) => {
     const response = await AuthAPI.oneClickRegister(payload);
     const responseUser = response.data?.data?.user || response.data?.user || null;
-    if (responseUser) setUser(responseUser);
+    if (responseUser) applyUser(responseUser);
     await refreshUser().catch(() => null);
     return response;
-  }, [refreshUser]);
+  }, [refreshUser, applyUser]);
 
   const logout = useCallback(async () => {
     try {
       await AuthAPI.logout();
     } finally {
       setUser(null);
+      clearRememberedCurrency();
     }
   }, []);
 
@@ -70,8 +78,8 @@ export function AuthProvider({ children }) {
     logout,
     refreshUser,
     checkSession,
-    setUser,
-  }), [user, loading, login, register, oneClickRegister, logout, refreshUser, checkSession]);
+    setUser: applyUser,
+  }), [user, loading, login, register, oneClickRegister, logout, refreshUser, checkSession, applyUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
