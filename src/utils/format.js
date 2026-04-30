@@ -1,7 +1,27 @@
-export function formatCurrency(value) {
+import { currencyLocale, resolveCurrencyCode } from './currency.js';
+
+export function formatCurrency(value, currencyOrUser) {
   const amount = Number(value);
-  if (!Number.isFinite(amount)) return '₹0';
-  return `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
+  const currency = resolveCurrencyCode(currencyOrUser);
+  const fractionDigits = Number.isInteger(safeAmount) ? 0 : 2;
+
+  try {
+    return new Intl.NumberFormat(currencyLocale(currency), {
+      style: 'currency',
+      currency,
+      currencyDisplay: 'narrowSymbol',
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: 2,
+    }).format(safeAmount);
+  } catch (_) {
+    return `${currency} ${safeAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+  }
+}
+
+export function formatCurrencyWithCode(value, currencyOrUser) {
+  const currency = resolveCurrencyCode(currencyOrUser);
+  return `${formatCurrency(value, currency)} ${currency}`;
 }
 
 export function formatDate(value) {
