@@ -62,7 +62,7 @@ export default function AgentPaymentMethodsPage() {
         <div>
           <span className="page-eyebrow">Agent Admin Panel</span>
           <h1>Payment Number Settings</h1>
-          <p>Main Admin controls which methods are available for your account. Here you only add your receiving number and popup note for assigned methods.</p>
+          <p>Main Admin controls which method slots are available for your account. Here you only add your receiving number and popup note for assigned methods.</p>
         </div>
 
         <div className="agent-header-actions">
@@ -97,7 +97,7 @@ export default function AgentPaymentMethodsPage() {
                 <span className="page-eyebrow">Assigned Payment Method</span>
                 <h2>{method.title}</h2>
                 <p className="agent-method-subtitle">
-                  Min {formatCurrency(method.minAmount || 0)} / Max {formatCurrency(method.maxAmount || 0)}
+                  Key: {method.key} • Min {formatCurrency(method.minAmount || 0)} / Max {formatCurrency(method.maxAmount || 0)}
                 </p>
               </div>
               <MethodBadge method={method} />
