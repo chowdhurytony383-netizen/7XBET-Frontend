@@ -7,6 +7,7 @@ import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency, formatDate } from '../utils/format.js';
+import { getDisplayEmail } from '../utils/userDisplay.js';
 import PageHeader from '../components/PageHeader.jsx';
 import StatCard from '../components/StatCard.jsx';
 import BetTable from '../components/BetTable.jsx';
@@ -15,7 +16,7 @@ import './ProfilePage.css';
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
-  const [form, setForm] = useState({ name: '', phone: '', picture: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', picture: '' });
   const [bets, setBets] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [tab, setTab] = useState('bets');
@@ -23,7 +24,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setForm({ name: user?.name || user?.fullName || '', phone: user?.phone || '', picture: user?.picture || '' });
+    setForm({ name: user?.name || user?.fullName || '', email: getDisplayEmail(user?.email), phone: user?.phone || '', picture: user?.picture || '' });
   }, [user]);
 
   useEffect(() => {
@@ -60,6 +61,8 @@ export default function ProfilePage() {
   };
 
   const displayName = user?.fullName || user?.name || user?.username || 'Account';
+  const displayEmail = getDisplayEmail(user?.email);
+  const emailStatus = displayEmail ? (user?.isVerified ? 'Verified' : 'Not verified') : 'Not added';
   const verificationStatus = user?.verificationStatus || user?.kyc?.status || (user?.isVerified ? 'Verified' : 'Pending');
 
   return (
@@ -68,9 +71,9 @@ export default function ProfilePage() {
       <div className="profile-grid">
         <aside className="card profile-card">
           <img className="profile-avatar" src={user?.picture || '/images/others/logo.svg'} alt="Account" />
-          <div><h2>{displayName}</h2><p>{user?.email || '—'}</p></div>
+          <div><h2>{displayName}</h2><p className="profile-email-text">{displayEmail || 'Email not added'}</p></div>
           <div className="profile-list">
-            <div><span>Email status</span><strong>{user?.isVerified ? 'Verified' : 'Not verified'}</strong></div>
+            <div><span>Email status</span><strong>{emailStatus}</strong></div>
             <div><span>Verification</span><strong>{verificationStatus}</strong></div>
             <div><span>Wallet</span><strong>{formatCurrency(user?.wallet)}</strong></div>
             <div><span>Joined</span><strong>{formatDate(user?.createdAt)}</strong></div>
@@ -78,6 +81,7 @@ export default function ProfilePage() {
           <Link className="btn btn-soft btn-full" to="/profile/verification"><FileCheck2 size={18} /> Verification page</Link>
           <form className="form-grid" onSubmit={updateProfile}>
             <div className="input-group"><label htmlFor="name">Full Name</label><input id="name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
+            <div className="input-group"><label htmlFor="email">Email</label><input id="email" type="email" value={form.email} placeholder="Enter email address" onChange={(event) => setForm({ ...form, email: event.target.value })} /></div>
             <div className="input-group"><label htmlFor="phone">Phone</label><input id="phone" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></div>
             <div className="input-group"><label htmlFor="picture">Picture URL</label><input id="picture" value={form.picture} onChange={(event) => setForm({ ...form, picture: event.target.value })} /></div>
             <button className="btn btn-primary" type="submit" disabled={saving}><Save size={18} /> {saving ? 'Saving...' : 'Save profile'}</button>
@@ -86,12 +90,12 @@ export default function ProfilePage() {
         <section className="page-stack">
           <div className="grid-4">
             <StatCard icon={User} label="Name" value={displayName} />
-            <StatCard icon={Mail} label="Email" value={user?.email || '—'} />
+            <StatCard icon={Mail} label="Email" value={displayEmail ? <span className="profile-email-value">{displayEmail}</span> : 'Not added'} />
             <StatCard icon={Phone} label="Phone" value={user?.phone || '—'} />
             <StatCard icon={Wallet} label="Balance" value={formatCurrency(user?.wallet)} />
           </div>
           <div className="grid-2">
-            <StatCard icon={BadgeCheck} label="Email verified" value={user?.isVerified ? 'Yes' : 'No'} />
+            <StatCard icon={BadgeCheck} label="Email verified" value={displayEmail ? (user?.isVerified ? 'Yes' : 'No') : 'Not added'} />
             <StatCard icon={FileCheck2} label="Identity verification" value={verificationStatus} />
           </div>
           <div className="profile-tabs">

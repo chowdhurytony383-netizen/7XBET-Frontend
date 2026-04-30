@@ -46,3 +46,34 @@
 @media (max-width: 1050px) {
   .profile-grid { grid-template-columns: 1fr; }
 }
+
+
+.profile-email-text,
+.profile-email-value {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .86rem;
+  letter-spacing: -.015em;
+}
+
+.profile-email-value {
+  font-size: clamp(.72rem, 2.5vw, .95rem);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 680px) {
+  .profile-card {
+    gap: 12px;
+  }
+
+  .profile-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .profile-email-text {
+    font-size: .78rem;
+  }
+}
