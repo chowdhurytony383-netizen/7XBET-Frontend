@@ -373,3 +373,30 @@
     letter-spacing: .11em !important;
   }
 }
+
+
+/* Logo display fix: hero card uses real logo file */
+.home-brand-logo {
+  width: min(88%, 520px);
+}
+
+.home-brand-logo img {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 30px rgba(0, 120, 255, .25));
+}
+
+@media (max-width: 560px) {
+  .home-brand-logo {
+    width: 88% !important;
+  }
+
+  .home-brand-logo img {
+    max-height: 52px !important;
+  }
+}
