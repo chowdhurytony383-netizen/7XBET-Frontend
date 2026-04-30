@@ -240,7 +240,7 @@ function AgentMethodAccessManager({ methods }) {
         <div>
           <span className="page-eyebrow">Main Admin Control</span>
           <h2>Agent Payment Method Access</h2>
-          <p>Choose which deposit methods each agent can see and update inside Agent Admin Panel. Unassigned methods will not appear for that agent and will not be used in random user deposit rotation.</p>
+          <p>Choose which deposit method slots each agent can see and update inside Agent Admin Panel. You can assign bKash-1, bKash-2, bKash-3 to different agents; user deposit page will still show one bKash option and rotate the number automatically.</p>
         </div>
         <ShieldCheck size={34} />
       </div>
@@ -315,6 +315,7 @@ function AgentMethodAccessManager({ methods }) {
                   <MethodBadge method={method} />
                   <span className="agent-access-method-info">
                     <strong>{method.title}</strong>
+                    <small>Key: {method.key}</small>
                     <small>{method.category || 'e-wallets'} • {method.isActive === false ? 'Global disabled' : 'Global active'}</small>
                     {method.agentPayment?.number && <small>Agent number: {method.agentPayment.number}</small>}
                   </span>
@@ -401,7 +402,7 @@ export default function AdminAgentPaymentMethodsPage() {
         <div>
           <span className="page-eyebrow">Main Admin Panel</span>
           <h1>Website Deposit Options</h1>
-          <p>Upload bKash, Nagad, Upay, Rocket etc. logo/image here. Then assign selected methods to each agent below.</p>
+          <p>Upload bKash, Nagad, Upay, Rocket etc. logo/image here. You can create bKash-1, bKash-2, bKash-3 for agent-side numbers; users will see one combined bKash card.</p>
         </div>
 
         <button className="btn btn-soft" type="button" onClick={loadMethods} disabled={loading}>
