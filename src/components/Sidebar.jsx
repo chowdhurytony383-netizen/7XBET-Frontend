@@ -62,7 +62,7 @@ const adminNavItems = [
   { to: '/admin/deposits', label: 'Deposits', icon: Wallet },
   { to: '/admin/withdrawals', label: 'Withdrawals', icon: Shield },
   { to: '/admin/agents', label: 'Agent Admin', icon: Shield },
-  { to: '/admin/agent-payments', label: 'Agent Payments', icon: Wallet },
+  { to: '/admin/agent-payments', label: 'Deposit Methods', icon: Wallet },
   { to: '/admin/agent-requests', label: 'Agent Requests', icon: Ticket },
 ];
 
