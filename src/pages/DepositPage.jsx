@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Copy, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -8,21 +8,44 @@ import { formatCurrency } from '../utils/format.js';
 import PageHeader from '../components/PageHeader.jsx';
 import './DepositPage.css';
 
-const quickAmounts = [100, 500, 1000, 2500];
+const categoryLabels = {
+  recommended: 'Recommended',
+  'e-wallets': 'E-wallets',
+  bank: 'Bank Transfer',
+  crypto: 'Crypto',
+  other: 'Other Methods',
+};
+
+const categoryOrder = ['recommended', 'e-wallets', 'bank', 'crypto', 'other'];
+
+function getOptionImage(option) {
+  return option?.image || '';
+}
 
 export default function DepositPage() {
   const { user, refreshUser } = useAuth();
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
   const [options, setOptions] = useState([]);
-  const [selectedId, setSelectedId] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [amount, setAmount] = useState('100');
+  const [payerNumber, setPayerNumber] = useState('');
+  const [transactionRef, setTransactionRef] = useState('');
+  const [note, setNote] = useState('');
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const selectedOption = useMemo(
-    () => options.find((item) => item.id === selectedId) || options[0] || null,
-    [options, selectedId]
-  );
+  const groupedOptions = useMemo(() => {
+    const groups = {};
+
+    for (const option of options) {
+      const category = option.category || 'other';
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(option);
+    }
+
+    return categoryOrder
+      .filter((category) => groups[category]?.length)
+      .map((category) => ({ category, title: categoryLabels[category] || category, items: groups[category] }));
+  }, [options]);
 
   const loadOptions = async () => {
     setLoadingOptions(true);
@@ -31,7 +54,6 @@ export default function DepositPage() {
       const response = await AccountAPI.agentDepositOptions();
       const nextOptions = response.data?.data || response.data?.options || [];
       setOptions(nextOptions);
-      setSelectedId((current) => current || nextOptions[0]?.id || '');
     } catch (error) {
       toast.error(getApiError(error, 'Unable to load deposit options'));
     } finally {
@@ -42,6 +64,19 @@ export default function DepositPage() {
   useEffect(() => {
     loadOptions();
   }, []);
+
+  const openDepositPopup = (option) => {
+    setSelectedOption(option);
+    setAmount(String(option.minAmount || 100));
+    setPayerNumber('');
+    setTransactionRef('');
+    setNote('');
+  };
+
+  const closeDepositPopup = () => {
+    if (submitting) return;
+    setSelectedOption(null);
+  };
 
   const copyNumber = async () => {
     if (!selectedOption?.number) return;
@@ -58,9 +93,26 @@ export default function DepositPage() {
     }
 
     const numericAmount = Number(amount);
+    const minAmount = Number(selectedOption.minAmount || 1);
+    const maxAmount = Number(selectedOption.maxAmount || 1_000_000);
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       toast.error('Enter a valid amount');
+      return;
+    }
+
+    if (numericAmount < minAmount || numericAmount > maxAmount) {
+      toast.error(`Amount must be between ${formatCurrency(minAmount)} and ${formatCurrency(maxAmount)}`);
+      return;
+    }
+
+    if (!payerNumber.trim()) {
+      toast.error('Enter your wallet number');
+      return;
+    }
+
+    if (!transactionRef.trim()) {
+      toast.error('Enter transaction ID / reference number');
       return;
     }
 
@@ -71,11 +123,16 @@ export default function DepositPage() {
         agentId: selectedOption.agentId,
         methodKey: selectedOption.methodKey,
         amount: numericAmount,
+        payerNumber,
+        transactionRef,
         note,
       });
 
       toast.success('Deposit request sent to agent panel');
-      setAmount('');
+      setSelectedOption(null);
+      setAmount('100');
+      setPayerNumber('');
+      setTransactionRef('');
       setNote('');
       await refreshUser().catch(() => null);
     } catch (error) {
@@ -86,103 +143,116 @@ export default function DepositPage() {
   };
 
   return (
-    <div className="page-stack">
+    <div className="page-stack deposit-page">
       <PageHeader
         eyebrow="Wallet"
         title="Deposit"
-        description="Choose an active agent payment method, send payment, then submit a deposit request."
-        actions={<button className="btn btn-soft" onClick={loadOptions}><RefreshCw size={18} /> Refresh options</button>}
+        description="Choose a payment option, send money to the shown number, then confirm your deposit request."
+        actions={<button className="btn btn-soft" onClick={loadOptions}><RefreshCw size={18} /> Refresh</button>}
       />
 
-      <div className="money-page-grid">
-        <form className="card money-form-card form-grid" onSubmit={submitDepositRequest}>
-          <div className="input-group">
-            <label htmlFor="method">Deposit payment option</label>
-            <select
-              id="method"
-              value={selectedId}
-              onChange={(event) => setSelectedId(event.target.value)}
-              disabled={loadingOptions || !options.length}
-            >
-              {loadingOptions && <option>Loading payment options...</option>}
-              {!loadingOptions && !options.length && <option>No active payment option</option>}
-              {options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.methodTitle} — {option.number || 'No number'} — {option.agentId}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedOption && (
-            <div className="agent-payment-option-card">
-              <div>
-                <span className="page-eyebrow">Selected method</span>
-                <h3>{selectedOption.methodTitle}</h3>
-                <p>Agent: {selectedOption.agentId} — {selectedOption.agentName || 'Agent'}</p>
-              </div>
-
-              <div className="payment-number-row">
-                <strong>{selectedOption.number || 'Number not set'}</strong>
-                {selectedOption.number && (
-                  <button className="btn btn-soft" type="button" onClick={copyNumber}>
-                    <Copy size={17} /> Copy
-                  </button>
-                )}
-              </div>
-
-              {selectedOption.image && (
-                <img className="payment-method-image" src={selectedOption.image} alt={selectedOption.methodTitle} />
-              )}
-
-              {selectedOption.note && <p className="payment-method-note">{selectedOption.note}</p>}
-            </div>
-          )}
-
-          <div className="input-group">
-            <label htmlFor="amount">Amount</label>
-            <input
-              id="amount"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              type="number"
-              min="1"
-              step="1"
-              placeholder="Enter deposit amount"
-              required
-            />
-          </div>
-
-          <div className="amount-buttons">
-            {quickAmounts.map((value) => (
-              <button className="btn btn-soft" type="button" key={value} onClick={() => setAmount(String(value))}>
-                {formatCurrency(value)}
-              </button>
-            ))}
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="note">Transaction ID / Sender Number / Note</label>
-            <textarea
-              id="note"
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              placeholder="Write transaction ID, sender number or note for agent"
-            />
-          </div>
-
-          <button className="btn btn-primary btn-full" type="submit" disabled={submitting || !selectedOption}>
-            <ArrowDownToLine size={18} /> {submitting ? 'Sending request...' : 'Submit deposit request'}
-          </button>
-        </form>
-
-        <aside className="card money-info-card">
-          <ShieldCheck size={28} />
-          <h3>Agent deposit flow</h3>
-          <p>After you submit this request, it will appear in the Agent Admin Panel. When the agent confirms it, your wallet balance will be credited.</p>
-          <p>Current wallet balance: <strong>{formatCurrency(user?.wallet)}</strong></p>
-        </aside>
+      <div className="deposit-account-card">
+        <span>Account {user?.userId || user?._id || '—'}</span>
+        <small>Main account balance: {formatCurrency(user?.wallet)}</small>
       </div>
+
+      <div className="deposit-alert-box">
+        আপনি যদি ৫ মিনিটের মধ্যে আপনার গেমিং অ্যাকাউন্টে ডিপোজিটের টাকা না পান তাহলে অনুগ্রহ করে লেনদেনের প্রমাণসহ সাপোর্টে যোগাযোগ করুন। Player ID, Transaction ID, Client number, Agent number, Time & date, Amount এবং বিকাশ / নগদ / রকেট অ্যাপ থেকে লেনদেনের স্ক্রিনশট দিবেন।
+      </div>
+
+      {loadingOptions ? (
+        <div className="deposit-section-card"><div className="deposit-empty">Loading payment options...</div></div>
+      ) : groupedOptions.length ? (
+        groupedOptions.map((group) => (
+          <section className="deposit-section-card" key={group.category}>
+            <h2>{group.title}</h2>
+            <div className="deposit-method-grid">
+              {group.items.map((option) => (
+                <button className="deposit-method-card" key={option.id} type="button" onClick={() => openDepositPopup(option)}>
+                  <span className="deposit-method-logo-box">
+                    {getOptionImage(option) ? (
+                      <img src={getOptionImage(option)} alt={option.methodTitle} />
+                    ) : (
+                      <strong>{String(option.methodTitle || '?').slice(0, 2)}</strong>
+                    )}
+                  </span>
+                  <span className="deposit-method-title">{option.methodTitle}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ))
+      ) : (
+        <div className="deposit-section-card">
+          <div className="deposit-empty">No active deposit option found. Main Admin must create methods and Agent Admin must add number/note.</div>
+        </div>
+      )}
+
+      <aside className="card money-info-card deposit-info-card">
+        <ShieldCheck size={28} />
+        <h3>Agent deposit flow</h3>
+        <p>Popup-এ যে নম্বর দেখাবে সেটি Agent Admin Panel থেকে আসবে। Logo/Image Main Admin Panel থেকে আসবে। Agent confirm করলে আপনার wallet balance add হবে।</p>
+      </aside>
+
+      {selectedOption && (
+        <div className="deposit-modal-backdrop" role="presentation" onMouseDown={closeDepositPopup}>
+          <form className="deposit-popup" onSubmit={submitDepositRequest} onMouseDown={(event) => event.stopPropagation()}>
+            <button className="deposit-popup-close" type="button" onClick={closeDepositPopup} aria-label="Close"><X size={28} /></button>
+
+            <div className="deposit-popup-logo">
+              {selectedOption.image ? <img src={selectedOption.image} alt={selectedOption.methodTitle} /> : <strong>{String(selectedOption.methodTitle).slice(0, 2)}</strong>}
+            </div>
+
+            <div className="deposit-popup-line" />
+
+            <p className="deposit-popup-warning">
+              Before making a request please transfer funds within 5 minutes using the payment details specified below.
+            </p>
+
+            <div className="deposit-number-row">
+              <strong>{selectedOption.methodTitle} ওয়ালেট নাম্বার</strong>
+              <span>{selectedOption.number}</span>
+              <button type="button" onClick={copyNumber}><Copy size={22} /></button>
+            </div>
+
+            {selectedOption.note && (
+              <div className="deposit-agent-note">{selectedOption.note}</div>
+            )}
+
+            <label className="deposit-popup-field amount-field">
+              <span>Amount (Min {Number(selectedOption.minAmount || 0).toLocaleString()} BDT / Max {Number(selectedOption.maxAmount || 0).toLocaleString()} BDT):</span>
+              <input
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
+                type="number"
+                min={selectedOption.minAmount || 1}
+                max={selectedOption.maxAmount || 1000000}
+                step="1"
+                required
+              />
+            </label>
+
+            <label className="deposit-popup-field">
+              <span>Your {selectedOption.methodTitle} wallet number - শুধুমাত্র ক্যাশ আউট করুন:</span>
+              <input value={payerNumber} onChange={(event) => setPayerNumber(event.target.value)} required />
+            </label>
+
+            <label className="deposit-popup-field">
+              <span>Transaction ID (UTR, Reference No):</span>
+              <input value={transactionRef} onChange={(event) => setTransactionRef(event.target.value)} required />
+            </label>
+
+            <label className="deposit-popup-field full-field">
+              <span>Extra note (optional):</span>
+              <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Any additional information" />
+            </label>
+
+            <button className="deposit-confirm-btn" type="submit" disabled={submitting}>
+              {submitting ? 'Sending...' : 'Confirm'}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
