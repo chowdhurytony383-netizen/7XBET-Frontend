@@ -35,3 +35,39 @@
   color: var(--muted);
   margin-top: 7px;
 }
+
+
+@media (max-width: 680px) {
+  .stat-card {
+    min-height: 96px;
+    padding: 12px;
+    gap: 10px;
+    border-radius: 18px;
+  }
+
+  .stat-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+  }
+
+  .stat-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .stat-card span {
+    font-size: .74rem;
+    margin-bottom: 4px;
+  }
+
+  .stat-card strong {
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
+    line-height: 1.08;
+  }
+
+  .stat-card small {
+    font-size: .72rem;
+    margin-top: 4px;
+  }
+}
