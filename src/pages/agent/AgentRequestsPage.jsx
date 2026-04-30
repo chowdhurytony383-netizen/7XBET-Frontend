@@ -19,7 +19,12 @@ function RequestCard({ request, onAction }) {
           <span>Method: {request.methodTitle || request.methodKey || 'Manual'}</span>
           <span>Date: {formatDate(request.createdAt)}</span>
         </div>
-        {request.userNote && <p>{request.userNote}</p>}
+        <div className="agent-request-note-box">
+          {request.payerNumber && <span><strong>Sender Number:</strong> {request.payerNumber}</span>}
+          {request.transactionRef && <span><strong>Transaction ID:</strong> {request.transactionRef}</span>}
+          {request.methodNumber && <span><strong>Agent Number:</strong> {request.methodNumber}</span>}
+          {request.userNote && <p>{request.userNote}</p>}
+        </div>
       </div>
 
       <div className="agent-request-actions">
