@@ -30,13 +30,14 @@
 
 .topbar-brand {
   min-height: 42px;
-  height: 42px;
-  padding: 0 14px;
+  padding: 0 18px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #fff;
+  font-weight: 1000;
+  letter-spacing: .02em;
   background:
     radial-gradient(circle at 20% 18%, rgba(46, 231, 255, .16), transparent 2.5rem),
     linear-gradient(135deg, rgba(15,33,47,.98), rgba(9,29,46,.94));
@@ -47,14 +48,24 @@
   white-space: nowrap;
 }
 
-.topbar-brand-img {
-  display: block;
-  width: 92px;
-  max-width: 24vw;
-  height: auto;
-  max-height: 27px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 139, 255, .28));
+.topbar-brand-seven {
+  color: #ffffff;
+  font-style: italic;
+  letter-spacing: -.08em;
+  transform: skewX(-12deg);
+  text-shadow: 0 2px 0 rgba(148,163,184,.75);
+}
+
+.topbar-brand-xbet {
+  margin-left: 2px;
+  font-style: italic;
+  letter-spacing: -.04em;
+  transform: skewX(-8deg);
+  background: linear-gradient(180deg, #38f7ff 0%, #0098ff 48%, #0054df 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(0, 139, 255, .38));
 }
 
 .topbar-menu,
@@ -169,16 +180,8 @@
 }
 
 .topbar-auth-link {
-  min-height: 38px;
-  height: 38px;
-  padding-inline: 13px;
-  border-radius: 14px;
-  font-size: .9rem;
-}
-
-.topbar-auth-link svg {
-  width: 15px;
-  height: 15px;
+  min-height: 42px;
+  padding-inline: 16px;
 }
 
 @media (max-width: 980px) {
@@ -202,12 +205,8 @@
   .topbar-brand {
     min-height: 34px;
     height: 34px;
-    padding: 0 11px;
-  }
-
-  .topbar-brand-img {
-    width: 72px;
-    max-height: 22px;
+    padding: 0 13px;
+    font-size: .78rem;
   }
 
   .topbar-menu {
@@ -258,16 +257,11 @@
   }
 
   .topbar-auth-link {
-    min-height: 33px;
-    height: 33px;
-    padding: 0 10px;
-    border-radius: 13px;
-    font-size: .76rem;
-  }
-
-  .topbar-auth-link svg {
-    width: 14px;
-    height: 14px;
+    min-height: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 16px;
+    font-size: .82rem;
   }
 }
 
@@ -278,12 +272,8 @@
   }
 
   .topbar-brand {
-    padding: 0 9px;
-  }
-
-  .topbar-brand-img {
-    width: 66px;
-    max-height: 20px;
+    padding: 0 11px;
+    font-size: .72rem;
   }
 
   .topbar-wallet {
@@ -299,6 +289,70 @@
 
   .topbar-user-info {
     display: none;
+  }
+
+  .topbar-auth-link {
+    padding: 0 10px;
+    font-size: .78rem;
+  }
+}
+
+
+/* Logo display fix: use image logo without squeezing/cropping */
+.topbar .topbar-brand {
+  width: 132px;
+  height: 40px;
+  min-height: 40px;
+  padding: 4px 10px;
+}
+
+.topbar .topbar-brand .logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.topbar-auth-link {
+  min-height: 38px;
+  height: 38px;
+  padding-inline: 13px;
+  border-radius: 14px;
+  font-size: .9rem;
+}
+
+.topbar-auth-link svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 680px) {
+  .topbar .topbar-brand {
+    width: 124px;
+    height: 36px;
+    min-height: 36px;
+    padding: 4px 9px;
+  }
+
+  .topbar-auth-link {
+    min-height: 33px;
+    height: 33px;
+    padding: 0 10px;
+    border-radius: 13px;
+    font-size: .76rem;
+  }
+
+  .topbar-auth-link svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar .topbar-brand {
+    width: 116px;
+    height: 34px;
+    min-height: 34px;
+    padding: 4px 8px;
   }
 
   .topbar-auth-link {

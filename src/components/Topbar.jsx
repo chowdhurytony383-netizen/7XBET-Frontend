@@ -2,6 +2,7 @@ import { LogIn, Menu, ShieldCheck, UserPlus, UserRound, WalletCards } from 'luci
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
+import Logo from './Logo.jsx';
 import './Topbar.css';
 
 function getDisplayName(user) {
@@ -18,11 +19,7 @@ function getVerificationStatus(user) {
 }
 
 function TopbarBrand() {
-  return (
-    <Link className="topbar-brand" to="/" aria-label="7XBET home">
-      <img className="topbar-brand-img" src="/images/brand/7xbet-logo.svg" alt="7XBET" />
-    </Link>
-  );
+  return <Logo className="topbar-brand" />;
 }
 
 export default function Topbar({ onMenuClick }) {
