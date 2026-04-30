@@ -1,52 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 260" role="img" aria-labelledby="title desc">
-  <title id="title">7XBET Logo</title>
-  <desc id="desc">Premium 7XBET wordmark logo in cyan, blue, green and silver.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 190" role="img" aria-label="7XBET">
   <defs>
-    <linearGradient id="sevenGradient" x1="0" y1="0" x2="0.8" y2="1">
-      <stop offset="0" stop-color="#37f8ff"/>
-      <stop offset="0.52" stop-color="#08c9d6"/>
-      <stop offset="1" stop-color="#21e17a"/>
+    <linearGradient id="sevenGradient" x1="0%" y1="0%" x2="60%" y2="100%">
+      <stop offset="0%" stop-color="#7dfffb"/>
+      <stop offset="42%" stop-color="#06c9ff"/>
+      <stop offset="100%" stop-color="#22e277"/>
     </linearGradient>
-    <linearGradient id="sevenDark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#19efb6"/>
-      <stop offset="1" stop-color="#006b44"/>
+    <linearGradient id="xbetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eaf8ff"/>
+      <stop offset="38%" stop-color="#26d6ff"/>
+      <stop offset="100%" stop-color="#006fe8"/>
     </linearGradient>
-    <linearGradient id="xGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#47f8ff"/>
-      <stop offset="0.45" stop-color="#0aa7ed"/>
-      <stop offset="1" stop-color="#0457d6"/>
+    <linearGradient id="betGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#d9e8f6"/>
+      <stop offset="100%" stop-color="#94a7bb"/>
     </linearGradient>
-    <linearGradient id="silverGradient" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.42" stop-color="#eef6ff"/>
-      <stop offset="1" stop-color="#9aa9b7"/>
-    </linearGradient>
-    <filter id="softGlow" x="-20%" y="-45%" width="145%" height="190%">
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.00 0 0 0 0 0.70 0 0 0 0 1.00 0 0 0 .32 0" result="glow"/>
+    <filter id="logoGlow" x="-25%" y="-35%" width="150%" height="170%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.05  0 0 0 0 0.75  0 0 0 0 1  0 0 0 .7 0" result="glow"/>
       <feMerge>
         <feMergeNode in="glow"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <filter id="shadow" x="-10%" y="-20%" width="130%" height="150%">
-      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000b17" flood-opacity="0.42"/>
-      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#20dfff" flood-opacity="0.2"/>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#020617" flood-opacity=".35"/>
     </filter>
   </defs>
 
-  <g filter="url(#softGlow)">
-    <polygon points="62,38 338,38 308,75 185,75 73,222 118,74 42,74" fill="url(#sevenGradient)"/>
-    <polygon points="185,92 220,132 79,236 131,142" fill="url(#sevenDark)" opacity="0.95"/>
-    <polygon points="54,38 338,38 321,52 72,52" fill="#99ffff" opacity="0.42"/>
-  </g>
+  <g filter="url(#softShadow)">
+    <text x="18" y="139"
+      font-family="Arial Black, Impact, system-ui, sans-serif"
+      font-size="145"
+      font-weight="900"
+      font-style="italic"
+      letter-spacing="-18"
+      fill="url(#sevenGradient)"
+      filter="url(#logoGlow)">7</text>
 
-  <g filter="url(#shadow)">
-    <polygon points="348,62 435,62 501,150 444,219 366,219 429,142" fill="url(#xGradient)"/>
-    <polygon points="513,62 599,62 500,219 421,219" fill="url(#xGradient)"/>
-    <polygon points="445,61 484,61 506,92 474,127 445,92" fill="#50e9ff" opacity="0.9"/>
-    <polygon points="358,70 430,70 453,102 378,102" fill="#7effff" opacity="0.22"/>
-  </g>
+    <text x="153" y="140"
+      font-family="Arial Black, Impact, system-ui, sans-serif"
+      font-size="132"
+      font-weight="900"
+      font-style="italic"
+      letter-spacing="-10"
+      fill="url(#xbetGradient)"
+      filter="url(#logoGlow)">X</text>
 
-  <text x="600" y="188" font-family="Arial Black, Montserrat, Poppins, Inter, Arial, sans-serif" font-size="146" font-weight="900" font-style="italic" letter-spacing="-12" fill="url(#silverGradient)" stroke="#6d7c8b" stroke-width="2" filter="url(#shadow)">BET</text>
+    <text x="278" y="140"
+      font-family="Arial Black, Impact, system-ui, sans-serif"
+      font-size="128"
+      font-weight="900"
+      font-style="italic"
+      letter-spacing="-8"
+      fill="url(#betGradient)">BET</text>
+
+    <path d="M54 147 L143 62 L161 79 L70 162 Z" fill="#22e277" opacity=".88"/>
+    <path d="M147 33 L224 137" stroke="#7dfbff" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+    <path d="M295 37 H646" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".2"/>
+  </g>
 </svg>

@@ -1,38 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">7XBET Icon</title>
-  <desc id="desc">7X monogram icon for 7XBET.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="7XBET icon">
   <defs>
-    <radialGradient id="bg" cx="32%" cy="20%" r="80%">
-      <stop offset="0" stop-color="#13324c"/>
-      <stop offset="0.55" stop-color="#071624"/>
-      <stop offset="1" stop-color="#020913"/>
+    <radialGradient id="bg" cx="30%" cy="20%" r="80%">
+      <stop offset="0%" stop-color="#143452"/>
+      <stop offset="55%" stop-color="#061827"/>
+      <stop offset="100%" stop-color="#030b14"/>
     </radialGradient>
-    <linearGradient id="seven" x1="0" y1="0" x2="0.9" y2="1">
-      <stop offset="0" stop-color="#3ffcff"/>
-      <stop offset="0.54" stop-color="#09c9d6"/>
-      <stop offset="1" stop-color="#1de17c"/>
+    <linearGradient id="sevenGradient" x1="0%" y1="0%" x2="60%" y2="100%">
+      <stop offset="0%" stop-color="#7dfffb"/>
+      <stop offset="42%" stop-color="#06c9ff"/>
+      <stop offset="100%" stop-color="#22e277"/>
     </linearGradient>
-    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1fffc2"/>
-      <stop offset="1" stop-color="#007848"/>
-    </linearGradient>
-    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4df8ff"/>
-      <stop offset="0.5" stop-color="#098fe7"/>
-      <stop offset="1" stop-color="#034fd5"/>
+    <linearGradient id="xGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eaf8ff"/>
+      <stop offset="45%" stop-color="#20cfff"/>
+      <stop offset="100%" stop-color="#006fe8"/>
     </linearGradient>
     <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
-      <feGaussianBlur stdDeviation="7" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.00 0 0 0 0 .75 0 0 0 0 1 0 0 0 .34 0" result="g"/>
-      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.05  0 0 0 0 0.75  0 0 0 0 1  0 0 0 .85 0" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect x="34" y="34" width="444" height="444" rx="96" fill="url(#bg)" stroke="#0e75b9" stroke-opacity=".52" stroke-width="5"/>
-  <g filter="url(#glow)">
-    <polygon points="122,134 330,134 301,172 209,172 124,380 93,380 187,174 98,174" fill="url(#seven)"/>
-    <polygon points="210,189 242,229 126,383 162,276" fill="url(#green)" opacity=".94"/>
-    <polygon points="279,178 347,178 394,255 347,344 278,344 326,257" fill="url(#blue)"/>
-    <polygon points="397,178 460,178 365,344 303,344" fill="url(#blue)"/>
-    <polygon points="342,182 378,182 395,216 365,250 342,216" fill="#48efff" opacity=".92"/>
-  </g>
+  <rect x="34" y="34" width="444" height="444" rx="92" fill="url(#bg)" stroke="#1d8bc7" stroke-width="8"/>
+  <text x="88" y="324"
+    font-family="Arial Black, Impact, system-ui, sans-serif"
+    font-size="245"
+    font-weight="900"
+    font-style="italic"
+    letter-spacing="-32"
+    fill="url(#sevenGradient)"
+    filter="url(#glow)">7</text>
+  <text x="243" y="327"
+    font-family="Arial Black, Impact, system-ui, sans-serif"
+    font-size="218"
+    font-weight="900"
+    font-style="italic"
+    letter-spacing="-20"
+    fill="url(#xGradient)"
+    filter="url(#glow)">X</text>
+  <path d="M128 337 L246 191 L274 217 L151 368 Z" fill="#22e277" opacity=".88"/>
 </svg>
