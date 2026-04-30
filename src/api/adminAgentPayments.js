@@ -9,4 +9,8 @@ export const AdminAgentPaymentAPI = {
         'Content-Type': 'multipart/form-data',
       },
     }),
+
+  getAccess: (agentId) => api.get(`/admin/agents/${agentId}/payment-method-access`),
+
+  updateAccess: (agentId, payload) => api.put(`/admin/agents/${agentId}/payment-method-access`, payload),
 };
