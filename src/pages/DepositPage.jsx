@@ -157,7 +157,7 @@ export default function DepositPage() {
       </div>
 
       <div className="deposit-alert-box">
-        আপনি যদি ৫ মিনিটের মধ্যে আপনার গেমিং অ্যাকাউন্টে ডিপোজিটের টাকা না পান তাহলে অনুগ্রহ করে লেনদেনের প্রমাণসহ সাপোর্টে যোগাযোগ করুন। Player ID, Transaction ID, Client number, Agent number, Time & date, Amount এবং বিকাশ / নগদ / রকেট অ্যাপ থেকে লেনদেনের স্ক্রিনশট দিবেন।
+        Coming Soon!
       </div>
 
       {loadingOptions ? (
@@ -191,7 +191,7 @@ export default function DepositPage() {
       <aside className="card money-info-card deposit-info-card">
         <ShieldCheck size={28} />
         <h3>Agent deposit flow</h3>
-        <p>Popup-এ যে নম্বর দেখাবে সেটি Agent Admin Panel থেকে আসবে। Logo/Image Main Admin Panel থেকে আসবে। Agent confirm করলে আপনার wallet balance add হবে।</p>
+        <p>Popup-Up Comming</p>
       </aside>
 
       {selectedOption && (
