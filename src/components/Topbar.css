@@ -30,14 +30,13 @@
 
 .topbar-brand {
   min-height: 42px;
-  padding: 0 18px;
+  height: 42px;
+  padding: 0 14px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-weight: 1000;
-  letter-spacing: .02em;
   background:
     radial-gradient(circle at 20% 18%, rgba(46, 231, 255, .16), transparent 2.5rem),
     linear-gradient(135deg, rgba(15,33,47,.98), rgba(9,29,46,.94));
@@ -48,24 +47,14 @@
   white-space: nowrap;
 }
 
-.topbar-brand-seven {
-  color: #ffffff;
-  font-style: italic;
-  letter-spacing: -.08em;
-  transform: skewX(-12deg);
-  text-shadow: 0 2px 0 rgba(148,163,184,.75);
-}
-
-.topbar-brand-xbet {
-  margin-left: 2px;
-  font-style: italic;
-  letter-spacing: -.04em;
-  transform: skewX(-8deg);
-  background: linear-gradient(180deg, #38f7ff 0%, #0098ff 48%, #0054df 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 4px 10px rgba(0, 139, 255, .38));
+.topbar-brand-img {
+  display: block;
+  width: 92px;
+  max-width: 24vw;
+  height: auto;
+  max-height: 27px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 139, 255, .28));
 }
 
 .topbar-menu,
@@ -213,8 +202,12 @@
   .topbar-brand {
     min-height: 34px;
     height: 34px;
-    padding: 0 13px;
-    font-size: .78rem;
+    padding: 0 11px;
+  }
+
+  .topbar-brand-img {
+    width: 72px;
+    max-height: 22px;
   }
 
   .topbar-menu {
@@ -285,8 +278,12 @@
   }
 
   .topbar-brand {
-    padding: 0 11px;
-    font-size: .72rem;
+    padding: 0 9px;
+  }
+
+  .topbar-brand-img {
+    width: 66px;
+    max-height: 20px;
   }
 
   .topbar-wallet {

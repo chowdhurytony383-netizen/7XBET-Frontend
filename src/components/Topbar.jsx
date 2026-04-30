@@ -20,8 +20,7 @@ function getVerificationStatus(user) {
 function TopbarBrand() {
   return (
     <Link className="topbar-brand" to="/" aria-label="7XBET home">
-      <span className="topbar-brand-seven">7</span>
-      <span className="topbar-brand-xbet">XBET</span>
+      <img className="topbar-brand-img" src="/images/brand/7xbet-logo.svg" alt="7XBET" />
     </Link>
   );
 }

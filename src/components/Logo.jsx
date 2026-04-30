@@ -4,11 +4,7 @@ import './Logo.css';
 export default function Logo() {
   return (
     <Link to="/" className="logo-mark" aria-label="7XBET home">
-      <span className="logo-seven">7</span>
-      <span className="logo-main">
-        <strong>XBET</strong>
-        <small>Premium • Professional • Stylish</small>
-      </span>
+      <img className="logo-image" src="/images/brand/7xbet-logo.svg" alt="7XBET" />
     </Link>
   );
 }
