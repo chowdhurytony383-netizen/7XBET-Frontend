@@ -486,7 +486,6 @@ export default function RegisterPage() {
 
           <div className="auth-links">
             <Link to="/login">Already have an account?</Link>
-            <Link to="/agent/login">Agent login</Link>
           </div>
         </div>
       </div>

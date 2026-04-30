@@ -71,8 +71,7 @@ export default function LoginPage() {
         <h1>Sign in to your account.</h1>
 
         <p>
-          Login with email, User ID, Google, Facebook, or use the agent login for
-          agent accounts.
+          Login with email, User ID, Google, or Facebook.
         </p>
       </div>
 
@@ -151,7 +150,6 @@ export default function LoginPage() {
           <div className="auth-links login-links">
             <Link to="/forgot-password">Forgot password?</Link>
             <Link to="/register">Create account</Link>
-            <Link to="/agent/login">Agent login</Link>
           </div>
         </form>
       </div>
