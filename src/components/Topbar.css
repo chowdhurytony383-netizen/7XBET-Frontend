@@ -296,3 +296,37 @@
     font-size: .78rem;
   }
 }
+
+/* Smaller Login / Register buttons in the guest mobile topbar */
+@media (max-width: 680px) {
+  .topbar:not(.topbar-logged-in) .topbar-auth-link {
+    min-height: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 14px;
+    font-size: .76rem;
+    line-height: 1;
+    gap: 5px;
+  }
+
+  .topbar:not(.topbar-logged-in) .topbar-auth-link svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar:not(.topbar-logged-in) .topbar-auth-link {
+    min-height: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 13px;
+    font-size: .72rem;
+    gap: 4px;
+  }
+
+  .topbar:not(.topbar-logged-in) .topbar-auth-link svg {
+    width: 14px;
+    height: 14px;
+  }
+}
