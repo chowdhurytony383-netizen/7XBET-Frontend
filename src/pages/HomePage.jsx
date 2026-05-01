@@ -265,7 +265,7 @@ export default function HomePage() {
           <PageHeader
             eyebrow="Games"
             title="Available games"
-            description=
+            description=" "
             actions={
               <Link className="btn btn-soft" to="/games">
                 <BarChart3 size={18} /> View all
@@ -282,7 +282,7 @@ export default function HomePage() {
           ) : (
             <EmptyState
               title="No games available"
-              message=
+              message=" "
             />
           )}
         </section>
