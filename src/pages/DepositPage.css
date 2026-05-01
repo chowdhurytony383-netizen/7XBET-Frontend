@@ -451,3 +451,149 @@
     font-size: .9rem;
   }
 }
+
+
+/* Crypto deposit method styles */
+.crypto-method-card .deposit-method-logo-box {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(34, 211, 238, .22), transparent 6rem),
+    linear-gradient(135deg, #0c1c2c, #10172a);
+  color: #e0f2fe;
+}
+
+.crypto-method-card .deposit-method-logo-box strong {
+  font-size: 1.55rem;
+  letter-spacing: -.04em;
+  color: #67e8f9;
+}
+
+.crypto-method-card .deposit-method-title {
+  background: linear-gradient(135deg, #0f766e, #1d4ed8);
+}
+
+.crypto-deposit-popup {
+  grid-template-columns: 1fr;
+  width: min(580px, 100%);
+}
+
+.crypto-popup-logo {
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0f766e, #1d4ed8);
+  color: #fff;
+}
+
+.crypto-popup-title h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.45rem;
+}
+
+.crypto-popup-title p {
+  margin: 5px 0 0;
+  color: #aebbd0;
+  font-weight: 800;
+}
+
+.crypto-qr-box {
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.crypto-qr-box img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+
+.crypto-address-box {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, .18);
+  background: rgba(3, 11, 18, .72);
+}
+
+.crypto-address-box span,
+.crypto-meta-grid span {
+  color: #94a3b8;
+  font-weight: 800;
+  font-size: .82rem;
+}
+
+.crypto-address-box strong {
+  color: #f8fafc;
+  line-height: 1.45;
+  word-break: break-all;
+}
+
+.crypto-warning-box {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(250, 204, 21, .28);
+  background: rgba(250, 204, 21, .12);
+  color: #fef3c7;
+}
+
+.crypto-warning-box p {
+  margin: 0;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
+.crypto-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.crypto-meta-grid div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(148, 163, 184, .12);
+}
+
+.crypto-meta-grid strong {
+  color: #fff;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crypto-pending-box {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 26px 16px;
+  color: #cbd5e1;
+}
+
+.crypto-pending-box svg {
+  color: #67e8f9;
+}
+
+.crypto-pending-box h3,
+.crypto-pending-box p {
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .crypto-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crypto-qr-box img {
+    width: 148px;
+    height: 148px;
+  }
+}

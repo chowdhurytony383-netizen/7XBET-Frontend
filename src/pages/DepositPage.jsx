@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Copy, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, Copy, RefreshCw, ShieldCheck, WalletCards, X } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
+import { CryptoAPI } from '../api/crypto.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
@@ -12,20 +13,32 @@ const categoryLabels = {
   recommended: 'Recommended',
   'e-wallets': 'E-wallets',
   bank: 'Bank Transfer',
-  crypto: 'Crypto',
+  crypto: 'Crypto Currency',
   other: 'Other Methods',
 };
 
 const categoryOrder = ['recommended', 'e-wallets', 'bank', 'crypto', 'other'];
 
 function getOptionImage(option) {
-  return option?.image || '';
+  return option?.image || option?.logo || '';
+}
+
+function cryptoLogoText(option) {
+  const symbol = option.symbol || option.coin || option.methodTitle || '?';
+  return String(symbol).slice(0, 4).toUpperCase();
+}
+
+function getQrUrl(value) {
+  if (!value) return '';
+  return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(value)}`;
 }
 
 export default function DepositPage() {
   const { user, refreshUser } = useAuth();
   const [options, setOptions] = useState([]);
+  const [cryptoOptions, setCryptoOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedCrypto, setSelectedCrypto] = useState(null);
   const [amount, setAmount] = useState('100');
   const [payerNumber, setPayerNumber] = useState('');
   const [transactionRef, setTransactionRef] = useState('');
@@ -33,10 +46,12 @@ export default function DepositPage() {
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  const allOptions = useMemo(() => [...options, ...cryptoOptions], [options, cryptoOptions]);
+
   const groupedOptions = useMemo(() => {
     const groups = {};
 
-    for (const option of options) {
+    for (const option of allOptions) {
       const category = option.category || 'other';
       if (!groups[category]) groups[category] = [];
       groups[category].push(option);
@@ -45,17 +60,39 @@ export default function DepositPage() {
     return categoryOrder
       .filter((category) => groups[category]?.length)
       .map((category) => ({ category, title: categoryLabels[category] || category, items: groups[category] }));
-  }, [options]);
+  }, [allOptions]);
 
   const loadOptions = async () => {
     setLoadingOptions(true);
 
     try {
-      const response = await AccountAPI.agentDepositOptions();
-      const nextOptions = response.data?.data || response.data?.options || [];
-      setOptions(nextOptions);
-    } catch (error) {
-      toast.error(getApiError(error, 'Unable to load deposit options'));
+      const [agentResponse, cryptoResponse] = await Promise.allSettled([
+        AccountAPI.agentDepositOptions(),
+        CryptoAPI.addresses(),
+      ]);
+
+      if (agentResponse.status === 'fulfilled') {
+        const nextOptions = agentResponse.value.data?.data || agentResponse.value.data?.options || [];
+        setOptions(nextOptions);
+      } else {
+        toast.error(getApiError(agentResponse.reason, 'Unable to load deposit options'));
+      }
+
+      if (cryptoResponse.status === 'fulfilled') {
+        const addresses = cryptoResponse.value.data?.data || cryptoResponse.value.data?.addresses || [];
+        setCryptoOptions(addresses.map((item) => ({
+          ...item,
+          id: `crypto-${item.key}`,
+          type: 'crypto',
+          category: 'crypto',
+          methodTitle: item.displayName || item.key,
+          image: item.logo || '',
+          minAmount: item.minDepositFiat || 0,
+          maxAmount: 0,
+        })));
+      } else {
+        setCryptoOptions([]);
+      }
     } finally {
       setLoadingOptions(false);
     }
@@ -66,6 +103,11 @@ export default function DepositPage() {
   }, []);
 
   const openDepositPopup = (option) => {
+    if (option.type === 'crypto') {
+      setSelectedCrypto(option);
+      return;
+    }
+
     setSelectedOption(option);
     setAmount(String(option.minAmount || 100));
     setPayerNumber('');
@@ -78,10 +120,17 @@ export default function DepositPage() {
     setSelectedOption(null);
   };
 
+  const closeCryptoPopup = () => setSelectedCrypto(null);
+
+  const copyText = async (value, successMessage = 'Copied') => {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    toast.success(successMessage);
+  };
+
   const copyNumber = async () => {
     if (!selectedOption?.number) return;
-    await navigator.clipboard.writeText(selectedOption.number);
-    toast.success('Payment number copied');
+    await copyText(selectedOption.number, 'Payment number copied');
   };
 
   const submitDepositRequest = async (event) => {
@@ -157,7 +206,7 @@ export default function DepositPage() {
       </div>
 
       <div className="deposit-alert-box">
-        Coming Soon!
+        আপনি যদি ৫ মিনিটের মধ্যে আপনার গেমিং অ্যাকাউন্টে ডিপোজিটের টাকা না পান তাহলে অনুগ্রহ করে সাপোর্টে যোগাযোগ করুন। Crypto deposit করার আগে সঠিক network ভালোভাবে check করুন।
       </div>
 
       {loadingOptions ? (
@@ -168,10 +217,12 @@ export default function DepositPage() {
             <h2>{group.title}</h2>
             <div className="deposit-method-grid">
               {group.items.map((option) => (
-                <button className="deposit-method-card" key={option.id} type="button" onClick={() => openDepositPopup(option)}>
+                <button className={`deposit-method-card ${option.type === 'crypto' ? 'crypto-method-card' : ''}`} key={option.id || option.key || option.methodKey} type="button" onClick={() => openDepositPopup(option)}>
                   <span className="deposit-method-logo-box">
                     {getOptionImage(option) ? (
                       <img src={getOptionImage(option)} alt={option.methodTitle} />
+                    ) : option.type === 'crypto' ? (
+                      <strong>{cryptoLogoText(option)}</strong>
                     ) : (
                       <strong>{String(option.methodTitle || '?').slice(0, 2)}</strong>
                     )}
@@ -190,8 +241,8 @@ export default function DepositPage() {
 
       <aside className="card money-info-card deposit-info-card">
         <ShieldCheck size={28} />
-        <h3>Agent deposit flow</h3>
-        <p>Popup-Up Comming</p>
+        <h3>Deposit flow</h3>
+        <p>For e-wallet deposits, send money to the shown agent number. For crypto deposits, send only the selected asset on the selected network to your unique address.</p>
       </aside>
 
       {selectedOption && (
@@ -221,15 +272,7 @@ export default function DepositPage() {
 
             <label className="deposit-popup-field amount-field">
               <span>Amount (Min {Number(selectedOption.minAmount || 0).toLocaleString()} BDT / Max {Number(selectedOption.maxAmount || 0).toLocaleString()} BDT):</span>
-              <input
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                type="number"
-                min={selectedOption.minAmount || 1}
-                max={selectedOption.maxAmount || 1000000}
-                step="1"
-                required
-              />
+              <input value={amount} onChange={(event) => setAmount(event.target.value)} type="number" min={selectedOption.minAmount || 1} max={selectedOption.maxAmount || 1000000} step="1" required />
             </label>
 
             <label className="deposit-popup-field">
@@ -247,10 +290,67 @@ export default function DepositPage() {
               <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Any additional information" />
             </label>
 
-            <button className="deposit-confirm-btn" type="submit" disabled={submitting}>
-              {submitting ? 'Sending...' : 'Confirm'}
-            </button>
+            <button className="deposit-confirm-btn" type="submit" disabled={submitting}>{submitting ? 'Sending...' : 'Confirm'}</button>
           </form>
+        </div>
+      )}
+
+      {selectedCrypto && (
+        <div className="deposit-modal-backdrop" role="presentation" onMouseDown={closeCryptoPopup}>
+          <div className="deposit-popup crypto-deposit-popup" onMouseDown={(event) => event.stopPropagation()}>
+            <button className="deposit-popup-close" type="button" onClick={closeCryptoPopup} aria-label="Close"><X size={28} /></button>
+
+            <div className="deposit-popup-logo crypto-popup-logo">
+              <strong>{cryptoLogoText(selectedCrypto)}</strong>
+            </div>
+
+            <div className="crypto-popup-title">
+              <h3>{selectedCrypto.displayName || selectedCrypto.methodTitle}</h3>
+              <p>{selectedCrypto.network}</p>
+            </div>
+
+            <div className="deposit-popup-line" />
+
+            {selectedCrypto.status === 'active' && selectedCrypto.address ? (
+              <>
+                <div className="crypto-qr-box">
+                  <img src={getQrUrl(selectedCrypto.address)} alt={`${selectedCrypto.methodTitle} deposit QR`} />
+                </div>
+
+                <div className="crypto-address-box">
+                  <span>Your unique deposit address</span>
+                  <strong>{selectedCrypto.address}</strong>
+                  <button className="btn btn-soft" type="button" onClick={() => copyText(selectedCrypto.address, 'Crypto address copied')}><Copy size={18} /> Copy address</button>
+                </div>
+
+                {selectedCrypto.memo && (
+                  <div className="crypto-address-box">
+                    <span>Memo / Tag</span>
+                    <strong>{selectedCrypto.memo}</strong>
+                    <button className="btn btn-soft" type="button" onClick={() => copyText(selectedCrypto.memo, 'Memo copied')}><Copy size={18} /> Copy memo</button>
+                  </div>
+                )}
+
+                <div className="crypto-warning-box">
+                  <AlertTriangle size={20} />
+                  <p>{selectedCrypto.warning || `Only send ${selectedCrypto.coin} on ${selectedCrypto.network} to this address.`}</p>
+                </div>
+
+                <div className="crypto-meta-grid">
+                  <div><span>Coin</span><strong>{selectedCrypto.coin}</strong></div>
+                  <div><span>Network</span><strong>{selectedCrypto.network}</strong></div>
+                  <div><span>Confirmations</span><strong>{selectedCrypto.confirmations || 1}</strong></div>
+                </div>
+              </>
+            ) : (
+              <div className="crypto-pending-box">
+                <WalletCards size={32} />
+                <h3>Address not ready</h3>
+                <p>{selectedCrypto.errorMessage || 'Crypto address is being generated. Please refresh after a moment.'}</p>
+                <button className="btn btn-primary" type="button" onClick={loadOptions}><RefreshCw size={18} /> Refresh addresses</button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
