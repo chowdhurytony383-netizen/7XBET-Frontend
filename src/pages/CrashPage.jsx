@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Activity, Clock3, History, Plane, RefreshCw, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
+import { Activity, Clock3, History, Plane, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
 import { CrashAPI } from '../api/crash.js';
 import { getApiError } from '../api/client.js';
-import PageHeader from '../components/PageHeader.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
@@ -105,7 +104,6 @@ export default function CrashPage() {
 
   const liveMultiplier = useMemo(() => {
     if (!round) return 1;
-
     if (effectiveStatus === 'WAITING') return 1;
 
     const start = asDateMs(round.startsAt);
@@ -166,27 +164,24 @@ export default function CrashPage() {
   };
 
   return (
-    <div className="page-stack crash-page">
-      <PageHeader
-        eyebrow="Original 7XBET Game"
-        title="7X Crash"
-        description="Place a bet before takeoff, watch the multiplier rise smoothly, and cash out before the crash."
-        actions={<button className="btn btn-soft" type="button" onClick={() => loadState()}><RefreshCw size={18} /> Refresh</button>}
-      />
+    <div className="page-stack crash-page crash-page-compact">
+      <div className="crash-page-titlebar">
+        <h1>7X Crash</h1>
+      </div>
 
       {loading && !state ? (
         <div className="card center-screen"><div className="loader" /></div>
       ) : (
-        <div className="crash-layout crash-layout-stacked">
-          <section className="crash-stage-card">
-            <div className="crash-stage-top">
+        <div className="crash-layout crash-layout-stacked compact-order-layout">
+          <section className="crash-stage-card compact-stage-card">
+            <div className="crash-stage-top compact-stage-top">
               <span className={`crash-status crash-status-${String(effectiveStatus).toLowerCase()}`}>
-                <Activity size={16} /> {statusLabel}
+                <Activity size={14} /> {statusLabel}
               </span>
               <span className="crash-round-id">{round?.roundId || 'Preparing round'}</span>
             </div>
 
-            <div className={`crash-stage crash-stage-${String(effectiveStatus).toLowerCase()}`}>
+            <div className={`crash-stage crash-stage-${String(effectiveStatus).toLowerCase()} compact-stage`}>
               <div className="crash-cloud crash-cloud-a" />
               <div className="crash-cloud crash-cloud-b" />
               <div className="crash-flight-line" />
@@ -197,13 +192,13 @@ export default function CrashPage() {
                   bottom: `${Math.min(72, 14 + planeProgress * 0.48)}%`,
                 }}
               >
-                <Plane size={44} />
+                <Plane size={36} />
               </div>
 
               <div className="crash-multiplier">
                 {effectiveStatus === 'WAITING' ? (
                   <>
-                    <small>Next round starts in</small>
+                    <small>Next round in</small>
                     <strong className="crash-countdown-number">{countdown}s</strong>
                   </>
                 ) : (
@@ -214,16 +209,10 @@ export default function CrashPage() {
                 )}
               </div>
             </div>
-
-            <div className="crash-info-grid">
-              <div><Clock3 size={18} /><span>Round status</span><strong>{statusLabel}</strong></div>
-              <div><Wallet size={18} /><span>Players</span><strong>{state?.activePlayers || 0}</strong></div>
-              <div><ShieldCheck size={18} /><span>Seed hash</span><strong title={round?.serverSeedHash}>{round?.serverSeedHash?.slice(0, 12) || '—'}...</strong></div>
-            </div>
           </section>
 
-          <section className="crash-bet-card card">
-            <div className="crash-bet-header">
+          <section className="crash-bet-card card compact-bet-card">
+            <div className="crash-bet-header compact-bet-header">
               <div>
                 <h2>Bet panel</h2>
                 {user ? (
@@ -235,7 +224,7 @@ export default function CrashPage() {
               <span className={`crash-mini-status crash-mini-status-${String(effectiveStatus).toLowerCase()}`}>{statusLabel}</span>
             </div>
 
-            <form onSubmit={placeBet} className="crash-bet-form">
+            <form onSubmit={placeBet} className="crash-bet-form compact-bet-form">
               <label>
                 Bet amount
                 <input value={amount} onChange={(event) => setAmount(event.target.value)} type="number" min="1" step="1" />
@@ -246,22 +235,22 @@ export default function CrashPage() {
                 <input value={autoCashout} onChange={(event) => setAutoCashout(event.target.value)} type="number" min="1.01" step="0.01" placeholder="Optional" />
               </label>
 
-              <div className="crash-quick-buttons">
-                {[50, 100, 500, 1000].map((value) => (
-                  <button key={value} type="button" onClick={() => setAmount(String(value))}>{value}</button>
+              <div className="crash-quick-buttons compact-quick-buttons">
+                {[50, 100, 500, 1000].map((quickAmount) => (
+                  <button key={quickAmount} type="button" onClick={() => setAmount(String(quickAmount))}>{quickAmount}</button>
                 ))}
               </div>
 
               {userBet ? (
-                <div className={`crash-current-bet crash-current-bet-${userBet.status?.toLowerCase()}`}>
-                  <span>Your bet</span>
+                <div className={`crash-current-bet crash-current-bet-${String(userBet.status || '').toLowerCase()}`}>
+                  <span>Your current bet</span>
                   <strong>{formatCurrency(userBet.amount)}</strong>
                   <small>Status: {userBet.status}</small>
                   {userBet.payoutAmount ? <small>Payout: {formatCurrency(userBet.payoutAmount)} at {formatMultiplier(userBet.payoutMultiplier)}</small> : null}
                 </div>
               ) : null}
 
-              <div className="crash-bet-actions">
+              <div className="crash-bet-actions compact-bet-actions">
                 {!user ? (
                   <Link className="btn btn-primary btn-full" to="/login">Login to play</Link>
                 ) : (
@@ -275,6 +264,14 @@ export default function CrashPage() {
                 </button>
               </div>
             </form>
+          </section>
+
+          <section className="crash-info-card card compact-info-card">
+            <div className="crash-info-grid compact-info-grid">
+              <div><Clock3 size={16} /><span>Round</span><strong>{statusLabel}</strong></div>
+              <div><Wallet size={16} /><span>Players</span><strong>{state?.activePlayers || 0}</strong></div>
+              <div><ShieldCheck size={16} /><span>Seed</span><strong title={round?.serverSeedHash}>{round?.serverSeedHash?.slice(0, 10) || '—'}...</strong></div>
+            </div>
           </section>
         </div>
       )}
