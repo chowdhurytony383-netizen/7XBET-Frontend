@@ -13,6 +13,9 @@ export const AuthAPI = {
   isAuthenticated: () => api.get('/user/is-auth'),
   me: () => api.get('/user/my-details'),
   updateProfile: (payload) => api.patch('/user/update-user-details', payload),
+  uploadProfilePicture: (formData) => api.patch('/user/profile-picture', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   verifyEmail: (token) => api.get(`/user/verify-user/${token}`),
   resendVerification: (email) => api.post('/user/resend-verification', { email }),
   requestPasswordOtp: (email) => api.post('/user/reset-password', { email }),
