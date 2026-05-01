@@ -6,10 +6,10 @@ export default function FaqPage() {
     <ContentPageTemplate
       eyebrow="Support"
       title="FAQ"
-      description=
+      description=" "
       endpoint="/other/faq"
       emptyTitle="No faq available"
-      emptyMessage=
+      emptyMessage=" "
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
