@@ -53,7 +53,7 @@ export default function DashboardPage() {
       <PageHeader
         eyebrow="Analytics"
         title="Dashboard"
-        description="Stats, chart and table data are fetched from backend account routes."
+        description=""
       />
       {error && <div className="auth-message">{error}</div>}
       <div className="grid-4">
