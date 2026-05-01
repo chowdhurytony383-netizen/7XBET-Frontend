@@ -6,10 +6,10 @@ export default function FaqPage() {
     <ContentPageTemplate
       eyebrow="Support"
       title="FAQ"
-      description="Frequently asked questions will load from the backend/admin panel."
+      description=
       endpoint="/other/faq"
       emptyTitle="No faq available"
-      emptyMessage="Add faq content in the backend/admin panel to show it here."
+      emptyMessage=
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
