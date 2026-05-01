@@ -443,37 +443,55 @@
   }
 }
 
-.crash-page-titlebar {
-  justify-content: space-between;
-  gap: 10px;
-}
-
 .crash-connection {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 8px;
+  gap: 6px;
   border-radius: 999px;
+  padding: 6px 10px;
   font-size: .72rem;
   font-weight: 900;
   border: 1px solid rgba(148, 163, 184, .16);
-  background: rgba(255, 255, 255, .065);
+  background: rgba(255, 255, 255, .07);
+  color: #cbd5e1;
 }
 
 .crash-connection.online {
   color: #bbf7d0;
+  border-color: rgba(34, 197, 94, .25);
+  background: rgba(34, 197, 94, .10);
 }
 
 .crash-connection.offline {
   color: #fecdd3;
+  border-color: rgba(251, 113, 133, .22);
+  background: rgba(251, 113, 133, .10);
 }
 
 .crash-error-line {
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(251, 113, 133, .12);
-  border: 1px solid rgba(251, 113, 133, .24);
-  color: #fecdd3;
-  font-size: .82rem;
+  border: 1px solid rgba(148, 163, 184, .14);
+  border-radius: 14px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, .055);
+  color: #cbd5e1;
+  font-size: .78rem;
   font-weight: 800;
+}
+
+@media (max-width: 680px) {
+  .crash-page-titlebar {
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+
+  .crash-connection {
+    padding: 5px 8px;
+    font-size: .66rem;
+  }
+
+  .crash-error-line {
+    margin: 0 8px;
+    padding: 7px 9px;
+    font-size: .7rem;
+  }
 }
