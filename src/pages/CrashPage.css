@@ -1,1 +1,282 @@
-/* Styles for Crash page. Shared layout classes are defined in ContentPageTemplate.css. */
+.crash-page {
+  --crash-green: #22c55e;
+  --crash-cyan: #22d3ee;
+  --crash-blue: #3b82f6;
+  --crash-red: #fb7185;
+}
+
+.crash-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+}
+
+.crash-stage-card,
+.crash-bet-card,
+.crash-history-card {
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(34, 211, 238, .16), transparent 24rem),
+    radial-gradient(circle at 80% 18%, rgba(34, 197, 94, .12), transparent 22rem),
+    rgba(15, 33, 47, .92);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.crash-stage-card { padding: 18px; }
+
+.crash-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.crash-status,
+.crash-round-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #e5f6ff;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .07);
+  font-size: .85rem;
+  font-weight: 900;
+}
+
+.crash-status-waiting { color: #bbf7d0; }
+.crash-status-running { color: #bae6fd; }
+.crash-status-crashed { color: #fecdd3; }
+.crash-round-id { color: #aebbd0; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.crash-stage {
+  position: relative;
+  min-height: 430px;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(3, 12, 29, .35), rgba(3, 7, 18, .78)),
+    radial-gradient(circle at 15% 20%, rgba(34, 211, 238, .14), transparent 18rem),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, .18), transparent 20rem),
+    #06111f;
+  border: 1px solid rgba(148, 163, 184, .14);
+}
+
+.crash-stage-crashed { animation: crashShake .28s ease-in-out 2; }
+
+.crash-cloud {
+  position: absolute;
+  width: 190px;
+  height: 70px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .055);
+  filter: blur(1px);
+  animation: cloudMove 8s linear infinite;
+}
+.crash-cloud-a { top: 20%; left: 6%; }
+.crash-cloud-b { top: 56%; left: 58%; animation-duration: 11s; opacity: .65; }
+
+.crash-flight-line {
+  position: absolute;
+  left: 10%;
+  right: 15%;
+  bottom: 18%;
+  height: 3px;
+  border-radius: 999px;
+  transform: rotate(-24deg);
+  transform-origin: left center;
+  background: linear-gradient(90deg, rgba(34, 197, 94, .85), rgba(34, 211, 238, .8), transparent);
+  box-shadow: 0 0 22px rgba(34, 211, 238, .35);
+}
+
+.crash-plane {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: #dff8ff;
+  background: linear-gradient(135deg, rgba(34, 197, 94, .32), rgba(14, 165, 233, .34));
+  border: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: 0 18px 60px rgba(34, 211, 238, .26);
+  transform: translate(-50%, 50%) rotate(28deg);
+  transition: left .15s linear, bottom .15s linear;
+}
+
+.crash-stage-crashed .crash-plane {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(251, 113, 133, .7), rgba(249, 115, 22, .55));
+  box-shadow: 0 18px 70px rgba(251, 113, 133, .35);
+}
+
+.crash-multiplier {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.crash-multiplier small {
+  color: #bfd1e8;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.crash-multiplier strong {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(4rem, 14vw, 9rem);
+  line-height: .9;
+  letter-spacing: -.08em;
+  color: #fff;
+  text-shadow: 0 0 32px rgba(34, 211, 238, .28);
+}
+
+.crash-stage-crashed .crash-multiplier strong { color: #fecdd3; }
+
+.crash-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.crash-info-grid div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  padding: 13px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.crash-info-grid svg { color: #bbf7d0; }
+.crash-info-grid span { color: #93a4b8; font-size: .76rem; font-weight: 800; }
+.crash-info-grid strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.crash-bet-card { padding: 18px; align-self: start; }
+.crash-bet-card h2 { margin: 0 0 8px; font-size: 1.35rem; }
+.crash-wallet { margin: 0 0 14px; color: #aebbd0; }
+.crash-wallet strong { color: #fff; }
+
+.crash-bet-form { display: grid; gap: 12px; }
+.crash-bet-form label { display: grid; gap: 7px; color: #cbd5e1; font-weight: 900; }
+.crash-bet-form input {
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, .18);
+  background: rgba(3, 11, 18, .72);
+  color: #fff;
+  padding: 0 13px;
+  outline: none;
+}
+.crash-bet-form input:focus { border-color: rgba(34, 197, 94, .65); }
+
+.crash-quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.crash-quick-buttons button {
+  min-height: 36px;
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .075);
+  color: #fff;
+  font-weight: 900;
+}
+
+.crash-current-bet {
+  display: grid;
+  gap: 3px;
+  padding: 13px;
+  border-radius: 16px;
+  background: rgba(34, 197, 94, .11);
+  border: 1px solid rgba(34, 197, 94, .22);
+}
+.crash-current-bet span,
+.crash-current-bet small { color: #bdd0e5; }
+.crash-current-bet strong { font-size: 1.25rem; }
+.crash-current-bet-lost { background: rgba(251, 113, 133, .11); border-color: rgba(251, 113, 133, .22); }
+.crash-current-bet-cashed_out { background: rgba(59, 130, 246, .11); border-color: rgba(59, 130, 246, .22); }
+.crash-cashout-btn:not(:disabled) { background: linear-gradient(135deg, #facc15, #f97316); color: #221300; }
+
+.crash-history-card { padding: 18px; }
+.crash-section-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.crash-section-title h3 { margin: 0; }
+.crash-section-title svg { color: #86efac; }
+.crash-round-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.crash-round-list span {
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(148, 163, 184, .14);
+  color: #fecdd3;
+  font-weight: 900;
+}
+.crash-round-list span.hot { color: #bbf7d0; }
+
+.crash-bets-table { display: grid; gap: 8px; }
+.crash-bets-table > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) .7fr .7fr minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .055);
+  color: #dbeafe;
+}
+.crash-bets-table span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crash-bets-table em { font-style: normal; font-weight: 900; }
+.bet-cashed_out { color: #bbf7d0; }
+.bet-lost { color: #fecdd3; }
+.bet-active { color: #bae6fd; }
+
+@keyframes cloudMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50px); }
+}
+
+@keyframes crashShake {
+  0%, 100% { transform: translateX(0); }
+  35% { transform: translateX(-4px); }
+  70% { transform: translateX(4px); }
+}
+
+@media (max-width: 1050px) {
+  .crash-layout { grid-template-columns: 1fr; }
+  .crash-stage { min-height: 360px; }
+}
+
+@media (max-width: 680px) {
+  .crash-stage-card,
+  .crash-bet-card,
+  .crash-history-card { border-radius: 18px; }
+  .crash-stage-card { padding: 10px; }
+  .crash-stage-top { align-items: flex-start; margin-bottom: 8px; }
+  .crash-status,
+  .crash-round-id { padding: 7px 9px; font-size: .72rem; }
+  .crash-round-id { max-width: 130px; }
+  .crash-stage { min-height: 250px; border-radius: 16px; }
+  .crash-plane { width: 54px; height: 54px; border-radius: 18px; }
+  .crash-plane svg { width: 32px; height: 32px; }
+  .crash-multiplier strong { font-size: clamp(3.2rem, 22vw, 5.8rem); }
+  .crash-multiplier small { font-size: .66rem; }
+  .crash-info-grid { grid-template-columns: 1fr; gap: 7px; margin-top: 8px; }
+  .crash-info-grid div { padding: 9px; border-radius: 12px; }
+  .crash-bet-card,
+  .crash-history-card { padding: 13px; }
+  .crash-quick-buttons { grid-template-columns: repeat(2, 1fr); }
+  .crash-bets-table > div { grid-template-columns: 1fr 1fr; font-size: .82rem; }
+}
