@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="page-stack admin-page">
-      <PageHeader eyebrow="Admin panel" title="Overview" description= actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>} />
+      <PageHeader eyebrow="Admin panel" title="Overview" description=" " actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>} />
       {error && <div className="auth-message">{error}</div>}
       <div className="grid-4">
         <StatCard icon={Users} label="Users" value={stats.totalUsers ?? 0} />
