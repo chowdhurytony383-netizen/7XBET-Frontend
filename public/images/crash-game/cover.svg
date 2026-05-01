@@ -1,1 +1,28 @@
-
+<svg width="900" height="620" viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="620" rx="54" fill="#071521"/>
+  <circle cx="220" cy="140" r="220" fill="#22c55e" fill-opacity="0.15"/>
+  <circle cx="720" cy="430" r="260" fill="#0284c7" fill-opacity="0.23"/>
+  <path d="M155 450C290 330 432 260 745 190" stroke="url(#paint0_linear)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M605 178L775 123L712 280L671 224L568 303L537 271L640 205L605 178Z" fill="url(#paint1_linear)"/>
+  <text x="90" y="180" fill="white" font-family="Inter, Arial, sans-serif" font-size="84" font-weight="900">7X CRASH</text>
+  <text x="95" y="240" fill="#BDEAFE" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">Cash out before the multiplier crashes</text>
+  <g filter="url(#filter0_d)">
+    <rect x="96" y="338" width="210" height="86" rx="24" fill="#132B3A" fill-opacity="0.94" stroke="#22C55E" stroke-opacity="0.5"/>
+    <text x="130" y="393" fill="#86EFAC" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="900">2.47x</text>
+  </g>
+  <defs>
+    <filter id="filter0_d" x="70" y="320" width="262" height="138" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#22D3EE" flood-opacity="0.22"/>
+    </filter>
+    <linearGradient id="paint0_linear" x1="155" y1="450" x2="745" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="0.55" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#60A5FA" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear" x1="537" y1="303" x2="775" y2="123" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="0.55" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+  </defs>
+</svg>
