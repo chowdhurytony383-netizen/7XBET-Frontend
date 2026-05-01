@@ -442,3 +442,38 @@
     font-size: .8rem;
   }
 }
+
+.crash-page-titlebar {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.crash-connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 900;
+  border: 1px solid rgba(148, 163, 184, .16);
+  background: rgba(255, 255, 255, .065);
+}
+
+.crash-connection.online {
+  color: #bbf7d0;
+}
+
+.crash-connection.offline {
+  color: #fecdd3;
+}
+
+.crash-error-line {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(251, 113, 133, .12);
+  border: 1px solid rgba(251, 113, 133, .24);
+  color: #fecdd3;
+  font-size: .82rem;
+  font-weight: 800;
+}

@@ -1,47 +1,31 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Activity, Clock3, History, Plane, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
+import { Activity, Clock3, History, Plane, ShieldCheck, Sparkles, Wallet, Wifi, WifiOff } from 'lucide-react';
 import { CrashAPI } from '../api/crash.js';
 import { getApiError } from '../api/client.js';
 import EmptyState from '../components/EmptyState.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
+import { getCrashSocket } from '../socket/crashSocket.js';
 import './CrashPage.css';
-
-const GROWTH_BASE_SECONDS = 4.5;
-const GROWTH_POWER = 1.45;
-const FRAME_THROTTLE_MS = 33;
-
-function asDateMs(value) {
-  const time = new Date(value || Date.now()).getTime();
-  return Number.isFinite(time) ? time : Date.now();
-}
-
-function multiplierAtElapsedSeconds(seconds = 0) {
-  const elapsed = Math.max(0, Number(seconds) || 0);
-  return 1 + Math.pow(elapsed / GROWTH_BASE_SECONDS, GROWTH_POWER);
-}
 
 function formatMultiplier(value) {
   const number = Number(value || 1);
   return `${number.toFixed(2)}x`;
 }
 
-function getEffectiveStatus(round, currentTime) {
-  if (!round) return 'LOADING';
-  if (round.status === 'CRASHED') return 'CRASHED';
-  if (round.status === 'WAITING' && currentTime >= asDateMs(round.startsAt)) return 'RUNNING';
-  if (round.status === 'RUNNING' && currentTime >= asDateMs(round.crashAt)) return 'CRASHED';
-  return round.status || 'LOADING';
+function getRoundStatusLabel(round, status, multiplier) {
+  if (!round) return 'Loading';
+  if (status === 'WAITING') return 'Betting open';
+  if (status === 'RUNNING') return 'Flying';
+  if (status === 'CRASHED') return `Crashed at ${formatMultiplier(round.crashMultiplier || multiplier)}`;
+  return status || 'Loading';
 }
 
-function getRoundStatusLabel(round, effectiveStatus, liveMultiplier) {
-  if (!round) return 'Loading';
-  if (effectiveStatus === 'WAITING') return 'Betting open';
-  if (effectiveStatus === 'RUNNING') return 'Flying';
-  if (effectiveStatus === 'CRASHED') return `Crashed at ${formatMultiplier(round.crashMultiplier || liveMultiplier)}`;
-  return effectiveStatus;
+function asDateMs(value) {
+  const time = new Date(value || Date.now()).getTime();
+  return Number.isFinite(time) ? time : Date.now();
 }
 
 export default function CrashPage() {
@@ -49,80 +33,26 @@ export default function CrashPage() {
   const [state, setState] = useState(null);
   const [amount, setAmount] = useState('100');
   const [autoCashout, setAutoCashout] = useState('2.00');
+  const [connected, setConnected] = useState(false);
+  const [socketError, setSocketError] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [cashoutLoading, setCashoutLoading] = useState(false);
+  const [lastTick, setLastTick] = useState(null);
   const [now, setNow] = useState(Date.now());
 
   const round = state?.round;
   const userBet = state?.userBet;
   const recentRounds = state?.recentRounds || [];
   const myBets = state?.myBets || [];
-
-  const serverTimeOffset = useMemo(() => {
-    if (!state?.serverTime || !state?.receivedAt) return 0;
-    return asDateMs(state.serverTime) - asDateMs(state.receivedAt);
-  }, [state?.serverTime, state?.receivedAt]);
-
-  const displayNow = now + serverTimeOffset;
-
-  const loadState = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
-    try {
-      const response = await CrashAPI.state();
-      setState({ ...(response.data || {}), receivedAt: Date.now() });
-    } catch (error) {
-      if (!silent) toast.error(getApiError(error, 'Unable to load crash game'));
-    } finally {
-      if (!silent) setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadState();
-    const poller = window.setInterval(() => loadState(true), 650);
-    return () => window.clearInterval(poller);
-  }, [loadState]);
-
-  useEffect(() => {
-    let frameId = 0;
-    let lastFrame = 0;
-
-    const tick = (frameTime) => {
-      if (frameTime - lastFrame >= FRAME_THROTTLE_MS) {
-        setNow(Date.now());
-        lastFrame = frameTime;
-      }
-      frameId = window.requestAnimationFrame(tick);
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frameId);
-  }, []);
-
-  const effectiveStatus = useMemo(() => getEffectiveStatus(round, displayNow), [round, displayNow]);
-
-  const liveMultiplier = useMemo(() => {
-    if (!round) return 1;
-    if (effectiveStatus === 'WAITING') return 1;
-
-    const start = asDateMs(round.startsAt);
-    const end = asDateMs(round.crashAt);
-    const targetTime = effectiveStatus === 'CRASHED' ? Math.min(displayNow, end) : displayNow;
-    const elapsedSeconds = Math.max(0, (targetTime - start) / 1000);
-    const smoothValue = multiplierAtElapsedSeconds(elapsedSeconds);
-
-    const serverCurrent = Number(round.currentMultiplier || 1);
-    const revealedCrash = Number(round.crashMultiplier || 0);
-    const maxValue = revealedCrash > 1 ? revealedCrash : Infinity;
-
-    return Math.max(1, Math.min(maxValue, Math.max(smoothValue, serverCurrent > 1 && effectiveStatus !== 'RUNNING' ? serverCurrent : 1)));
-  }, [round, displayNow, effectiveStatus]);
+  const effectiveStatus = lastTick?.roundId === round?.roundId ? lastTick.status : round?.status;
+  const liveMultiplier = Number(lastTick?.roundId === round?.roundId ? lastTick.currentMultiplier : round?.currentMultiplier || 1);
+  const statusLabel = getRoundStatusLabel(round, effectiveStatus, liveMultiplier);
 
   const countdown = useMemo(() => {
     if (!round || effectiveStatus !== 'WAITING') return 0;
-    return Math.max(0, Math.ceil((asDateMs(round.startsAt) - displayNow) / 1000));
-  }, [round, displayNow, effectiveStatus]);
+    return Math.max(0, Math.ceil((asDateMs(round.startsAt) - now) / 1000));
+  }, [round, effectiveStatus, now]);
 
   const planeProgress = useMemo(() => {
     if (!round) return 0;
@@ -133,18 +63,111 @@ export default function CrashPage() {
 
   const canBet = Boolean(user && effectiveStatus === 'WAITING' && !userBet);
   const canCashout = Boolean(user && effectiveStatus === 'RUNNING' && userBet?.status === 'ACTIVE');
-  const statusLabel = getRoundStatusLabel(round, effectiveStatus, liveMultiplier);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 200);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const socket = getCrashSocket();
+
+    const applyState = (payload) => {
+      if (!active || !payload?.round) return;
+      setState((current) => ({ ...(current || {}), ...payload }));
+      setLastTick(null);
+      setLoading(false);
+      setSocketError('');
+    };
+
+    const applyTick = (payload) => {
+      if (!active || !payload) return;
+      setLastTick(payload);
+      setLoading(false);
+    };
+
+    const onConnect = () => {
+      setConnected(true);
+      setSocketError('');
+      socket.emit('crash:join', {}, (payload) => applyState(payload));
+    };
+
+    const onDisconnect = () => setConnected(false);
+
+    const onError = (payload) => {
+      const message = payload?.message || 'Crash game error';
+      setSocketError(message);
+      toast.error(message);
+    };
+
+    const onBetPlaced = async (payload) => {
+      toast.success(payload?.message || 'Bet placed');
+      await refreshUser?.().catch(() => null);
+      socket.emit('crash:join', {}, (nextState) => applyState(nextState));
+    };
+
+    const onCashout = async (payload) => {
+      toast.success(payload?.message || 'Cashout successful');
+      await refreshUser?.().catch(() => null);
+      socket.emit('crash:join', {}, (nextState) => applyState(nextState));
+    };
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('connect_error', (error) => {
+      setConnected(false);
+      setSocketError(error?.message || 'Realtime connection failed');
+    });
+    socket.on('crash:state', applyState);
+    socket.on('crash:tick', applyTick);
+    socket.on('crash:crashed', () => socket.emit('crash:join', {}, (payload) => applyState(payload)));
+    socket.on('crash:error', onError);
+    socket.on('crash:bet:placed', onBetPlaced);
+    socket.on('crash:cashout:success', onCashout);
+
+    socket.connect();
+
+    CrashAPI.state()
+      .then((response) => applyState(response.data))
+      .catch((error) => setSocketError(getApiError(error, 'Unable to load crash game')))
+      .finally(() => setLoading(false));
+
+    return () => {
+      active = false;
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('connect_error');
+      socket.off('crash:state', applyState);
+      socket.off('crash:tick', applyTick);
+      socket.off('crash:crashed');
+      socket.off('crash:error', onError);
+      socket.off('crash:bet:placed', onBetPlaced);
+      socket.off('crash:cashout:success', onCashout);
+    };
+  }, [refreshUser]);
+
+  const emitWithAck = (event, payload) => new Promise((resolve, reject) => {
+    const socket = getCrashSocket();
+    if (!socket.connected) {
+      reject(new Error('Realtime connection is not connected yet'));
+      return;
+    }
+    socket.timeout(5000).emit(event, payload, (error, response) => {
+      if (error) reject(new Error('Request timed out'));
+      else if (!response?.success) reject(new Error(response?.message || 'Request failed'));
+      else resolve(response);
+    });
+  });
 
   const placeBet = async (event) => {
     event.preventDefault();
     if (!user) return toast.error('Please login before placing a bet');
     setSubmitting(true);
     try {
-      await CrashAPI.placeBet({ amount: Number(amount), autoCashout: Number(autoCashout || 0) });
-      toast.success('Bet placed');
-      await Promise.all([loadState(true), refreshUser?.().catch(() => null)]);
+      await emitWithAck('crash:placeBet', { amount: Number(amount), autoCashout: Number(autoCashout || 0) });
     } catch (error) {
-      toast.error(getApiError(error, 'Unable to place bet'));
+      toast.error(error.message || 'Unable to place bet');
     } finally {
       setSubmitting(false);
     }
@@ -153,11 +176,9 @@ export default function CrashPage() {
   const cashout = async () => {
     setCashoutLoading(true);
     try {
-      const response = await CrashAPI.cashout();
-      toast.success(response.data?.message || 'Cashout successful');
-      await Promise.all([loadState(true), refreshUser?.().catch(() => null)]);
+      await emitWithAck('crash:cashout', {});
     } catch (error) {
-      toast.error(getApiError(error, 'Unable to cash out'));
+      toast.error(error.message || 'Unable to cash out');
     } finally {
       setCashoutLoading(false);
     }
@@ -167,7 +188,13 @@ export default function CrashPage() {
     <div className="page-stack crash-page crash-page-compact">
       <div className="crash-page-titlebar">
         <h1>7X Crash</h1>
+        <span className={`crash-connection ${connected ? 'online' : 'offline'}`}>
+          {connected ? <Wifi size={14} /> : <WifiOff size={14} />}
+          {connected ? 'Realtime' : 'Connecting'}
+        </span>
       </div>
+
+      {socketError ? <div className="crash-error-line">{socketError}</div> : null}
 
       {loading && !state ? (
         <div className="card center-screen"><div className="loader" /></div>
@@ -254,12 +281,12 @@ export default function CrashPage() {
                 {!user ? (
                   <Link className="btn btn-primary btn-full" to="/login">Login to play</Link>
                 ) : (
-                  <button className="btn btn-primary btn-full" type="submit" disabled={!canBet || submitting}>
+                  <button className="btn btn-primary btn-full" type="submit" disabled={!canBet || submitting || !connected}>
                     {submitting ? 'Placing...' : effectiveStatus === 'WAITING' ? 'Place bet' : 'Wait for next round'}
                   </button>
                 )}
 
-                <button className="btn btn-soft btn-full crash-cashout-btn" type="button" onClick={cashout} disabled={!canCashout || cashoutLoading}>
+                <button className="btn btn-soft btn-full crash-cashout-btn" type="button" onClick={cashout} disabled={!canCashout || cashoutLoading || !connected}>
                   {cashoutLoading ? 'Cashing out...' : `Cash out ${formatMultiplier(liveMultiplier)}`}
                 </button>
               </div>
