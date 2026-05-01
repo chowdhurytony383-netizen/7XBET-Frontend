@@ -9,7 +9,7 @@ export default function BonusesPage() {
       description="Available bonuses, rules and eligibility will load from the backend."
       endpoint="/bonuses"
       emptyTitle="No bonuses available"
-      emptyMessage=
+      emptyMessage=" "
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
