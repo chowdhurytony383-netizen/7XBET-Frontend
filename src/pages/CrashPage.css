@@ -7,8 +7,8 @@
 
 .crash-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 18px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
 .crash-stage-card,
@@ -35,7 +35,8 @@
 }
 
 .crash-status,
-.crash-round-id {
+.crash-round-id,
+.crash-mini-status {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -48,9 +49,12 @@
   font-weight: 900;
 }
 
-.crash-status-waiting { color: #bbf7d0; }
-.crash-status-running { color: #bae6fd; }
-.crash-status-crashed { color: #fecdd3; }
+.crash-status-waiting,
+.crash-mini-status-waiting { color: #bbf7d0; }
+.crash-status-running,
+.crash-mini-status-running { color: #bae6fd; }
+.crash-status-crashed,
+.crash-mini-status-crashed { color: #fecdd3; }
 .crash-round-id { color: #aebbd0; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .crash-stage {
@@ -64,6 +68,7 @@
     radial-gradient(circle at 80% 70%, rgba(59, 130, 246, .18), transparent 20rem),
     #06111f;
   border: 1px solid rgba(148, 163, 184, .14);
+  transform: translateZ(0);
 }
 
 .crash-stage-crashed { animation: crashShake .28s ease-in-out 2; }
@@ -104,14 +109,20 @@
   background: linear-gradient(135deg, rgba(34, 197, 94, .32), rgba(14, 165, 233, .34));
   border: 1px solid rgba(255, 255, 255, .22);
   box-shadow: 0 18px 60px rgba(34, 211, 238, .26);
-  transform: translate(-50%, 50%) rotate(28deg);
-  transition: left .15s linear, bottom .15s linear;
+  transform: translate3d(-50%, 50%, 0) rotate(28deg);
+  transition: left 80ms linear, bottom 80ms linear, transform 140ms ease;
+  will-change: left, bottom, transform;
+}
+
+.crash-stage-running .crash-plane {
+  animation: planeFloat 1.8s ease-in-out infinite;
 }
 
 .crash-stage-crashed .crash-plane {
   color: #fff;
   background: linear-gradient(135deg, rgba(251, 113, 133, .7), rgba(249, 115, 22, .55));
   box-shadow: 0 18px 70px rgba(251, 113, 133, .35);
+  transform: translate3d(-50%, 50%, 0) rotate(48deg) scale(.94);
 }
 
 .crash-multiplier {
@@ -139,6 +150,11 @@
   letter-spacing: -.08em;
   color: #fff;
   text-shadow: 0 0 32px rgba(34, 211, 238, .28);
+  font-variant-numeric: tabular-nums;
+}
+
+.crash-countdown-number {
+  color: #bbf7d0 !important;
 }
 
 .crash-stage-crashed .crash-multiplier strong { color: #fecdd3; }
@@ -164,12 +180,19 @@
 .crash-info-grid span { color: #93a4b8; font-size: .76rem; font-weight: 800; }
 .crash-info-grid strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
-.crash-bet-card { padding: 18px; align-self: start; }
+.crash-bet-card { padding: 18px; }
+.crash-bet-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .crash-bet-card h2 { margin: 0 0 8px; font-size: 1.35rem; }
-.crash-wallet { margin: 0 0 14px; color: #aebbd0; }
+.crash-wallet { margin: 0; color: #aebbd0; }
 .crash-wallet strong { color: #fff; }
+.crash-mini-status { flex: 0 0 auto; }
 
-.crash-bet-form { display: grid; gap: 12px; }
+.crash-bet-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
 .crash-bet-form label { display: grid; gap: 7px; color: #cbd5e1; font-weight: 900; }
 .crash-bet-form input {
   min-height: 48px;
@@ -186,6 +209,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  grid-column: 1 / -1;
 }
 .crash-quick-buttons button {
   min-height: 36px;
@@ -197,6 +221,7 @@
 }
 
 .crash-current-bet {
+  grid-column: 1 / -1;
   display: grid;
   gap: 3px;
   padding: 13px;
@@ -209,6 +234,13 @@
 .crash-current-bet strong { font-size: 1.25rem; }
 .crash-current-bet-lost { background: rgba(251, 113, 133, .11); border-color: rgba(251, 113, 133, .22); }
 .crash-current-bet-cashed_out { background: rgba(59, 130, 246, .11); border-color: rgba(59, 130, 246, .22); }
+
+.crash-bet-actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
 .crash-cashout-btn:not(:disabled) { background: linear-gradient(135deg, #facc15, #f97316); color: #221300; }
 
 .crash-history-card { padding: 18px; }
@@ -254,9 +286,9 @@
   70% { transform: translateX(4px); }
 }
 
-@media (max-width: 1050px) {
-  .crash-layout { grid-template-columns: 1fr; }
-  .crash-stage { min-height: 360px; }
+@keyframes planeFloat {
+  0%, 100% { margin-bottom: 0; }
+  50% { margin-bottom: 6px; }
 }
 
 @media (max-width: 680px) {
@@ -266,7 +298,8 @@
   .crash-stage-card { padding: 10px; }
   .crash-stage-top { align-items: flex-start; margin-bottom: 8px; }
   .crash-status,
-  .crash-round-id { padding: 7px 9px; font-size: .72rem; }
+  .crash-round-id,
+  .crash-mini-status { padding: 7px 9px; font-size: .72rem; }
   .crash-round-id { max-width: 130px; }
   .crash-stage { min-height: 250px; border-radius: 16px; }
   .crash-plane { width: 54px; height: 54px; border-radius: 18px; }
@@ -277,6 +310,9 @@
   .crash-info-grid div { padding: 9px; border-radius: 12px; }
   .crash-bet-card,
   .crash-history-card { padding: 13px; }
+  .crash-bet-header { display: grid; gap: 8px; }
+  .crash-bet-form { grid-template-columns: 1fr; }
   .crash-quick-buttons { grid-template-columns: repeat(2, 1fr); }
+  .crash-bet-actions { grid-template-columns: 1fr; }
   .crash-bets-table > div { grid-template-columns: 1fr 1fr; font-size: .82rem; }
 }
