@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { BadgeCheck, FileCheck2, Mail, Phone, Save, User, Wallet } from 'lucide-react';
+import { BadgeCheck, Camera, FileCheck2, Mail, Phone, Save, User, Wallet } from 'lucide-react';
 import { AuthAPI } from '../api/auth.js';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
@@ -14,9 +14,13 @@ import BetTable from '../components/BetTable.jsx';
 import TransactionTable from '../components/TransactionTable.jsx';
 import './ProfilePage.css';
 
+const DEFAULT_PROFILE_PICTURE = '/images/brand/7xbet-icon.svg';
+
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', picture: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '' });
+  const [pictureFile, setPictureFile] = useState(null);
+  const [picturePreview, setPicturePreview] = useState('');
   const [bets, setBets] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [tab, setTab] = useState('bets');
@@ -24,8 +28,24 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setForm({ name: user?.name || user?.fullName || '', email: getDisplayEmail(user?.email), phone: user?.phone || '', picture: user?.picture || '' });
+    setForm({
+      name: user?.name || user?.fullName || '',
+      email: getDisplayEmail(user?.email),
+      phone: user?.phone || '',
+    });
   }, [user]);
+
+  useEffect(() => {
+    if (!pictureFile) {
+      setPicturePreview('');
+      return undefined;
+    }
+
+    const nextPreview = URL.createObjectURL(pictureFile);
+    setPicturePreview(nextPreview);
+
+    return () => URL.revokeObjectURL(nextPreview);
+  }, [pictureFile]);
 
   useEffect(() => {
     let active = true;
@@ -49,8 +69,22 @@ export default function ProfilePage() {
   const updateProfile = async (event) => {
     event.preventDefault();
     setSaving(true);
+
     try {
-      await AuthAPI.updateProfile(form);
+      await AuthAPI.updateProfile({
+        name: form.name,
+        fullName: form.name,
+        email: form.email,
+        phone: form.phone,
+      });
+
+      if (pictureFile) {
+        const formData = new FormData();
+        formData.append('picture', pictureFile);
+        await AuthAPI.uploadProfilePicture(formData);
+        setPictureFile(null);
+      }
+
       await refreshUser();
       toast.success('Profile updated');
     } catch (error) {
@@ -60,17 +94,47 @@ export default function ProfilePage() {
     }
   };
 
+  const handlePictureChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Only JPG, PNG or WEBP profile pictures are allowed');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error('Profile picture must be under 3MB');
+      event.target.value = '';
+      return;
+    }
+
+    setPictureFile(file);
+  };
+
   const displayName = user?.fullName || user?.name || user?.username || 'Account';
   const displayEmail = getDisplayEmail(user?.email);
   const emailStatus = displayEmail ? (user?.isVerified ? 'Verified' : 'Not verified') : 'Not added';
   const verificationStatus = user?.verificationStatus || user?.kyc?.status || (user?.isVerified ? 'Verified' : 'Pending');
+  const profilePicture = picturePreview || user?.picture || DEFAULT_PROFILE_PICTURE;
 
   return (
     <div className="page-stack">
       <PageHeader eyebrow="Account" title="Profile" description="Profile, wallet, bet and transaction details are loaded from backend routes." />
       <div className="profile-grid">
         <aside className="card profile-card">
-          <img className="profile-avatar" src={user?.picture || '/images/others/logo.svg'} alt="Account" />
+          <img
+            className="profile-avatar"
+            src={profilePicture}
+            alt="Account"
+            onError={(event) => {
+              if (event.currentTarget.src !== window.location.origin + DEFAULT_PROFILE_PICTURE) {
+                event.currentTarget.src = DEFAULT_PROFILE_PICTURE;
+              }
+            }}
+          />
           <div><h2>{displayName}</h2><p className="profile-email-text">{displayEmail || 'Email not added'}</p></div>
           <div className="profile-list">
             <div><span>Email status</span><strong>{emailStatus}</strong></div>
@@ -83,7 +147,13 @@ export default function ProfilePage() {
             <div className="input-group"><label htmlFor="name">Full Name</label><input id="name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
             <div className="input-group"><label htmlFor="email">Email</label><input id="email" type="email" value={form.email} placeholder="Enter email address" onChange={(event) => setForm({ ...form, email: event.target.value })} /></div>
             <div className="input-group"><label htmlFor="phone">Phone</label><input id="phone" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></div>
-            <div className="input-group"><label htmlFor="picture">Picture URL</label><input id="picture" value={form.picture} onChange={(event) => setForm({ ...form, picture: event.target.value })} /></div>
+            <div className="input-group profile-picture-field">
+              <label htmlFor="profilePicture">Profile picture</label>
+              <input id="profilePicture" type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePictureChange} />
+              <span className="profile-picture-help">
+                <Camera size={16} /> {pictureFile ? pictureFile.name : 'Upload JPG, PNG or WEBP image'}
+              </span>
+            </div>
             <button className="btn btn-primary" type="submit" disabled={saving}><Save size={18} /> {saving ? 'Saving...' : 'Save profile'}</button>
           </form>
         </aside>
