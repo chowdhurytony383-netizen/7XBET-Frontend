@@ -232,7 +232,7 @@ export default function LiveSportsSection({ matches = [], matchOfTheDay }) {
           ) : (
             <EmptyState
               title="Live matches unavailable"
-              message="Add live sports data in the backend to show this section."
+              message="Add live sports data in  to show this section."
             />
           )}
         </div>
