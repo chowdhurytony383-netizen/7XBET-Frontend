@@ -1,4 +1,4 @@
-import { Bomb, ChevronRight, Dice5, Gamepad2, Sparkles } from 'lucide-react';
+import { Bomb, ChevronRight, Dice5, Gamepad2, Rocket, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { gameName } from '../utils/format.js';
 import './GameCard.css';
@@ -18,6 +18,11 @@ const gameAssets = {
     image: '/originals/fortunetiger/icons/icon-512.png',
     icon: Sparkles,
     path: '/source-games/fortunetiger',
+  },
+  crash: {
+    image: '/images/crash-game/cover.svg',
+    icon: Rocket,
+    path: '/crash',
   },
 };
 
@@ -42,6 +47,7 @@ function resolveGameKey(game) {
   if (value.includes('mine')) return 'mines';
   if (value.includes('dice')) return 'dice';
   if (value.includes('fortunetiger')) return 'fortunetiger';
+  if (value.includes('crash') || value.includes('aviator')) return 'crash';
 
   return value;
 }
