@@ -24,6 +24,7 @@ import PromotionsPage from './pages/PromotionsPage.jsx';
 import FaqPage from './pages/FaqPage.jsx';
 import RulesPage from './pages/RulesPage.jsx';
 import CustomerSupportPage from './pages/CustomerSupportPage.jsx';
+import StaticInfoPage from './pages/StaticInfoPage.jsx';
 
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
@@ -82,6 +83,13 @@ export default function App() {
         <Route path="other/faq" element={<FaqPage />} />
         <Route path="other/rules" element={<RulesPage />} />
         <Route path="customer-support" element={<CustomerSupportPage />} />
+        <Route path="about-us" element={<StaticInfoPage pageKey="about" />} />
+        <Route path="terms-and-conditions" element={<StaticInfoPage pageKey="terms" />} />
+        <Route path="contacts" element={<StaticInfoPage pageKey="contacts" />} />
+        <Route path="affiliate-program" element={<StaticInfoPage pageKey="affiliate" />} />
+        <Route path="privacy-policy" element={<StaticInfoPage pageKey="privacy" />} />
+        <Route path="responsible-gambling" element={<StaticInfoPage pageKey="responsible" />} />
+        <Route path="kyc-policies" element={<StaticInfoPage pageKey="kyc" />} />
       </Route>
 
       <Route element={<AuthRoute />}>
