@@ -59,10 +59,12 @@ import AdminAgentRequestsPage from './pages/admin/AdminAgentRequestsPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
+import SeoManager from './components/SeoManager.jsx';
 
 export default function App() {
   return (
     <>
+      <SeoManager />
       <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
