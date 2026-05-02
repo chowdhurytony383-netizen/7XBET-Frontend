@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./FooterSection.css";
 import {
   FaFacebookF,
@@ -24,45 +25,45 @@ const FooterSection = () => {
         <div className="footer-grid">
           <div className="footer-column">
             <h4>7XBET</h4>
-            <a href="#">About us</a>
-            <a href="#">Terms and Conditions</a>
-            <a href="#">Contacts</a>
-            <a href="#">Affiliate Program</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Responsible Gambling</a>
-            <a href="#">KYC Policies</a>
+            <Link to="/about-us">About us</Link>
+            <Link to="/terms-and-conditions">Terms and Conditions</Link>
+            <Link to="/contacts">Contacts</Link>
+            <Link to="/affiliate-program">Affiliate Program</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/responsible-gambling">Responsible Gambling</Link>
+            <Link to="/kyc-policies">KYC Policies</Link>
           </div>
 
           <div className="footer-column">
             <h4>Products</h4>
-            <a href="#">Sports</a>
-            <a href="#">Esports</a>
-            <a href="#">Live Casino</a>
-            <a href="#">Slots</a>
-            <a href="#">Bonuses</a>
+            <Link to="/sports">Sports</Link>
+            <Link to="/esports">Esports</Link>
+            <Link to="/live-casino">Live Casino</Link>
+            <Link to="/slots">Slots</Link>
+            <Link to="/bonuses">Bonuses</Link>
           </div>
 
           <div className="footer-column">
             <h4>Live</h4>
-            <a href="#">Live</a>
-            <a href="#">Multi-LIVE</a>
-            <a href="#">Results</a>
-            <a href="#">Statistics</a>
+            <Link to="/sports">Live</Link>
+            <Link to="/sports">Multi-LIVE</Link>
+            <Link to="/sports">Results</Link>
+            <Link to="/sports">Statistics</Link>
           </div>
 
           <div className="footer-column">
             <h4>Useful links</h4>
-            <a href="#">Mobile version</a>
-            <a href="#">Bet slip check</a>
-            <a href="#">Blog</a>
+            <Link to="/">Mobile version</Link>
+            <Link to="/bet-slip">Bet slip check</Link>
+            <Link to="/other">Blog</Link>
           </div>
 
           <div className="footer-column">
             <h4>Socials</h4>
-            <a href="#">
+            <a href="#" aria-label="7XBET Facebook">
               <FaFacebookF /> Facebook
             </a>
-            <a href="#">
+            <a href="#" aria-label="7XBET Telegram">
               <FaTelegramPlane /> Telegram
             </a>
           </div>
@@ -70,7 +71,7 @@ const FooterSection = () => {
           <div className="footer-column app-column">
             <h4>Apps</h4>
 
-            <button className="app-btn">
+            <button className="app-btn" type="button">
               <FaAndroid className="app-icon" />
               <div>
                 <span>Download for</span>
@@ -78,7 +79,7 @@ const FooterSection = () => {
               </div>
             </button>
 
-            <button className="app-btn">
+            <button className="app-btn" type="button">
               <FaApple className="app-icon" />
               <div>
                 <span>Download for</span>
@@ -104,7 +105,7 @@ const FooterSection = () => {
           deliver fast performance and instant updates.
         </p>
 
-        <div className="more-info">More Info ▾</div>
+        <Link className="more-info" to="/about-us">More Info ▾</Link>
       </div>
     </footer>
   );
