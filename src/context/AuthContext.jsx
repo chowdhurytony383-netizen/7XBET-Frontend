@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AuthAPI } from '../api/auth.js';
+import { clearAuthTokens, consumeAuthTokensFromUrl, saveAuthTokens } from '../api/client.js';
 import { clearRememberedCurrency, rememberUserCurrency } from '../utils/currency.js';
 
 const AuthContext = createContext(null);
@@ -27,6 +28,7 @@ export function AuthProvider({ children }) {
       await AuthAPI.isAuthenticated();
       await refreshUser();
     } catch (_) {
+      clearAuthTokens();
       applyUser(null);
     } finally {
       setLoading(false);
@@ -34,27 +36,39 @@ export function AuthProvider({ children }) {
   }, [refreshUser, applyUser]);
 
   useEffect(() => {
+    consumeAuthTokensFromUrl();
     checkSession();
   }, [checkSession]);
 
   const login = useCallback(async (payload) => {
     const response = await AuthAPI.login(payload);
-    const responseUser = response.data?.data?.user || null;
+    saveAuthTokens(response.data);
+
+    const responseUser = response.data?.data?.user || response.data?.user || null;
     if (responseUser) applyUser(responseUser);
+
     await refreshUser().catch(() => null);
     return response;
   }, [refreshUser, applyUser]);
 
   const register = useCallback(async (payload) => {
     const response = await AuthAPI.register(payload);
+    saveAuthTokens(response.data);
+
+    const responseUser = response.data?.data?.user || response.data?.user || null;
+    if (responseUser) applyUser(responseUser);
+
     await refreshUser().catch(() => null);
     return response;
-  }, [refreshUser]);
+  }, [refreshUser, applyUser]);
 
   const oneClickRegister = useCallback(async (payload) => {
     const response = await AuthAPI.oneClickRegister(payload);
+    saveAuthTokens(response.data);
+
     const responseUser = response.data?.data?.user || response.data?.user || null;
     if (responseUser) applyUser(responseUser);
+
     await refreshUser().catch(() => null);
     return response;
   }, [refreshUser, applyUser]);
@@ -63,6 +77,7 @@ export function AuthProvider({ children }) {
     try {
       await AuthAPI.logout();
     } finally {
+      clearAuthTokens();
       setUser(null);
       clearRememberedCurrency();
     }
