@@ -19,6 +19,11 @@ const gameAssets = {
     icon: Sparkles,
     path: '/source-games/fortunetiger',
   },
+  bikiniparadise: {
+    image: '/originals/bikiniparadise/icons/icon-512.png',
+    icon: Sparkles,
+    path: '/source-games/bikiniparadise',
+  },
   crash: {
     image: '/images/crash-game/cover.svg',
     icon: Rocket,
@@ -47,6 +52,7 @@ function resolveGameKey(game) {
   if (value.includes('mine')) return 'mines';
   if (value.includes('dice')) return 'dice';
   if (value.includes('fortunetiger')) return 'fortunetiger';
+  if (value.includes('bikiniparadise') || value.includes('bikini')) return 'bikiniparadise';
   if (value.includes('crash') || value.includes('aviator')) return 'crash';
 
   return value;
