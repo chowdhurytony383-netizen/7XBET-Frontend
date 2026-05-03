@@ -10,6 +10,7 @@ export const AccountAPI = {
   createWithdrawTransaction: (payload) => api.post('/transaction/create-transaction', payload),
   requestRazorpayPayout: (transactionId) => api.post('/razorpay/withdraw-payout-razorpay', { transactionId }),
   agentDepositOptions: () => api.get('/transaction/agent-deposit-options'),
+  agentWithdrawOptions: () => api.get('/transaction/agent-withdraw-options'),
   createAgentDepositRequest: (payload) => api.post('/transaction/agent-deposit-request', payload),
   createAgentWithdrawRequest: (payload) => api.post('/transaction/agent-withdraw-request', payload),
   createDepositOrder: (amount) => api.post('/razorpay/create-deposit-order', { amount }),
