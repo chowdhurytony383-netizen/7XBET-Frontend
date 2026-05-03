@@ -1,0 +1,119 @@
+.withdraw-page .page-header p {
+  max-width: 760px;
+}
+
+.withdraw-account-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, .18), rgba(15, 23, 42, .88)), #151c29;
+}
+
+.withdraw-alert-box {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #273449;
+}
+
+.withdraw-method-card .deposit-method-title {
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+}
+
+.withdraw-info-card svg {
+  color: #34d399;
+}
+
+.withdraw-popup {
+  width: min(640px, calc(100vw - 40px));
+}
+
+.withdraw-popup-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.withdraw-popup-heading h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.45rem;
+  font-weight: 1000;
+}
+
+.withdraw-popup-heading p {
+  margin: 0;
+  color: #aeb6c7;
+  font-weight: 800;
+}
+
+.withdraw-warning-box {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(250, 204, 21, .28);
+  background: rgba(250, 204, 21, .12);
+  color: #fef3c7;
+}
+
+.withdraw-warning-box p {
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 800;
+}
+
+.withdraw-balance-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, .1);
+  border: 1px solid rgba(34, 197, 94, .22);
+}
+
+.withdraw-balance-strip span {
+  color: #bbf7d0;
+  font-weight: 900;
+}
+
+.withdraw-balance-strip strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.withdraw-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #10b981, #2563eb);
+}
+
+.withdraw-empty-help {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 18px;
+  color: #cbd5e1;
+}
+
+.withdraw-empty-help p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px) {
+  .withdraw-popup {
+    width: min(672px, 100%);
+  }
+
+  .withdraw-popup-heading h3 {
+    font-size: 1.22rem;
+  }
+
+  .withdraw-balance-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
