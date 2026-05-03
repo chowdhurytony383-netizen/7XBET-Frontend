@@ -7,6 +7,7 @@ import './SourceGamePage.css';
 
 const sourceGameTitles = {
   fortunetiger: 'Fortune Tiger',
+  bikiniparadise: 'Bikini Paradise',
 };
 
 export default function SourceGamePage() {
