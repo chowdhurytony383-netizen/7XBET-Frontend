@@ -22,6 +22,8 @@ function RequestCard({ request, onAction }) {
         <div className="agent-request-note-box">
           {request.payerNumber && <span><strong>Sender Number:</strong> {request.payerNumber}</span>}
           {request.transactionRef && <span><strong>Transaction ID:</strong> {request.transactionRef}</span>}
+          {(request.receiverNumber || request.accountNumber) && <span><strong>Receiving Account:</strong> {request.receiverNumber || request.accountNumber}</span>}
+          {request.accountHolderName && <span><strong>Account Holder:</strong> {request.accountHolderName}</span>}
           {request.methodNumber && <span><strong>Agent Number:</strong> {request.methodNumber}</span>}
           {request.userNote && <p>{request.userNote}</p>}
         </div>
@@ -96,7 +98,7 @@ export default function AgentRequestsPage() {
           <p>
             {requestType === 'DEPOSIT'
               ? 'Confirming a deposit credits the user wallet and deducts the amount from agent balance.'
-              : 'Confirming a withdrawal deducts the user wallet and adds the amount to agent balance.'}
+              : 'Confirming a withdrawal marks the held user balance as paid and adds the amount to agent balance. Rejecting refunds the held balance.'}
           </p>
         </div>
 
