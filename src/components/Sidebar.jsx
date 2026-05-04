@@ -130,131 +130,133 @@ export default function Sidebar({ open, onClose, onLogout }) {
         </div>
 
         <nav className="sidebar-nav">
-          {mainNavItems.map((item) => (
-            <SidebarLink key={item.to} item={item} onClose={onClose} />
-          ))}
-
-          <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('bonuses')}>
-            <span className="sidebar-link-left">
-              <Crown size={20} />
-              <span>Bonuses</span>
-            </span>
-            {openMenus.bonuses ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
-
-          {openMenus.bonuses && (
-            <div className="sidebar-submenu">
-              {bonusChildren.map((item) => (
-                <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          )}
-
-          <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('other')}>
-            <span className="sidebar-link-left">
-              <Grid2X2 size={20} />
-              <span>Other</span>
-            </span>
-            {openMenus.other ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
-
-          {openMenus.other && (
-            <div className="sidebar-submenu">
-              {otherChildren.map((item) => (
-                <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          )}
-
-          {!user && (
+          {canAccessAdmin ? (
             <>
-              <div className="sidebar-section-label">Account</div>
-              {guestNavItems.map((item) => (
-                <SidebarLink key={item.to} item={item} onClose={onClose} />
-              ))}
-            </>
-          )}
-
-          {user && (
-            <>
-              <div className="sidebar-section-label">Account</div>
-              {userOnlyNavItems.map((item) => (
-                <SidebarLink key={item.to} item={item} onClose={onClose} />
-              ))}
-            </>
-          )}
-
-          {canAccessAdmin && (
-            <>
-              <div className="sidebar-section-label">Admin</div>
+              <div className="sidebar-section-label">Main Admin Panel</div>
               {adminNavItems.map((item) => (
                 <SidebarLink key={item.to} item={item} onClose={onClose} />
               ))}
             </>
-          )}
+          ) : (
+            <>
+              {mainNavItems.map((item) => (
+                <SidebarLink key={item.to} item={item} onClose={onClose} />
+              ))}
 
-          <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('settings')}>
-            <span className="sidebar-link-left">
-              <Settings size={20} />
-              <span>Settings</span>
-            </span>
-            {openMenus.settings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
+              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('bonuses')}>
+                <span className="sidebar-link-left">
+                  <Crown size={20} />
+                  <span>Bonuses</span>
+                </span>
+                {openMenus.bonuses ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
 
-          {openMenus.settings && (
-            <div className="sidebar-submenu settings-block">
-              <div className="sidebar-setting-row">
-                <span>Time zone</span>
-                <span>GMT +06:00</span>
-              </div>
-              <label className="sidebar-setting-row">
-                <span>Show bet slip at the bottom</span>
-                <input type="checkbox" />
-              </label>
-              <div className="sidebar-setting-row">
-                <span>Select odds format</span>
-                <span>Decimal</span>
-              </div>
-              <label className="sidebar-setting-row">
-                <span>Light version</span>
-                <input type="checkbox" />
-              </label>
-              <label className="sidebar-setting-row">
-                <span>Quick bet slip</span>
-                <input type="checkbox" />
-              </label>
-              <label className="sidebar-setting-row">
-                <span>Dark theme</span>
-                <input type="checkbox" defaultChecked />
-              </label>
-              <label className="sidebar-setting-row">
-                <span>European view</span>
-                <input type="checkbox" defaultChecked />
-              </label>
-              <label className="sidebar-setting-row">
-                <span>Asian view</span>
-                <input type="checkbox" />
-              </label>
-            </div>
-          )}
+              {openMenus.bonuses && (
+                <div className="sidebar-submenu">
+                  {bonusChildren.map((item) => (
+                    <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
 
-          <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('language')}>
-            <span className="sidebar-link-left">
-              <Globe size={20} />
-              <span>Language</span>
-            </span>
-            {openMenus.language ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
+              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('other')}>
+                <span className="sidebar-link-left">
+                  <Grid2X2 size={20} />
+                  <span>Other</span>
+                </span>
+                {openMenus.other ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
 
-          {openMenus.language && (
-            <div className="sidebar-submenu">
-              <button type="button" className="sidebar-sublink sidebar-button">English</button>
-              <button type="button" className="sidebar-sublink sidebar-button">বাংলা</button>
-            </div>
+              {openMenus.other && (
+                <div className="sidebar-submenu">
+                  {otherChildren.map((item) => (
+                    <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+
+              {!user && (
+                <>
+                  <div className="sidebar-section-label">Account</div>
+                  {guestNavItems.map((item) => (
+                    <SidebarLink key={item.to} item={item} onClose={onClose} />
+                  ))}
+                </>
+              )}
+
+              {user && (
+                <>
+                  <div className="sidebar-section-label">Account</div>
+                  {userOnlyNavItems.map((item) => (
+                    <SidebarLink key={item.to} item={item} onClose={onClose} />
+                  ))}
+                </>
+              )}
+
+              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('settings')}>
+                <span className="sidebar-link-left">
+                  <Settings size={20} />
+                  <span>Settings</span>
+                </span>
+                {openMenus.settings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
+
+              {openMenus.settings && (
+                <div className="sidebar-submenu settings-block">
+                  <div className="sidebar-setting-row">
+                    <span>Time zone</span>
+                    <span>GMT +06:00</span>
+                  </div>
+                  <label className="sidebar-setting-row">
+                    <span>Show bet slip at the bottom</span>
+                    <input type="checkbox" />
+                  </label>
+                  <div className="sidebar-setting-row">
+                    <span>Select odds format</span>
+                    <span>Decimal</span>
+                  </div>
+                  <label className="sidebar-setting-row">
+                    <span>Light version</span>
+                    <input type="checkbox" />
+                  </label>
+                  <label className="sidebar-setting-row">
+                    <span>Quick bet slip</span>
+                    <input type="checkbox" />
+                  </label>
+                  <label className="sidebar-setting-row">
+                    <span>Dark theme</span>
+                    <input type="checkbox" defaultChecked />
+                  </label>
+                  <label className="sidebar-setting-row">
+                    <span>European view</span>
+                    <input type="checkbox" defaultChecked />
+                  </label>
+                  <label className="sidebar-setting-row">
+                    <span>Asian view</span>
+                    <input type="checkbox" />
+                  </label>
+                </div>
+              )}
+
+              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('language')}>
+                <span className="sidebar-link-left">
+                  <Globe size={20} />
+                  <span>Language</span>
+                </span>
+                {openMenus.language ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
+
+              {openMenus.language && (
+                <div className="sidebar-submenu">
+                  <button type="button" className="sidebar-sublink sidebar-button">English</button>
+                  <button type="button" className="sidebar-sublink sidebar-button">বাংলা</button>
+                </div>
+              )}
+            </>
           )}
         </nav>
 
