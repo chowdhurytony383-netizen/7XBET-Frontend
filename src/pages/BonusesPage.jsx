@@ -6,7 +6,7 @@ export default function BonusesPage() {
     <ContentPageTemplate
       eyebrow="Promotions"
       title="Bonuses"
-      description="Available bonuses, rules and eligibility will load from the backend."
+      description=" "
       endpoint="/bonuses"
       emptyTitle="No bonuses available"
       emptyMessage=" "
