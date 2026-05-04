@@ -1,1 +1,48 @@
-/* Styles for Slots page. Shared layout classes are defined in ContentPageTemplate.css. */
+.freedemo-demo-section {
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.72));
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.freedemo-demo-header {
+  margin-bottom: 18px;
+}
+
+.freedemo-demo-header h2 {
+  margin: 8px 0 8px;
+  font-size: clamp(24px, 4vw, 42px);
+  letter-spacing: -0.04em;
+}
+
+.freedemo-demo-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.freedemo-game-shell {
+  width: 100%;
+  min-height: 680px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #050816;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.freedemo-game-widget {
+  width: 100%;
+  min-height: 680px;
+}
+
+@media (max-width: 768px) {
+  .freedemo-demo-section {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .freedemo-game-shell,
+  .freedemo-game-widget {
+    min-height: 560px;
+  }
+}
