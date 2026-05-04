@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, Wallet } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Wallet } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -40,8 +40,7 @@ export default function WalletPage() {
       <PageHeader
         eyebrow="Wallet"
         title="Wallet"
-        description="Balance and all transactions recorded."
-        actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>}
+        description="Balance and transaction records are received from the backend."
       />
 
       {error && <div className="auth-message">{error}</div>}
