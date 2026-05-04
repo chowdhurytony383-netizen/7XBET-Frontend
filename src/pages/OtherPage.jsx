@@ -6,10 +6,10 @@ export default function OtherPage() {
     <ContentPageTemplate
       eyebrow="Other"
       title="Other"
-      description="Other site content will load from the backend/admin panel."
+      description=" "
       endpoint="/other"
       emptyTitle="No other available"
-      emptyMessage="Add other content in the backend/admin panel to show it here."
+      emptyMessage=" "
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
