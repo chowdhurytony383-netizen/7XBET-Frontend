@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
       <div className="auth-visual">
         <Logo />
         <h1>Reset password securely.</h1>
-        <p>The backend sends an OTP to the registered email address before allowing a new password.</p>
+        <p>Send an OTP to the registered email address before allowing a new password.</p>
       </div>
       <div className="auth-panel">
         <form className="auth-card form-grid" onSubmit={submit}>
