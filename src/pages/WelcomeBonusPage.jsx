@@ -6,10 +6,10 @@ export default function WelcomeBonusPage() {
     <ContentPageTemplate
       eyebrow="Promotions"
       title="Welcome bonus"
-      description="Welcome bonus details will load from the backend."
+      description="Welcome bonus details."
       endpoint="/bonuses/welcome"
       emptyTitle="No welcome bonus available"
-      emptyMessage="Add welcome bonus content in the backend/admin panel to show it here."
+      emptyMessage=""
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
