@@ -32,7 +32,7 @@ export default function VerifyResetPasswordPage() {
       <div className="auth-visual">
         <Logo />
         <h1>Verify OTP.</h1>
-        <p>Submit the OTP sent by the backend to continue password reset.</p>
+        <p>Submit the OTP sent to continue password reset.</p>
       </div>
       <div className="auth-panel">
         <form className="auth-card form-grid" onSubmit={submit}>
