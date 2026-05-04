@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowDownToLine, ArrowUpFromLine, CreditCard, LogOut, Shield, Wallet } from 'lucide-react';
@@ -6,6 +6,8 @@ import { AgentAPI } from '../api/agent.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 import PageHeader from '../components/PageHeader.jsx';
+import LiveAutoRefreshStatus from '../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../hooks/useAutoRefresh.js';
 import StatCard from '../components/StatCard.jsx';
 import './AgentDashboardPage.css';
 
@@ -18,9 +20,11 @@ export default function AgentDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
 
     try {
       const [meResponse, txResponse, depositResponse, withdrawResponse] = await Promise.all([
@@ -33,14 +37,16 @@ export default function AgentDashboardPage() {
       setTransactions(txResponse.data?.data || txResponse.data?.transactions || []);
       setDepositRequests(depositResponse.data?.data || depositResponse.data?.requests || []);
       setWithdrawRequests(withdrawResponse.data?.data || withdrawResponse.data?.requests || []);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Agent session expired'));
+      if (!silent) setError(getApiError(err, 'Agent session expired'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   const logout = async () => {
     await AgentAPI.logout().catch(() => null);
@@ -54,7 +60,7 @@ export default function AgentDashboardPage() {
         eyebrow="Agent admin panel"
         title={agent?.agentId || 'Agent dashboard'}
         description="Manage payment methods and confirm/reject user deposit and withdrawal requests."
-        actions={<button className="btn btn-danger" onClick={logout}><LogOut size={18} /> Logout</button>}
+        actions={<><LiveAutoRefreshStatus /><button className="btn btn-danger" onClick={logout}><LogOut size={18} /> Logout</button></>}
       />
 
       {error && <div className="auth-message">{error}</div>}
