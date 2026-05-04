@@ -179,3 +179,29 @@ body,
     gap: 8px !important;
   }
 }
+
+
+.live-auto-refresh-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(34, 197, 94, .24);
+  border-radius: 999px;
+  color: #bbf7d0;
+  background: rgba(22, 163, 74, .12);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.live-auto-refresh-status svg {
+  color: #22c55e;
+  animation: livePulse 1s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: .55; transform: scale(.96); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
