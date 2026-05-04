@@ -49,11 +49,18 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let active = true;
+
     async function load() {
       setLoading(true);
+
       try {
-        const [betsResponse, transactionsResponse] = await Promise.all([AccountAPI.bets(), AccountAPI.transactions()]);
+        const [betsResponse, transactionsResponse] = await Promise.all([
+          AccountAPI.bets(),
+          AccountAPI.transactions(),
+        ]);
+
         if (!active) return;
+
         setBets(betsResponse.data?.data || betsResponse.data?.bets || []);
         setTransactions(transactionsResponse.data?.data || transactionsResponse.data?.transactions || []);
       } catch (error) {
@@ -62,8 +69,12 @@ export default function ProfilePage() {
         if (active) setLoading(false);
       }
     }
+
     load();
-    return () => { active = false; };
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const updateProfile = async (event) => {
@@ -81,7 +92,9 @@ export default function ProfilePage() {
       if (pictureFile) {
         const formData = new FormData();
         formData.append('picture', pictureFile);
-        await AuthAPI.uploadProfilePicture(formData);
+
+        await AuthAPI.updateProfilePicture(formData);
+
         setPictureFile(null);
       }
 
@@ -99,6 +112,7 @@ export default function ProfilePage() {
     if (!file) return;
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
     if (!allowedTypes.includes(file.type)) {
       toast.error('Only JPG, PNG or WEBP profile pictures are allowed');
       event.target.value = '';
@@ -122,7 +136,12 @@ export default function ProfilePage() {
 
   return (
     <div className="page-stack">
-      <PageHeader eyebrow="Account" title="Profile" description="Profile, wallet, bet and transaction details are loaded from backend routes." />
+      <PageHeader
+        eyebrow="Account"
+        title="Profile"
+        description="Profile, wallet, bet and transaction details are loaded from backend routes."
+      />
+
       <div className="profile-grid">
         <aside className="card profile-card">
           <img
@@ -135,44 +154,134 @@ export default function ProfilePage() {
               }
             }}
           />
-          <div><h2>{displayName}</h2><p className="profile-email-text">{displayEmail || 'Email not added'}</p></div>
-          <div className="profile-list">
-            <div><span>Email status</span><strong>{emailStatus}</strong></div>
-            <div><span>Verification</span><strong>{verificationStatus}</strong></div>
-            <div><span>Wallet</span><strong>{formatCurrency(user?.wallet)}</strong></div>
-            <div><span>Joined</span><strong>{formatDate(user?.createdAt)}</strong></div>
+
+          <div>
+            <h2>{displayName}</h2>
+            <p className="profile-email-text">{displayEmail || 'Email not added'}</p>
           </div>
-          <Link className="btn btn-soft btn-full" to="/profile/verification"><FileCheck2 size={18} /> Verification page</Link>
+
+          <div className="profile-list">
+            <div>
+              <span>Email status</span>
+              <strong>{emailStatus}</strong>
+            </div>
+
+            <div>
+              <span>Verification</span>
+              <strong>{verificationStatus}</strong>
+            </div>
+
+            <div>
+              <span>Wallet</span>
+              <strong>{formatCurrency(user?.wallet)}</strong>
+            </div>
+
+            <div>
+              <span>Joined</span>
+              <strong>{formatDate(user?.createdAt)}</strong>
+            </div>
+          </div>
+
+          <Link className="btn btn-soft btn-full" to="/profile/verification">
+            <FileCheck2 size={18} />
+            Verification page
+          </Link>
+
           <form className="form-grid" onSubmit={updateProfile}>
-            <div className="input-group"><label htmlFor="name">Full Name</label><input id="name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
-            <div className="input-group"><label htmlFor="email">Email</label><input id="email" type="email" value={form.email} placeholder="Enter email address" onChange={(event) => setForm({ ...form, email: event.target.value })} /></div>
-            <div className="input-group"><label htmlFor="phone">Phone</label><input id="phone" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></div>
+            <div className="input-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                id="name"
+                value={form.name}
+                onChange={(event) => setForm({ ...form, name: event.target.value })}
+              />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={form.email}
+                placeholder="Enter email address"
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+              />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="phone">Phone</label>
+              <input
+                id="phone"
+                value={form.phone}
+                onChange={(event) => setForm({ ...form, phone: event.target.value })}
+              />
+            </div>
+
             <div className="input-group profile-picture-field">
               <label htmlFor="profilePicture">Profile picture</label>
-              <input id="profilePicture" type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePictureChange} />
+              <input
+                id="profilePicture"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePictureChange}
+              />
               <span className="profile-picture-help">
-                <Camera size={16} /> {pictureFile ? pictureFile.name : 'Upload JPG, PNG or WEBP image'}
+                <Camera size={16} />
+                {pictureFile ? pictureFile.name : 'Upload JPG, PNG or WEBP image'}
               </span>
             </div>
-            <button className="btn btn-primary" type="submit" disabled={saving}><Save size={18} /> {saving ? 'Saving...' : 'Save profile'}</button>
+
+            <button className="btn btn-primary" type="submit" disabled={saving}>
+              <Save size={18} />
+              {saving ? 'Saving...' : 'Save profile'}
+            </button>
           </form>
         </aside>
+
         <section className="page-stack">
           <div className="grid-4">
             <StatCard icon={User} label="Name" value={displayName} />
-            <StatCard icon={Mail} label="Email" value={displayEmail ? <span className="profile-email-value">{displayEmail}</span> : 'Not added'} />
+            <StatCard
+              icon={Mail}
+              label="Email"
+              value={displayEmail ? <span className="profile-email-value">{displayEmail}</span> : 'Not added'}
+            />
             <StatCard icon={Phone} label="Phone" value={user?.phone || '—'} />
             <StatCard icon={Wallet} label="Balance" value={formatCurrency(user?.wallet)} />
           </div>
+
           <div className="grid-2">
-            <StatCard icon={BadgeCheck} label="Email verified" value={displayEmail ? (user?.isVerified ? 'Yes' : 'No') : 'Not added'} />
+            <StatCard
+              icon={BadgeCheck}
+              label="Email verified"
+              value={displayEmail ? (user?.isVerified ? 'Yes' : 'No') : 'Not added'}
+            />
             <StatCard icon={FileCheck2} label="Identity verification" value={verificationStatus} />
           </div>
+
           <div className="profile-tabs">
-            <button className={`btn ${tab === 'bets' ? 'btn-primary' : 'btn-soft'}`} onClick={() => setTab('bets')}>Bets</button>
-            <button className={`btn ${tab === 'transactions' ? 'btn-primary' : 'btn-soft'}`} onClick={() => setTab('transactions')}>Transactions</button>
+            <button
+              className={`btn ${tab === 'bets' ? 'btn-primary' : 'btn-soft'}`}
+              type="button"
+              onClick={() => setTab('bets')}
+            >
+              Bets
+            </button>
+
+            <button
+              className={`btn ${tab === 'transactions' ? 'btn-primary' : 'btn-soft'}`}
+              type="button"
+              onClick={() => setTab('transactions')}
+            >
+              Transactions
+            </button>
           </div>
-          {tab === 'bets' ? <BetTable bets={bets} loading={loading} /> : <TransactionTable transactions={transactions} loading={loading} />}
+
+          {tab === 'bets' ? (
+            <BetTable bets={bets} loading={loading} />
+          ) : (
+            <TransactionTable transactions={transactions} loading={loading} />
+          )}
         </section>
       </div>
     </div>
