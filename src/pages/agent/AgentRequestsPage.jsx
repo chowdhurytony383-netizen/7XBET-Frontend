@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, RefreshCw, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react';
 import { AgentAPI } from '../../api/agent.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import '../AgentPaymentMethods.css';
 
 function RequestCard({ request, onAction }) {
@@ -51,9 +53,11 @@ export default function AgentRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
-  const loadData = async () => {
-    setLoading(true);
-    setMessage('');
+  const loadData = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setMessage('');
+    }
 
     try {
       const [meResponse, requestResponse] = await Promise.all([
@@ -62,17 +66,16 @@ export default function AgentRequestsPage() {
       ]);
       setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
       setRequests(requestResponse.data?.data || requestResponse.data?.requests || []);
+      setMessage('');
     } catch (error) {
-      setMessage(getApiError(error, 'Unable to load requests'));
+      if (!silent) setMessage(getApiError(error, 'Unable to load requests'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requestType]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+  useAutoRefresh(loadData, { intervalMs: 1000 });
 
   const handleAction = async (requestId, action) => {
     try {
@@ -104,7 +107,7 @@ export default function AgentRequestsPage() {
 
         <div className="agent-header-actions">
           <Link className="btn btn-soft" to="/agent/dashboard"><ArrowLeft size={18} /> Dashboard</Link>
-          <button className="btn btn-soft" onClick={loadData}><RefreshCw size={18} /> Refresh</button>
+          <LiveAutoRefreshStatus />
         </div>
       </div>
 
