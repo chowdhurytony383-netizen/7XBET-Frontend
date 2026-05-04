@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { AlertTriangle, ArrowUpFromLine, RefreshCw, ShieldCheck, WalletCards, X } from 'lucide-react';
+import { AlertTriangle, ArrowUpFromLine, ShieldCheck, WalletCards, X } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -161,7 +161,6 @@ export default function WithdrawPage() {
         eyebrow="Wallet"
         title="Withdraw"
         description="Choose a payout option, add your receiving account, and submit your withdrawal request to the assigned agent."
-        actions={<button className="btn btn-soft" onClick={loadOptions}><RefreshCw size={18} /> Refresh</button>}
       />
 
       <div className="deposit-account-card withdraw-account-card">

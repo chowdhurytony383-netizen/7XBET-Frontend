@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, ArrowUpFromLine, CreditCard, LogOut, RefreshCw, Shield, Wallet } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, CreditCard, LogOut, Shield, Wallet } from 'lucide-react';
 import { AgentAPI } from '../api/agent.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -54,7 +54,7 @@ export default function AgentDashboardPage() {
         eyebrow="Agent admin panel"
         title={agent?.agentId || 'Agent dashboard'}
         description="Manage payment methods and confirm/reject user deposit and withdrawal requests."
-        actions={<><button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button><button className="btn btn-danger" onClick={logout}><LogOut size={18} /> Logout</button></>}
+        actions={<button className="btn btn-danger" onClick={logout}><LogOut size={18} /> Logout</button>}
       />
 
       {error && <div className="auth-message">{error}</div>}

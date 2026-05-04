@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { AlertTriangle, Copy, RefreshCw, ShieldCheck, WalletCards, X } from 'lucide-react';
+import { AlertTriangle, Copy, ShieldCheck, WalletCards, X } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
 import { CryptoAPI } from '../api/crypto.js';
 import { getApiError } from '../api/client.js';
@@ -197,7 +197,6 @@ export default function DepositPage() {
         eyebrow="Wallet"
         title="Deposit"
         description="Choose a payment option, send money to the shown number, then confirm your deposit request."
-        actions={<button className="btn btn-soft" onClick={loadOptions}><RefreshCw size={18} /> Refresh</button>}
       />
 
       <div className="deposit-account-card">
@@ -346,8 +345,7 @@ export default function DepositPage() {
               <div className="crypto-pending-box">
                 <WalletCards size={32} />
                 <h3>Address not ready</h3>
-                <p>{selectedCrypto.errorMessage || 'Crypto address is being generated. Please refresh after a moment.'}</p>
-                <button className="btn btn-primary" type="button" onClick={loadOptions}><RefreshCw size={18} /> Refresh addresses</button>
+                <p>{selectedCrypto.errorMessage || 'Crypto address is being generated. Please try again after a moment.'}</p>
               </div>
             )}
           </div>

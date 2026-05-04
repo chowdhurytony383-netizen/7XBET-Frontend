@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
 import { GamesAPI } from '../api/games.js';
 import { getApiError } from '../api/client.js';
 import PageHeader from '../components/PageHeader.jsx';
@@ -47,7 +46,6 @@ export default function GamesPage() {
       <PageHeader
         eyebrow="Game lobby"
         title="Games"
-        actions={<button className="btn btn-soft" onClick={loadGames}><RefreshCw size={18} /> Refresh</button>}
       />
       <div className="games-filter">
         <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games" />

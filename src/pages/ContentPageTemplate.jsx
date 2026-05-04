@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, RefreshCw } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { PublicContentAPI } from '../api/publicContent.js';
 import { getApiError } from '../api/client.js';
 import EmptyState from '../components/EmptyState.jsx';
@@ -96,14 +96,8 @@ export default function ContentPageTemplate({
         <div className="content-panel-header">
           <div>
             <h2>{title}</h2>
-            <p>Content will be displayed here when it is available.</p>
+            <p>Content will be displayed here when it is available from the backend/admin panel.</p>
           </div>
-          {endpoint && (
-            <button type="button" className="btn btn-soft" onClick={loadContent} disabled={loading}>
-              <RefreshCw size={16} />
-              Refresh
-            </button>
-          )}
         </div>
 
         {error && <div className="alert error">{error}</div>}
@@ -133,7 +127,7 @@ export default function ContentPageTemplate({
         ) : (
           <EmptyState
             title={emptyTitle || `No ${title.toLowerCase()} available`}
-            message={emptyMessage || `Add ${title.toLowerCase()} `}
+            message={emptyMessage || `Add ${title.toLowerCase()} content in the backend/admin panel to show it here.`}
           />
         )}
       </section>
