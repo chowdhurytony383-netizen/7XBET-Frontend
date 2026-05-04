@@ -6,7 +6,7 @@ export default function RulesPage() {
     <ContentPageTemplate
       eyebrow="Rules"
       title="Rules"
-      description="Platform rules and game rules will load from the backend/admin panel."
+      description=""
       endpoint="/other/rules"
       emptyTitle="No rules available"
       emptyMessage="Add rules content in the backend/admin panel to show it here."
