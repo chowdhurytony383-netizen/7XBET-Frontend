@@ -40,7 +40,7 @@ export default function WalletPage() {
       <PageHeader
         eyebrow="Wallet"
         title="Wallet"
-        description="Balance and transaction records are received from the backend."
+        description="Balance and all transactions recorded."
         actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>}
       />
 
