@@ -97,7 +97,7 @@ export default function VerificationPage() {
 
   return (
     <div className="page-stack verification-page">
-      <PageHeader eyebrow="Profile" title="Verification" description="Submit identity and address information. The backend stores and reviews every field." />
+      <PageHeader eyebrow="Profile" title="Verification" description="Submit identity and address information." />
       <section className="card verification-status-card">
         <FileCheck2 size={26} />
         <div><span>Current status</span><strong>{status}</strong></div>
