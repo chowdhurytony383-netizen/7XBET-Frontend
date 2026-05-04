@@ -96,7 +96,7 @@ export default function ContentPageTemplate({
         <div className="content-panel-header">
           <div>
             <h2>{title}</h2>
-            <p>Content will be displayed here when it is available from the backend/admin panel.</p>
+            <p>Content will be displayed here when it is available.</p>
           </div>
           {endpoint && (
             <button type="button" className="btn btn-soft" onClick={loadContent} disabled={loading}>
@@ -133,7 +133,7 @@ export default function ContentPageTemplate({
         ) : (
           <EmptyState
             title={emptyTitle || `No ${title.toLowerCase()} available`}
-            message={emptyMessage || `Add ${title.toLowerCase()} content in the backend/admin panel to show it here.`}
+            message={emptyMessage || `Add ${title.toLowerCase()} `}
           />
         )}
       </section>
