@@ -49,7 +49,7 @@ export default function DicePage() {
 
   return (
     <div className="page-stack">
-      <PageHeader eyebrow="Game" title="Dice" description="Bets are submitted to the backend dice route. Result and wallet update come from the API response." />
+      <PageHeader eyebrow="Game" title="Dice" description=" " />
 
       <div className="grid-3">
         <StatCard icon={Wallet} label="Wallet balance" value={formatCurrency(user?.wallet)} />
