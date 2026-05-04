@@ -6,10 +6,10 @@ export default function SportsPage() {
     <ContentPageTemplate
       eyebrow="Sportsbook"
       title="Sports"
-      description="Sports events, live matches and odds will load from the backend."
+      description="Sports events, live matches."
       endpoint="/sports/live-matches"
       emptyTitle="No sports available"
-      emptyMessage="Add sports content in the backend/admin panel to show it here."
+      emptyMessage=""
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
