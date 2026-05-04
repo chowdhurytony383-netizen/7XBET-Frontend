@@ -1,17 +1,30 @@
 User-agent: *
 Allow: /
+
 Disallow: /admin
 Disallow: /admin/
 Disallow: /agent
 Disallow: /agent/
 Disallow: /dashboard
+Disallow: /dashboard/
 Disallow: /wallet
+Disallow: /wallet/
 Disallow: /deposit
+Disallow: /deposit/
 Disallow: /withdraw
+Disallow: /withdraw/
 Disallow: /profile
+Disallow: /profile/
 Disallow: /verify-user
+Disallow: /login
+Disallow: /register
 Disallow: /forgot-password
 Disallow: /verify-reset-password-otp
 Disallow: /set-new-password
+Disallow: /bet-slip
+Disallow: /games/dice
+Disallow: /games/mines
+Disallow: /source-games
+Disallow: /source-games/
 
 Sitemap: https://7xbet.asia/sitemap.xml

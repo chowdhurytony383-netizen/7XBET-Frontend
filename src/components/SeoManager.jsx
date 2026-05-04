@@ -5,6 +5,36 @@ const SITE_URL = 'https://7xbet.asia';
 const SITE_NAME = '7XBET';
 const DEFAULT_IMAGE = `${SITE_URL}/images/brand/og-image.png`;
 
+const GOOGLE_SITE_VERIFICATION = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION;
+
+const NOINDEX_PATHS = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/verify-reset-password-otp',
+  '/set-new-password',
+  '/verify-user',
+  '/agent',
+  '/agent/login',
+  '/agent/dashboard',
+  '/agent/payment-methods',
+  '/dashboard',
+  '/wallet',
+  '/deposit',
+  '/withdraw',
+  '/profile',
+  '/profile/verification',
+  '/admin',
+  '/bet-slip',
+  '/games/dice',
+  '/games/mines',
+  '/source-games',
+];
+
+function shouldNoIndex(pathname) {
+  return NOINDEX_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
+
 const DEFAULT_SEO = {
   title: '7XBET | Sports Betting, Casino Games & Live Gaming Platform',
   description:
@@ -246,8 +276,14 @@ export default function SeoManager() {
     document.title = seo.title;
     setMetaByName('description', seo.description);
     setMetaByName('keywords', seo.keywords || DEFAULT_SEO.keywords);
-    setMetaByName('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    setMetaByName(
+      'robots',
+      shouldNoIndex(pathname)
+        ? 'noindex, nofollow'
+        : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    );
     setMetaByName('theme-color', '#07121d');
+    setMetaByName('google-site-verification', GOOGLE_SITE_VERIFICATION);
 
     setLink('canonical', canonicalUrl);
 

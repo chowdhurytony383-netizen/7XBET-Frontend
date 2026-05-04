@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import AdminRoute from './components/AdminRoute.jsx';
 import AuthRoute from './components/AuthRoute.jsx';
@@ -60,11 +61,28 @@ import AdminAgentRequestsPage from './pages/admin/AdminAgentRequestsPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
 import SeoManager from './components/SeoManager.jsx';
+import { initGA, trackPageView } from './utils/analytics.js';
+
+function GoogleAnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    const path = `${location.pathname}${location.search}`;
+    trackPageView(path);
+  }, [location.pathname, location.search]);
+
+  return null;
+}
 
 export default function App() {
   return (
     <>
       <SeoManager />
+      <GoogleAnalyticsTracker />
       <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
