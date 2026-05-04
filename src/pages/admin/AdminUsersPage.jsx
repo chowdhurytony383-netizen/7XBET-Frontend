@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { RefreshCw, Search, UserCheck, UserX } from 'lucide-react';
+import { Search, UserCheck, UserX } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import './AdminUsersPage.css';
 
 export default function AdminUsersPage() {
@@ -15,20 +17,25 @@ export default function AdminUsersPage() {
   const [updatingId, setUpdatingId] = useState('');
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
+
     try {
       const response = await AdminAPI.users(filters);
       setUsers(response.data?.data || response.data?.users || []);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Unable to load users'));
+      if (!silent) setError(getApiError(err, 'Unable to load users'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [filters]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   const updateStatus = async (userId, status) => {
     setUpdatingId(userId);
@@ -45,7 +52,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="page-stack admin-users-page">
-      <PageHeader eyebrow="Admin panel" title="Users" description="Search users, open account details and control account status from backend admin endpoints." actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>} />
+      <PageHeader eyebrow="Admin panel" title="Users" description="Search users, open account details and control account status from backend admin endpoints." actions={<LiveAutoRefreshStatus />} />
       <form className="card admin-filter-bar" onSubmit={(event) => { event.preventDefault(); load(); }}>
         <div className="input-group"><label htmlFor="search">Search</label><input id="search" value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Name, email or phone" /></div>
         <div className="input-group"><label htmlFor="status">Account status</label><select id="status" value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })}><option value="">All</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="blocked">Blocked</option></select></div>

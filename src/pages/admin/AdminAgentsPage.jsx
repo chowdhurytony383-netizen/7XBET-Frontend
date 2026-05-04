@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Copy, Plus, RefreshCw, Search, Shield, Wallet } from 'lucide-react';
+import { Copy, Plus, Search, Shield, Wallet } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import './AdminAgentsPage.css';
 
 export default function AdminAgentsPage() {
@@ -18,21 +20,25 @@ export default function AdminAgentsPage() {
   const [toppingUp, setToppingUp] = useState(false);
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
 
     try {
       const response = await AdminAPI.agents(filters);
       setAgents(response.data?.data || response.data?.agents || []);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Unable to load agents'));
+      if (!silent) setError(getApiError(err, 'Unable to load agents'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [filters]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   const createAgent = async (event) => {
     event.preventDefault();
@@ -94,7 +100,7 @@ export default function AdminAgentsPage() {
         eyebrow="Admin panel"
         title="Agent Admin"
         description="Create agent accounts, send balance by Agent ID and control separate agent panel access."
-        actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>}
+        actions={<LiveAutoRefreshStatus />}
       />
 
       {error && <div className="auth-message">{error}</div>}

@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { CheckCircle2, RefreshCw, Search, XCircle } from 'lucide-react';
+import { CheckCircle2, Search, XCircle } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import './AdminTransactionsPage.css';
 
 export default function AdminDepositsPage() {
@@ -14,20 +16,25 @@ export default function AdminDepositsPage() {
   const [updatingId, setUpdatingId] = useState('');
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
+
     try {
       const response = await AdminAPI.deposits(filters);
       setItems(response.data?.data || response.data?.deposits || []);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Unable to load deposits'));
+      if (!silent) setError(getApiError(err, 'Unable to load deposits'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [filters]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   const updateStatus = async (transactionId, status) => {
     setUpdatingId(transactionId);
@@ -44,7 +51,7 @@ export default function AdminDepositsPage() {
 
   return (
     <div className="page-stack admin-transactions-page">
-      <PageHeader eyebrow="Admin panel" title="Deposits" description="Approve or reject deposit records after backend payment verification." actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>} />
+      <PageHeader eyebrow="Admin panel" title="Deposits" description="Approve or reject deposit records after backend payment verification." actions={<LiveAutoRefreshStatus />} />
       <form className="card admin-transaction-filter" onSubmit={(event) => { event.preventDefault(); load(); }}>
         <div className="input-group"><label htmlFor="depositSearch">Search</label><input id="depositSearch" value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Transaction ID, email or payment ID" /></div>
         <div className="input-group"><label htmlFor="depositStatus">Status</label><select id="depositStatus" value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })}><option value="">All</option><option value="PENDING">Pending</option><option value="SUCCESS">Success</option><option value="FAILED">Failed</option><option value="REJECTED">Rejected</option></select></div>

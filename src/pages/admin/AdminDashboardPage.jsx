@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import StatCard from '../../components/StatCard.jsx';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import './AdminDashboardPage.css';
 
 export default function AdminDashboardPage() {
@@ -13,26 +15,31 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
+
     try {
       const response = await AdminAPI.overview();
       setOverview(response.data?.data || response.data || null);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Unable to load admin overview'));
+      if (!silent) setError(getApiError(err, 'Unable to load admin overview'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   const stats = overview?.stats || overview || {};
 
   return (
     <div className="page-stack admin-page">
-      <PageHeader eyebrow="Admin panel" title="Overview" description=" " actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>} />
+      <PageHeader eyebrow="Admin panel" title="Overview" description=" " actions={<LiveAutoRefreshStatus />} />
       {error && <div className="auth-message">{error}</div>}
       <div className="grid-4">
         <StatCard icon={Users} label="Users" value={stats.totalUsers ?? 0} />

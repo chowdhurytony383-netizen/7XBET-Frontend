@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
+import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import './AdminTransactionsPage.css';
 
 export default function AdminAgentRequestsPage() {
@@ -12,24 +13,25 @@ export default function AdminAgentRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
 
     try {
       const response = await AdminAPI.agentPaymentRequests(filters);
       setRequests(response.data?.data || response.data?.requests || []);
+      setError('');
     } catch (err) {
-      setError(getApiError(err, 'Unable to load agent requests'));
+      if (!silent) setError(getApiError(err, 'Unable to load agent requests'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [filters]);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load, { intervalMs: 1000 });
 
   return (
     <div className="page-stack">
@@ -37,7 +39,7 @@ export default function AdminAgentRequestsPage() {
         eyebrow="Admin panel"
         title="Agent deposit/withdraw requests"
         description="Monitor all user deposit and withdrawal requests handled by agents."
-        actions={<button className="btn btn-soft" onClick={load}><RefreshCw size={18} /> Refresh</button>}
+        actions={<LiveAutoRefreshStatus />}
       />
 
       <section className="card admin-table-card">
