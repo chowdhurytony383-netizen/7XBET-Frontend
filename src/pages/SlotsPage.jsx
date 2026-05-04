@@ -6,10 +6,10 @@ export default function SlotsPage() {
     <ContentPageTemplate
       eyebrow="Casino"
       title="Slots"
-      description="Slot games and providers will load from the backend."
+      description=" "
       endpoint="/casino/slots"
       emptyTitle="No slots available"
-      emptyMessage="Add slots content in the backend/admin panel to show it here."
+      emptyMessage=" "
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
