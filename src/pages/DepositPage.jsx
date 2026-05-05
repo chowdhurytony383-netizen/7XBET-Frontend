@@ -205,7 +205,10 @@ export default function DepositPage() {
       </div>
 
       <div className="deposit-alert-box">
-        আপনি যদি ৫ মিনিটের মধ্যে আপনার গেমিং অ্যাকাউন্টে ডিপোজিটের টাকা না পান তাহলে অনুগ্রহ করে সাপোর্টে যোগাযোগ করুন। Crypto deposit করার আগে সঠিক network ভালোভাবে check করুন।
+        If your deposit is not credited to your gaming account within 5 minutes, please contact our support team.
+Email: support-en@7xbet.asia
+We are currently looking for Country Managers and Payment Provider Agents across Asian countries.
+Before making a crypto deposit, please carefully verify that you have selected the correct network.
       </div>
 
       {loadingOptions ? (
