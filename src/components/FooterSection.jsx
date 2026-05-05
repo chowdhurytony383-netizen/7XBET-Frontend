@@ -18,7 +18,8 @@ const FooterSection = () => {
             <span className="logo-green">BET</span>
           </h2>
           <p className="footer-support">
-            For questions or suggestions, please Contact us: support-en@7xbet.asia
+            For questions or suggestions, please Contact us:
+ support-en@7xbet.asia
           </p>
         </div>
 
