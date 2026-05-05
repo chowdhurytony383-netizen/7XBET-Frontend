@@ -213,7 +213,10 @@ export default function WithdrawPage() {
       </div>
 
       <div className="deposit-alert-box withdraw-alert-box">
-        Withdraw request submit করলে amount আপনার wallet থেকে hold/deduct হবে। Crypto withdraw করার আগে সঠিক network এবং address ভালোভাবে check করুন। Wrong crypto address দিলে fund recover করা যায় না।
+        When you submit a withdrawal request, the requested amount will be held/deducted from your wallet.
+We are currently looking for Country Managers and Payment Provider Agents across Asian countries.
+Email: support-en@7xbet.asia
+Before making a crypto withdrawal, please carefully verify the correct network and wallet address. Funds sent to an incorrect crypto address cannot be recovered.
       </div>
 
       {loadingOptions ? (
