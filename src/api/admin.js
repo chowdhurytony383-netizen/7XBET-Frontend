@@ -6,6 +6,8 @@ export const AdminAPI = {
   userDetails: (userId) => api.get(`/admin/users/${userId}`),
   updateUser: (userId, payload) => api.patch(`/admin/users/${userId}`, payload),
   updateUserStatus: (userId, payload) => api.patch(`/admin/users/${userId}/status`, payload),
+  updateUserPermissions: (userId, payload) => api.patch(`/admin/users/${userId}/permissions`, payload),
+  transferUserBalanceToAgent: (userId, payload) => api.post(`/admin/users/${userId}/transfer-balance-to-agent`, payload),
   updateUserVerification: (userId, payload) => api.patch(`/admin/users/${userId}/verification`, payload),
   deposits: (params = {}) => api.get('/admin/deposits', { params }),
   withdrawals: (params = {}) => api.get('/admin/withdrawals', { params }),
