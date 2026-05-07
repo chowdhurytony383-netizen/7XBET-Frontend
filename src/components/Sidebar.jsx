@@ -25,9 +25,11 @@ import {
   UserPlus,
   Wallet,
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { applySiteLanguage, initGoogleTranslate, reapplySavedSiteLanguage } from '../utils/googleTranslate.js';
+import { DEFAULT_SITE_LANGUAGE, SITE_LANGUAGES, getSavedSiteLanguage } from '../utils/languages.js';
 import Logo from './Logo.jsx';
 import './Sidebar.css';
 
@@ -101,6 +103,7 @@ function SidebarLink({ item, onClose }) {
 
 export default function Sidebar({ open, onClose, onLogout }) {
   const { user } = useAuth();
+  const location = useLocation();
   const canAccessAdmin = Boolean(user?.role === 'admin' || user?.isAdmin || user?.permissions?.includes?.('admin'));
   const [openMenus, setOpenMenus] = useState({
     bonuses: false,
@@ -109,14 +112,29 @@ export default function Sidebar({ open, onClose, onLogout }) {
     language: false,
   });
   const [now, setNow] = useState(() => new Date());
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getSavedSiteLanguage());
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 30000);
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    initGoogleTranslate().then(() => reapplySavedSiteLanguage());
+  }, []);
+
+  useEffect(() => {
+    reapplySavedSiteLanguage();
+  }, [location.pathname]);
+
   const toggleMenu = (key) => {
     setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleLanguageChange = async (event) => {
+    const nextLanguage = event.target.value || DEFAULT_SITE_LANGUAGE;
+    setSelectedLanguage(nextLanguage);
+    await applySiteLanguage(nextLanguage, { reloadIfNeeded: true });
   };
 
   const timeText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -136,6 +154,37 @@ export default function Sidebar({ open, onClose, onLogout }) {
               {adminNavItems.map((item) => (
                 <SidebarLink key={item.to} item={item} onClose={onClose} />
               ))}
+
+              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('language')}>
+                <span className="sidebar-link-left">
+                  <Globe size={20} />
+                  <span>Language</span>
+                </span>
+                {openMenus.language ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
+
+              {openMenus.language && (
+                <div className="sidebar-submenu language-block">
+                  <label className="language-select-label" htmlFor="site-language-select-admin">
+                    Select website language
+                  </label>
+                  <select
+                    id="site-language-select-admin"
+                    className="language-select"
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                  >
+                    {SITE_LANGUAGES.map((language) => (
+                      <option key={language.code} value={language.code}>
+                        {language.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="language-help-text">
+                    All visible website text will be translated automatically. Game iframe/image text may stay unchanged.
+                  </p>
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -251,9 +300,25 @@ export default function Sidebar({ open, onClose, onLogout }) {
               </button>
 
               {openMenus.language && (
-                <div className="sidebar-submenu">
-                  <button type="button" className="sidebar-sublink sidebar-button">English</button>
-                  <button type="button" className="sidebar-sublink sidebar-button">বাংলা</button>
+                <div className="sidebar-submenu language-block">
+                  <label className="language-select-label" htmlFor="site-language-select">
+                    Select website language
+                  </label>
+                  <select
+                    id="site-language-select"
+                    className="language-select"
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                  >
+                    {SITE_LANGUAGES.map((language) => (
+                      <option key={language.code} value={language.code}>
+                        {language.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="language-help-text">
+                    All visible website text will be translated automatically. Game iframe/image text may stay unchanged.
+                  </p>
                 </div>
               )}
             </>
