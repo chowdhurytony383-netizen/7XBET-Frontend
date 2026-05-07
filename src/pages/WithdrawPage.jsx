@@ -52,6 +52,7 @@ export default function WithdrawPage() {
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  const withdrawAllowed = user?.withdrawEnabled !== false;
   const options = useMemo(() => [...agentOptions, ...cryptoOptions], [agentOptions, cryptoOptions]);
   const walletBalance = Number(user?.wallet || 0);
   const isCryptoWithdraw = selectedOption?.type === 'crypto-withdraw';
@@ -71,6 +72,13 @@ export default function WithdrawPage() {
   }, [options]);
 
   const loadOptions = async () => {
+    if (!withdrawAllowed) {
+      setAgentOptions([]);
+      setCryptoOptions([]);
+      setLoadingOptions(false);
+      return;
+    }
+
     setLoadingOptions(true);
 
     try {
@@ -109,9 +117,14 @@ export default function WithdrawPage() {
 
   useEffect(() => {
     loadOptions();
-  }, []);
+  }, [withdrawAllowed]);
 
   const openWithdrawPopup = (option) => {
+    if (!withdrawAllowed) {
+      toast.error('Withdraw is disabled for your account. Please contact support.');
+      return;
+    }
+
     setSelectedOption(option);
     setAmount(String(option.minAmount || 100));
     setReceiverNumber('');
@@ -136,6 +149,11 @@ export default function WithdrawPage() {
 
   const submitWithdrawRequest = async (event) => {
     event.preventDefault();
+
+    if (!withdrawAllowed) {
+      toast.error('Withdraw is disabled for your account. Please contact support.');
+      return;
+    }
 
     if (!selectedOption) {
       toast.error('No active withdrawal option found');
@@ -219,7 +237,9 @@ Email: support-en@7xbet.asia
 Before making a crypto withdrawal, please carefully verify the correct network and wallet address. Funds sent to an incorrect crypto address cannot be recovered.
       </div>
 
-      {loadingOptions ? (
+      {!withdrawAllowed ? (
+        <div className="deposit-section-card"><div className="deposit-empty">Withdraw is disabled for your account. Please contact support.</div></div>
+      ) : loadingOptions ? (
         <div className="deposit-section-card"><div className="deposit-empty">Loading withdrawal options...</div></div>
       ) : groupedOptions.length ? (
         groupedOptions.map((group) => (
@@ -322,7 +342,7 @@ Before making a crypto withdrawal, please carefully verify the correct network a
         </div>
       )}
 
-      {!loadingOptions && !options.length && (
+      {withdrawAllowed && !loadingOptions && !options.length && (
         <div className="withdraw-empty-help card">
           <WalletCards size={28} />
           <p>Withdrawal methods use Main Admin payment settings and crypto withdraw backend configuration.</p>

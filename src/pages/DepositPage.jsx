@@ -46,6 +46,7 @@ export default function DepositPage() {
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  const depositAllowed = user?.depositEnabled !== false;
   const allOptions = useMemo(() => [...options, ...cryptoOptions], [options, cryptoOptions]);
 
   const groupedOptions = useMemo(() => {
@@ -63,6 +64,13 @@ export default function DepositPage() {
   }, [allOptions]);
 
   const loadOptions = async () => {
+    if (!depositAllowed) {
+      setOptions([]);
+      setCryptoOptions([]);
+      setLoadingOptions(false);
+      return;
+    }
+
     setLoadingOptions(true);
 
     try {
@@ -100,9 +108,14 @@ export default function DepositPage() {
 
   useEffect(() => {
     loadOptions();
-  }, []);
+  }, [depositAllowed]);
 
   const openDepositPopup = (option) => {
+    if (!depositAllowed) {
+      toast.error('Deposit is disabled for your account. Please contact support.');
+      return;
+    }
+
     if (option.type === 'crypto') {
       setSelectedCrypto(option);
       return;
@@ -135,6 +148,11 @@ export default function DepositPage() {
 
   const submitDepositRequest = async (event) => {
     event.preventDefault();
+
+    if (!depositAllowed) {
+      toast.error('Deposit is disabled for your account. Please contact support.');
+      return;
+    }
 
     if (!selectedOption) {
       toast.error('No active deposit payment option found');
@@ -211,7 +229,9 @@ We are currently looking for Country Managers and Payment Provider Agents across
 Before making a crypto deposit, please carefully verify that you have selected the correct network.
       </div>
 
-      {loadingOptions ? (
+      {!depositAllowed ? (
+        <div className="deposit-section-card"><div className="deposit-empty">Deposit is disabled for your account. Please contact support.</div></div>
+      ) : loadingOptions ? (
         <div className="deposit-section-card"><div className="deposit-empty">Loading payment options...</div></div>
       ) : groupedOptions.length ? (
         groupedOptions.map((group) => (
