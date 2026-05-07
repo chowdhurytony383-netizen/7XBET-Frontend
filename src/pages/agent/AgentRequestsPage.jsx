@@ -9,7 +9,7 @@ import LiveAutoRefreshStatus from '../../components/LiveAutoRefreshStatus.jsx';
 import useAutoRefresh from '../../hooks/useAutoRefresh.js';
 import '../AgentPaymentMethods.css';
 
-function RequestCard({ request, onAction }) {
+function RequestCard({ request, onAction, agentCurrency }) {
   return (
     <div className="agent-request-card">
       <div>
@@ -17,7 +17,7 @@ function RequestCard({ request, onAction }) {
         <h2>{request.userName || request.user?.fullName || request.user?.name || 'User'}</h2>
         <div className="agent-request-meta">
           <span>User ID: {request.userId || request.user?.userId || '—'}</span>
-          <span>Amount: {formatCurrency(request.amount)}</span>
+          <span>Amount: {formatCurrency(request.amount, agentCurrency)}</span>
           <span>Method: {request.methodTitle || request.methodKey || 'Manual'}</span>
           <span>Date: {formatDate(request.createdAt)}</span>
         </div>
@@ -117,7 +117,7 @@ export default function AgentRequestsPage() {
             <span className="page-eyebrow">Logged Agent</span>
             <h2>{agent.agentId} — {agent.name}</h2>
           </div>
-          <strong>Balance {formatCurrency(agent.balance || 0)}</strong>
+          <strong>Balance {formatCurrency(agent.balance || 0, agent)}</strong>
         </div>
       )}
 
@@ -127,7 +127,14 @@ export default function AgentRequestsPage() {
         {loading ? (
           <div className="agent-payment-message">Loading requests...</div>
         ) : requests.length ? (
-          requests.map((request) => <RequestCard key={request._id} request={request} onAction={handleAction} />)
+          requests.map((request) => (
+            <RequestCard
+              key={request._id}
+              request={request}
+              onAction={handleAction}
+              agentCurrency={agent}
+            />
+          ))
         ) : (
           <div className="agent-payment-message">No pending {requestType.toLowerCase()} requests.</div>
         )}
