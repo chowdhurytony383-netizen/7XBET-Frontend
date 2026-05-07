@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, ArrowUpFromLine, CreditCard, LogOut, Shield, Wallet } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, CreditCard, Globe2, LogOut, Shield, Wallet } from 'lucide-react';
 import { AgentAPI } from '../api/agent.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -67,7 +67,8 @@ export default function AgentDashboardPage() {
 
       <div className="grid-4">
         <StatCard icon={Shield} label="Agent ID" value={agent?.agentId || '—'} />
-        <StatCard icon={Wallet} label="Balance" value={formatCurrency(agent?.balance || 0)} />
+        <StatCard icon={Wallet} label="Balance" value={formatCurrency(agent?.balance || 0, agent)} />
+        <StatCard icon={Globe2} label="Country / Currency" value={`${agent?.country || 'Bangladesh'} / ${agent?.currency || 'BDT'}`} />
         <StatCard icon={ArrowDownToLine} label="Pending deposits" value={depositRequests.length} />
         <StatCard icon={ArrowUpFromLine} label="Pending withdrawals" value={withdrawRequests.length} />
       </div>
@@ -101,9 +102,9 @@ export default function AgentDashboardPage() {
               ) : transactions.length ? transactions.map((item) => (
                 <tr key={item._id}>
                   <td><span className="pill">{item.type}</span></td>
-                  <td>{formatCurrency(item.amount)}</td>
-                  <td>{formatCurrency(item.balanceBefore)}</td>
-                  <td>{formatCurrency(item.balanceAfter)}</td>
+                  <td>{formatCurrency(item.amount, agent)}</td>
+                  <td>{formatCurrency(item.balanceBefore, agent)}</td>
+                  <td>{formatCurrency(item.balanceAfter, agent)}</td>
                   <td>{item.note || '—'}</td>
                   <td>{formatDate(item.createdAt)}</td>
                 </tr>
