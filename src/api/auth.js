@@ -18,6 +18,8 @@ export const AuthAPI = {
   }),
   verifyEmail: (token) => api.get(`/user/verify-user/${token}`),
   resendVerification: (email) => api.post('/user/resend-verification', { email }),
+  sendEmailOtp: (email) => api.post('/user/send-email-otp', { email }),
+  verifyEmailOtp: (payload) => api.post('/user/verify-email-otp', payload),
   requestPasswordOtp: (email) => api.post('/user/reset-password', { email }),
   verifyPasswordOtp: (payload) => api.post('/user/verify-reset-password-otp', payload),
   setNewPassword: (payload) => api.post('/user/set-new-password', payload),
