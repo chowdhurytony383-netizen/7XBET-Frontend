@@ -34,3 +34,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.agent-country-currency-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(110px, .6fr);
+  gap: 12px;
+}
+
+.agent-country-cell {
+  display: grid;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.agent-country-cell select {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, .25);
+  background: rgba(15, 23, 42, .86);
+  color: #f8fafc;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.agent-country-cell span,
+.agent-field-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b8c3d9;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .agent-country-currency-grid {
+    grid-template-columns: 1fr;
+  }
+}
