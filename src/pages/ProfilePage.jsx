@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { BadgeCheck, Camera, FileCheck2, Mail, Phone, Save, User, Wallet } from 'lucide-react';
+import { BadgeCheck, Camera, FileCheck2, Mail, Phone, Save, ShieldCheck, User, Wallet } from 'lucide-react';
 import { AuthAPI } from '../api/auth.js';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
@@ -21,6 +21,9 @@ export default function ProfilePage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [pictureFile, setPictureFile] = useState(null);
   const [picturePreview, setPicturePreview] = useState('');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [bets, setBets] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [tab, setTab] = useState('bets');
@@ -33,6 +36,7 @@ export default function ProfilePage() {
       email: getDisplayEmail(user?.email),
       phone: user?.phone || '',
     });
+    setEmailOtp('');
   }, [user]);
 
   useEffect(() => {
@@ -107,6 +111,53 @@ export default function ProfilePage() {
     }
   };
 
+  const sendEmailOtp = async () => {
+    const email = String(form.email || '').trim();
+
+    if (!email) {
+      toast.error('Please add your email first');
+      return;
+    }
+
+    if (email !== getDisplayEmail(user?.email)) {
+      toast.error('Please save your profile before sending OTP');
+      return;
+    }
+
+    setSendingOtp(true);
+
+    try {
+      await AuthAPI.sendEmailOtp(email);
+      toast.success('OTP sent to your email');
+    } catch (error) {
+      toast.error(getApiError(error, 'Failed to send OTP'));
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  const verifyEmailOtp = async () => {
+    const otp = String(emailOtp || '').trim();
+
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error('Enter the 6 digit OTP');
+      return;
+    }
+
+    setVerifyingOtp(true);
+
+    try {
+      await AuthAPI.verifyEmailOtp({ otp });
+      setEmailOtp('');
+      await refreshUser();
+      toast.success('Email verified successfully');
+    } catch (error) {
+      toast.error(getApiError(error, 'OTP verification failed'));
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
   const handlePictureChange = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -130,9 +181,11 @@ export default function ProfilePage() {
 
   const displayName = user?.fullName || user?.name || user?.username || 'Account';
   const displayEmail = getDisplayEmail(user?.email);
-  const emailStatus = displayEmail ? (user?.isVerified ? 'Verified' : 'Not verified') : 'Not added';
+  const emailVerified = Boolean(displayEmail && user?.isVerified);
+  const emailStatus = displayEmail ? (emailVerified ? 'Verified' : 'Not verified') : 'Not added';
   const verificationStatus = user?.verificationStatus || user?.kyc?.status || (user?.isVerified ? 'Verified' : 'Pending');
   const profilePicture = picturePreview || user?.picture || DEFAULT_PROFILE_PICTURE;
+  const canShowEmailOtp = Boolean(displayEmail && !emailVerified);
 
   return (
     <div className="page-stack">
@@ -163,7 +216,7 @@ export default function ProfilePage() {
           <div className="profile-list">
             <div>
               <span>Email status</span>
-              <strong>{emailStatus}</strong>
+              <strong className={emailVerified ? 'profile-status-success' : ''}>{emailStatus}</strong>
             </div>
 
             <div>
@@ -236,6 +289,48 @@ export default function ProfilePage() {
               {saving ? 'Saving...' : 'Save profile'}
             </button>
           </form>
+
+          {canShowEmailOtp && (
+            <div className="profile-email-otp-card">
+              <div className="profile-email-otp-heading">
+                <ShieldCheck size={18} />
+                <div>
+                  <strong>Verify your email</strong>
+                  <span>We will send a 6 digit OTP to your saved email.</span>
+                </div>
+              </div>
+
+              <button
+                className="btn btn-soft btn-full"
+                type="button"
+                disabled={sendingOtp}
+                onClick={sendEmailOtp}
+              >
+                <Mail size={18} />
+                {sendingOtp ? 'Sending OTP...' : 'Send OTP'}
+              </button>
+
+              <div className="profile-email-otp-row">
+                <input
+                  value={emailOtp}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder="Enter 6 digit OTP"
+                  onChange={(event) => setEmailOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                />
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={verifyingOtp}
+                  onClick={verifyEmailOtp}
+                >
+                  <BadgeCheck size={18} />
+                  {verifyingOtp ? 'Verifying...' : 'Verify'}
+                </button>
+              </div>
+            </div>
+          )}
         </aside>
 
         <section className="page-stack">
@@ -254,7 +349,7 @@ export default function ProfilePage() {
             <StatCard
               icon={BadgeCheck}
               label="Email verified"
-              value={displayEmail ? (user?.isVerified ? 'Yes' : 'No') : 'Not added'}
+              value={displayEmail ? (emailVerified ? 'Yes' : 'No') : 'Not added'}
             />
             <StatCard icon={FileCheck2} label="Identity verification" value={verificationStatus} />
           </div>
