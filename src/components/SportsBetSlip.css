@@ -281,3 +281,31 @@
     min-height: 40px;
   }
 }
+
+/* Extra mobile safety: keep Bet Slip total/place button visible on small phones */
+@media (max-width: 720px) {
+  .sports-bet-slip-panel {
+    max-height: 82dvh !important;
+    grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+    overflow: hidden !important;
+  }
+
+  .sports-bet-slip-list {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sports-slip-total-box,
+  .sports-slip-place-btn {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@media (max-width: 420px) {
+  .sports-bet-slip-panel {
+    max-height: 84dvh !important;
+    height: min(84dvh, calc(100dvh - 46px)) !important;
+  }
+}
