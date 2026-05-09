@@ -96,12 +96,10 @@ export default function HomePage() {
     let active = true;
 
     async function loadSportsContent() {
-      const [categoriesResponse, liveResponse, matchResponse] =
-        await Promise.allSettled([
-          SportsAPI.categories(),
-          SportsAPI.liveMatches(),
-          SportsAPI.matchOfTheDay(),
-        ]);
+      const [categoriesResponse, liveResponse] = await Promise.allSettled([
+        SportsAPI.categories(),
+        SportsAPI.liveMatches(),
+      ]);
 
       if (!active) return;
 
@@ -112,23 +110,13 @@ export default function HomePage() {
       }
 
       if (liveResponse.status === 'fulfilled') {
-        setLiveMatches(
-          normalizeList(liveResponse.value.data, [
-            'matches',
-            'liveMatches',
-            'events',
-          ])
-        );
-      }
-
-      if (matchResponse.status === 'fulfilled') {
-        setMatchOfTheDay(
-          normalizeObject(matchResponse.value.data, [
-            'match',
-            'matchOfTheDay',
-            'event',
-          ])
-        );
+        const matches = normalizeList(liveResponse.value.data, [
+          'matches',
+          'liveMatches',
+          'events',
+        ]);
+        setLiveMatches(matches);
+        setMatchOfTheDay(matches[0] || null);
       }
     }
 

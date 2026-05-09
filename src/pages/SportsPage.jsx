@@ -115,33 +115,42 @@ export default function SportsPage() {
   const [selectedSport, setSelectedSport] = useState(searchParams.get('sport') || 'all');
   const [betSlipItems, setBetSlipItems] = useState([]);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
+
     try {
-      const [matchesResponse, statusResponse] = await Promise.all([
+      const [matchesResponse, statusResponse, betResponse] = await Promise.all([
         SportsAPI.liveMatches(),
         SportsAPI.syncStatus().catch(() => null),
+        user ? SportsAPI.myBets().catch(() => null) : Promise.resolve(null),
       ]);
+
       setMatches(matchesResponse.data?.data || matchesResponse.data?.matches || []);
       setStatus(statusResponse?.data?.data || null);
-
-      if (user) {
-        const betResponse = await SportsAPI.myBets().catch(() => null);
-        setBets(betResponse?.data?.data || betResponse?.data?.bets || []);
-      } else {
-        setBets([]);
-      }
+      setBets(user ? (betResponse?.data?.data || betResponse?.data?.bets || []) : []);
     } catch (error) {
-      toast.error(getApiError(error, 'Unable to load sports data'));
+      if (!silent) toast.error(getApiError(error, 'Unable to load sports data'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    load();
-    const timer = setInterval(load, 5000);
-    return () => clearInterval(timer);
+    let active = true;
+    const refreshMs = Math.max(10000, Number(import.meta.env.VITE_SPORTS_REFRESH_MS || 15000));
+
+    const runLoad = async (options = {}) => {
+      if (!active) return;
+      await load(options);
+    };
+
+    runLoad({ silent: false });
+    const timer = window.setInterval(() => runLoad({ silent: true }), refreshMs);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   useEffect(() => {

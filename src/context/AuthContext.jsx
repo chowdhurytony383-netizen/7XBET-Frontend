@@ -43,9 +43,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!user) return undefined;
 
+    const refreshMs = Math.max(10000, Number(import.meta.env.VITE_WALLET_REFRESH_MS || 15000));
     const timer = window.setInterval(() => {
       refreshUser().catch(() => null);
-    }, 5000);
+    }, refreshMs);
 
     return () => window.clearInterval(timer);
   }, [user?._id, refreshUser]);
