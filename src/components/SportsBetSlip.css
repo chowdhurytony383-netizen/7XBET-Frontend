@@ -6,7 +6,9 @@
   width: min(430px, calc(100vw - 24px));
   max-height: min(78dvh, 720px);
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 12px;
+  overflow: hidden;
   padding: 16px;
   border-radius: 24px;
   border: 1px solid rgba(180, 255, 47, .22);
@@ -46,8 +48,11 @@
 .sports-bet-slip-list {
   display: grid;
   gap: 10px;
-  overflow: auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding-right: 2px;
+  scrollbar-width: thin;
 }
 
 .sports-bet-slip-item {
@@ -137,12 +142,65 @@
 
 @media (max-width: 720px) {
   .sports-bet-slip-panel {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    width: auto;
-    max-height: 72dvh;
-    border-radius: 20px;
-    padding: 13px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: min(84dvh, calc(100dvh - 64px));
+    border-radius: 22px 22px 0 0;
+    padding: 12px max(12px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+
+  .sports-bet-slip-head h3 {
+    font-size: 1rem;
+  }
+
+  .sports-bet-slip-list {
+    max-height: 46dvh;
+  }
+
+  .sports-bet-slip-item {
+    gap: 8px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .sports-slip-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+  }
+
+  .sports-slip-clear,
+  .sports-slip-item-top button {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+  }
+
+  .sports-slip-stake-field input {
+    min-height: 38px;
+  }
+
+  .sports-slip-total-box {
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .sports-slip-place-btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sports-bet-slip-panel {
+    max-height: min(88dvh, calc(100dvh - 48px));
+    gap: 9px;
+    padding-top: 10px;
+  }
+
+  .sports-bet-slip-list {
+    max-height: 50dvh;
   }
 }
