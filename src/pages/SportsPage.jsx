@@ -111,6 +111,38 @@ function LineupsList({ items = [] }) {
   );
 }
 
+function compactJson(value) {
+  if (value === undefined || value === null || value === '') return '—';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch (_error) {
+    return '—';
+  }
+}
+
+function GenericDataList({ items = [], empty = 'Not available yet' }) {
+  const limited = asArray(items).slice(0, 80);
+  if (!limited.length) return <p className="sports-detail-muted">{empty}</p>;
+
+  return (
+    <div className="sports-detail-list">
+      {limited.map((item, index) => (
+        <div className="sports-detail-list-row" key={item.id || item.player_id || item.team_id || `${item.name || 'row'}-${index}`}>
+          <span>{item.minute ?? item.time ?? item.position ?? item.rank ?? index + 1}</span>
+          <strong>{textValue(item.name || item.player?.name || item.team?.name || item.type?.name || item.type || item.description || item.group || item.league?.name, 'Item')}</strong>
+          <small>{textValue(item.value ?? item.total ?? item.points ?? item.score ?? item.result ?? item.country?.name ?? item.info ?? compactJson(item.data), '')}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ScoresPanel({ scores }) {
+  if (!scores) return <p className="sports-detail-muted">Not available yet</p>;
+  return <pre className="sports-detail-mini-json">{JSON.stringify(scores, null, 2)}</pre>;
+}
+
 function OddsList({ market }) {
   const selections = asArray(market?.selections);
   if (!selections.length) return <p className="sports-detail-muted">No betting market available</p>;
@@ -202,6 +234,18 @@ function MatchDetailsModal({ data, loading, onClose }) {
 
             <DetailsSection icon={<Users size={18} />} title="Lineups / players">
               <LineupsList items={details?.lineups} />
+            </DetailsSection>
+
+            <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
+              <ScoresPanel scores={details?.scores} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Users size={18} />} title="Player statistics">
+              <GenericDataList items={details?.players} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
+              <GenericDataList items={details?.standings} />
             </DetailsSection>
 
             <DetailsSection icon={<Info size={18} />} title="Full provider JSON">
