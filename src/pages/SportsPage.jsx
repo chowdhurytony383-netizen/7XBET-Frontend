@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Activity, Clock, RefreshCcw, ShieldCheck, Ticket, Trophy, Wallet } from 'lucide-react';
+import { Activity, Clock, Radio, ShieldCheck, Ticket, Trophy, Wallet } from 'lucide-react';
 import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -204,7 +204,7 @@ export default function SportsPage() {
 
   useEffect(() => {
     load();
-    const timer = setInterval(load, 30000);
+    const timer = setInterval(load, 5000);
     return () => clearInterval(timer);
   }, [load]);
 
@@ -256,9 +256,9 @@ export default function SportsPage() {
 
       <section className="sports-hero-panel">
         <div>
-          <span className="page-eyebrow">Free automatic mode</span>
-          <h2>Live sports betting without manual admin odds</h2>
-          <p>Events and h2h match winner odds update from your free provider API key. Winning bets settle automatically when final scores arrive.</p>
+          <span className="page-eyebrow">Realtime automatic mode</span>
+          <h2>All available sports with automatic odds</h2>
+          <p>All available free-provider sports, live matches and h2h match winner odds update automatically. Winning bets settle when final scores arrive.</p>
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
@@ -276,9 +276,9 @@ export default function SportsPage() {
             </button>
           ))}
         </div>
-        <button type="button" className="btn btn-soft" onClick={load} disabled={loading}>
-          <RefreshCcw size={16} /> {loading ? 'Updating...' : 'Update'}
-        </button>
+        <span className="sports-live-sync-pill">
+          <Radio size={16} /> Realtime auto update
+        </span>
       </div>
 
       {!status?.enabled ? (

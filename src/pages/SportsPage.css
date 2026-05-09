@@ -472,3 +472,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.sports-live-sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 14px;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sports-live-sync-pill svg {
+  animation: sports-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes sports-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
