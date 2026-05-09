@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Activity, Clock, Radio, ShieldCheck, Ticket, Trophy, Wallet } from 'lucide-react';
+import { Activity, BarChart3, Clock, Info, ListChecks, MapPin, Radio, ShieldCheck, Ticket, Trophy, Users, Wallet, X } from 'lucide-react';
 import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -21,6 +21,202 @@ import PageHeader from '../components/PageHeader.jsx';
 import SportsBetSlip from '../components/SportsBetSlip.jsx';
 import './SportsPage.css';
 
+
+function asArray(value) {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  return [];
+}
+
+function textValue(value, fallback = '—') {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'object') return value.name || value.description || value.short_code || fallback;
+  return String(value);
+}
+
+function DetailsItem({ label, value }) {
+  return (
+    <div className="sports-detail-item">
+      <span>{label}</span>
+      <strong>{textValue(value)}</strong>
+    </div>
+  );
+}
+
+function DetailsSection({ icon, title, children }) {
+  return (
+    <section className="sports-detail-section">
+      <h4>{icon}{title}</h4>
+      {children}
+    </section>
+  );
+}
+
+function MiniTeam({ team }) {
+  return (
+    <div className="sports-detail-team">
+      {team?.logo ? <img src={team.logo} alt={team.name || 'Team'} /> : <span>{teamLogoText(team?.name || team?.raw?.name || 'TM')}</span>}
+      <strong>{team?.name || team?.raw?.name || 'Team'}</strong>
+    </div>
+  );
+}
+
+function EventList({ items = [] }) {
+  const limited = asArray(items).slice(0, 40);
+  if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
+
+  return (
+    <div className="sports-detail-list">
+      {limited.map((item, index) => (
+        <div className="sports-detail-list-row" key={item.id || `${item.type_id || 'event'}-${index}`}>
+          <span>{item.minute ?? item.sort_order ?? item.period_id ?? index + 1}</span>
+          <strong>{textValue(item.type || item.type_id || item.name || item.description, 'Event')}</strong>
+          <small>{textValue(item.player_name || item.player?.name || item.participant_name || item.result || item.info || item.addition, '')}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatisticsList({ items = [] }) {
+  const limited = asArray(items).slice(0, 60);
+  if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
+
+  return (
+    <div className="sports-detail-stat-grid">
+      {limited.map((item, index) => (
+        <div className="sports-detail-stat" key={item.id || `${item.type_id || 'stat'}-${index}`}>
+          <span>{textValue(item.type || item.type_id || item.name || item.code, 'Statistic')}</span>
+          <strong>{textValue(item.data?.value ?? item.value ?? item.amount ?? item.percentage ?? item.data, '—')}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LineupsList({ items = [] }) {
+  const limited = asArray(items).slice(0, 60);
+  if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
+
+  return (
+    <div className="sports-detail-lineups">
+      {limited.map((item, index) => (
+        <div className="sports-detail-lineup" key={item.id || `${item.player_id || 'player'}-${index}`}>
+          <span>{item.jersey_number || item.number || index + 1}</span>
+          <strong>{textValue(item.player?.display_name || item.player?.name || item.player_name || item.name, 'Player')}</strong>
+          <small>{textValue(item.position?.name || item.position_id || item.type || item.formation_position, '')}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OddsList({ market }) {
+  const selections = asArray(market?.selections);
+  if (!selections.length) return <p className="sports-detail-muted">No betting market available</p>;
+  return (
+    <div className="sports-detail-odds-row">
+      {selections.map((selection) => (
+        <div key={selection.selectionId || selection.name}>
+          <span>{selection.name}</span>
+          <strong>{Number(selection.price || 0).toFixed(2)}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MatchDetailsModal({ data, loading, onClose }) {
+  if (!data && !loading) return null;
+
+  const event = data?.event || data?.data?.event;
+  const market = data?.market || data?.data?.market;
+  const details = data?.details || data?.data?.details;
+  const rawDetails = details?.raw || details;
+
+  return (
+    <div className="sports-detail-backdrop" role="dialog" aria-modal="true">
+      <div className="sports-detail-modal">
+        <button type="button" className="sports-detail-close" onClick={onClose} aria-label="Close details"><X size={20} /></button>
+        <div className="sports-detail-header">
+          <span className="page-eyebrow">Full Match Details</span>
+          <h3>{event ? `${getTeamName(event.homeTeam)} vs ${getTeamName(event.awayTeam)}` : 'Loading match details...'}</h3>
+          <p>{details?.provider ? `Provider: ${details.provider}` : 'Fetching provider data...'}</p>
+        </div>
+
+        {loading ? <div className="sports-empty-panel">Loading full details...</div> : null}
+
+        {!loading && details && !details.available ? (
+          <div className="sports-warning-panel">
+            <Info size={20} />
+            <div>
+              <strong>Details not available</strong>
+              <p>{details.message || 'Provider did not return full details for this match yet.'}</p>
+            </div>
+          </div>
+        ) : null}
+
+        {!loading && event ? (
+          <div className="sports-detail-body">
+            <DetailsSection icon={<Info size={18} />} title="Basic information">
+              <div className="sports-detail-grid">
+                <DetailsItem label="Sport" value={event.sportTitle || event.sport} />
+                <DetailsItem label="League" value={details?.league?.name || event.league} />
+                <DetailsItem label="Status" value={details?.state?.name || event.status} />
+                <DetailsItem label="Start time" value={details?.startingAt || event.startTime} />
+                <DetailsItem label="Result" value={details?.resultInfo} />
+                <DetailsItem label="Round" value={details?.round?.name || details?.round?.id} />
+              </div>
+            </DetailsSection>
+
+            <DetailsSection icon={<Users size={18} />} title="Teams">
+              <div className="sports-detail-teams">
+                <MiniTeam team={details?.homeTeam || event.homeTeam} />
+                <span>VS</span>
+                <MiniTeam team={details?.awayTeam || event.awayTeam} />
+              </div>
+            </DetailsSection>
+
+            <DetailsSection icon={<MapPin size={18} />} title="Venue / tournament">
+              <div className="sports-detail-grid">
+                <DetailsItem label="Venue" value={details?.venue?.name} />
+                <DetailsItem label="City" value={details?.venue?.city_name || details?.venue?.city} />
+                <DetailsItem label="Season" value={details?.season?.name} />
+                <DetailsItem label="Stage" value={details?.stage?.name} />
+                <DetailsItem label="Referee" value={asArray(details?.referees).map((referee) => referee.name).filter(Boolean).join(', ')} />
+                <DetailsItem label="Length" value={details?.length ? `${details.length} minutes` : ''} />
+              </div>
+            </DetailsSection>
+
+            <DetailsSection icon={<Ticket size={18} />} title="Betting odds">
+              <OddsList market={market} />
+            </DetailsSection>
+
+            <DetailsSection icon={<ListChecks size={18} />} title="Match events: goals / cards / substitutions">
+              <EventList items={details?.events} />
+            </DetailsSection>
+
+            <DetailsSection icon={<BarChart3 size={18} />} title="Statistics">
+              <StatisticsList items={details?.statistics} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Users size={18} />} title="Lineups / players">
+              <LineupsList items={details?.lineups} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Info size={18} />} title="Full provider JSON">
+              <details className="sports-detail-raw">
+                <summary>Open raw provider data</summary>
+                <pre>{JSON.stringify(rawDetails || {}, null, 2)}</pre>
+              </details>
+            </DetailsSection>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function MatchTeam({ team, sportKey, score }) {
   return (
     <div className="sports-team-row">
@@ -31,7 +227,7 @@ function MatchTeam({ team, sportKey, score }) {
   );
 }
 
-function MatchCard({ match, onSelect, selectedIds }) {
+function MatchCard({ match, onSelect, selectedIds, onDetails }) {
   const homeTeam = match.homeTeam || match.home;
   const awayTeam = match.awayTeam || match.away;
   const odds = normalizeMatchOdds(match);
@@ -48,7 +244,12 @@ function MatchCard({ match, onSelect, selectedIds }) {
           <h3>{getTeamName(homeTeam)} <span>vs</span> {getTeamName(awayTeam)}</h3>
           <p>{match.league || match.tournament || sportMeta.name} · {match.startTime || 'Auto sync'}</p>
         </div>
-        <span className={`sports-status-pill ${statusClass(status)}`}>{status}</span>
+        <div className="sports-card-actions">
+          <span className={`sports-status-pill ${statusClass(status)}`}>{status}</span>
+          <button type="button" className="sports-details-button" onClick={() => onDetails(match)}>
+            <Info size={15} /> Details
+          </button>
+        </div>
       </div>
 
       <div className="sports-score-board">
@@ -114,6 +315,9 @@ export default function SportsPage() {
   const [placing, setPlacing] = useState(false);
   const [selectedSport, setSelectedSport] = useState(searchParams.get('sport') || 'all');
   const [betSlipItems, setBetSlipItems] = useState([]);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [matchDetails, setMatchDetails] = useState(null);
 
   const load = useCallback(async ({ silent = false } = {}) => {
     if (!silent) setLoading(true);
@@ -216,6 +420,28 @@ export default function SportsPage() {
     setBetSlipItems((current) => current.filter((item) => item.id !== id));
   };
 
+  const openDetails = async (match) => {
+    const eventId = getMatchId(match);
+    if (!eventId) {
+      toast.error('Match details are not available yet');
+      return;
+    }
+
+    setDetailsOpen(true);
+    setDetailsLoading(true);
+    setMatchDetails({ event: match, market: null, details: null });
+
+    try {
+      const response = await SportsAPI.eventDetails(eventId);
+      setMatchDetails(response.data?.data || response.data || null);
+    } catch (error) {
+      toast.error(getApiError(error, 'Unable to load match details'));
+      setMatchDetails({ event: match, details: { available: false, message: getApiError(error, 'Unable to load match details') } });
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   const submitBets = async () => {
     if (!user) {
       toast.error('Please login to place a sports bet');
@@ -310,7 +536,7 @@ export default function SportsPage() {
                   </div>
                 </div>
                 {group.items.map((match) => (
-                  <MatchCard key={getMatchId(match)} match={match} onSelect={addSelection} selectedIds={selectedIds} />
+                  <MatchCard key={getMatchId(match)} match={match} onSelect={addSelection} selectedIds={selectedIds} onDetails={openDetails} />
                 ))}
               </div>
             ))
@@ -324,7 +550,8 @@ export default function SportsPage() {
             <Trophy size={22} />
             <h3>Automatic System</h3>
             <p>Odds and scores sync automatically. Admin does not need to create odds manually.</p>
-            <div><span>Provider</span><strong>{status?.provider || 'theoddsapi'}</strong></div>
+            <div><span>Odds provider</span><strong>{status?.provider || 'theoddsapi'}</strong></div>
+            <div><span>Details provider</span><strong>{status?.detailsEnabled ? (status?.detailsProvider || 'sportmonks') : 'OFF'}</strong></div>
             <div><span>Auto settlement</span><strong>{status?.autoSettlement ? 'ON' : 'OFF'}</strong></div>
             <div><span>Last odds sync</span><strong>{status?.lastOdds?.finishedAt ? formatDate(status.lastOdds.finishedAt) : '—'}</strong></div>
             <div><span>Last scores sync</span><strong>{status?.lastScores?.finishedAt ? formatDate(status.lastScores.finishedAt) : '—'}</strong></div>
@@ -347,6 +574,17 @@ export default function SportsPage() {
         onClear={() => setBetSlipItems([])}
         onPlaceAll={submitBets}
       />
+
+      {detailsOpen ? (
+        <MatchDetailsModal
+          data={matchDetails}
+          loading={detailsLoading}
+          onClose={() => {
+            setDetailsOpen(false);
+            setMatchDetails(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
