@@ -519,7 +519,7 @@ export default function SportsPage() {
       <div className="sports-layout-grid">
         <section className="sports-live-list">
           <div className="section-row-title sports-live-title-row">
-            <h2><Clock size={20} /> Live Sports / খেলা</h2>
+            <h2><Clock size={20} /> Live Sports </h2>
             <span>{visibleMatches.length} matches</span>
           </div>
 
