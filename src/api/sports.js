@@ -7,5 +7,6 @@ export const SportsAPI = {
   eventDetails: (eventId) => api.get(`/sports/events/${eventId}`),
   syncStatus: () => api.get('/sports/sync-status'),
   placeBet: (payload) => api.post('/sports/bets/place', payload),
+  placeMultipleBets: (payload) => api.post('/sports/bets/place-multiple', payload),
   myBets: () => api.get('/sports/bets/my'),
 };

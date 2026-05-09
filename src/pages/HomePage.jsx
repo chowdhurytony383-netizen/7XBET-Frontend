@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   Activity,
   BarChart3,
@@ -16,6 +17,7 @@ import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
+import { buildSportsSlipItem } from '../utils/sportsVisuals.js';
 
 import PageHeader from '../components/PageHeader.jsx';
 import StatCard from '../components/StatCard.jsx';
@@ -23,6 +25,7 @@ import GameCard from '../components/GameCard.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import SportsCategoryStrip from '../components/SportsCategoryStrip.jsx';
 import LiveSportsSection from '../components/LiveSportsSection.jsx';
+import SportsBetSlip from '../components/SportsBetSlip.jsx';
 import FooterSection from '../components/FooterSection.jsx';
 
 import './HomePage.css';
@@ -52,7 +55,7 @@ function normalizeObject(payload, keys = []) {
 }
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const [games, setGames] = useState([]);
   const [sportsCategories, setSportsCategories] = useState([]);
@@ -60,6 +63,8 @@ export default function HomePage() {
   const [matchOfTheDay, setMatchOfTheDay] = useState(null);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
+  const [homeBetSlipItems, setHomeBetSlipItems] = useState([]);
+  const [placingHomeBets, setPlacingHomeBets] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -163,6 +168,64 @@ export default function HomePage() {
     };
   }, [user]);
 
+
+  const addHomeSelection = (match, odd) => {
+    const item = buildSportsSlipItem(match, odd, 1);
+    if (!item.eventId || !item.selectionId) {
+      toast.error('This sports selection is not ready for betting');
+      return;
+    }
+
+    setHomeBetSlipItems((current) => {
+      if (current.some((existing) => existing.id === item.id)) {
+        toast('Already added to bet slip');
+        return current;
+      }
+      return [...current, item];
+    });
+  };
+
+  const updateHomeStake = (id, stake) => {
+    setHomeBetSlipItems((current) => current.map((item) => (
+      item.id === id ? { ...item, stake } : item
+    )));
+  };
+
+  const removeHomeSlipItem = (id) => {
+    setHomeBetSlipItems((current) => current.filter((item) => item.id !== id));
+  };
+
+  const placeHomeBets = async () => {
+    if (!user) {
+      toast.error('Please login to place a sports bet');
+      return;
+    }
+
+    const selections = homeBetSlipItems.map((item) => ({
+      eventId: item.eventId,
+      marketKey: item.marketKey,
+      selectionId: item.selectionId,
+      stake: Number(item.stake),
+    })).filter((item) => item.eventId && item.selectionId && Number.isFinite(item.stake) && item.stake > 0);
+
+    if (!selections.length) {
+      toast.error('Enter a valid stake amount');
+      return;
+    }
+
+    setPlacingHomeBets(true);
+    try {
+      await SportsAPI.placeMultipleBets({ selections });
+      setHomeBetSlipItems([]);
+      toast.success(`${selections.length} sports bet${selections.length === 1 ? '' : 's'} placed successfully`);
+      await refreshUser?.();
+    } catch (err) {
+      toast.error(getApiError(err, 'Sports bet failed'));
+    } finally {
+      setPlacingHomeBets(false);
+    }
+  };
+
   const featuredGames = useMemo(() => games.slice(0, 2), [games]);
 
   return (
@@ -229,6 +292,7 @@ export default function HomePage() {
         <LiveSportsSection
           matches={liveMatches}
           matchOfTheDay={matchOfTheDay}
+          onSelectBet={addHomeSelection}
         />
 
         {error && <div className="auth-message">{error}</div>}
@@ -238,13 +302,13 @@ export default function HomePage() {
             <StatCard
               icon={Wallet}
               label="Wallet balance"
-              value={formatCurrency(user?.wallet)}
+              value={formatCurrency(user?.wallet, user)}
             />
 
             <StatCard
               icon={CircleDollarSign}
               label="Net result"
-              value={formatCurrency(stats?.totalWinningAmount)}
+              value={formatCurrency(stats?.totalWinningAmount, user)}
             />
 
             <StatCard
@@ -287,6 +351,16 @@ export default function HomePage() {
           )}
         </section>
       </div>
+
+      <SportsBetSlip
+        items={homeBetSlipItems}
+        user={user}
+        placing={placingHomeBets}
+        onStakeChange={updateHomeStake}
+        onRemove={removeHomeSlipItem}
+        onClear={() => setHomeBetSlipItems([])}
+        onPlaceAll={placeHomeBets}
+      />
 
       <FooterSection />
     </>

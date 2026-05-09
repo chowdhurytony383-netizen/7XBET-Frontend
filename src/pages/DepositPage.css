@@ -602,3 +602,44 @@
     height: 148px;
   }
 }
+
+/* Colorful crypto token logos for Deposit and Withdraw */
+.crypto-logo-token.crypto-btc {
+  background: radial-gradient(circle at 30% 22%, rgba(255, 255, 255, .42), transparent 4.5rem), linear-gradient(135deg, #f59e0b, #f97316) !important;
+  color: #111827 !important;
+}
+
+.crypto-logo-token.crypto-eth {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .36), transparent 4.5rem), linear-gradient(135deg, #64748b, #6366f1) !important;
+  color: #ffffff !important;
+}
+
+.crypto-logo-token.crypto-usdt {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .34), transparent 4.5rem), linear-gradient(135deg, #14b8a6, #22c55e) !important;
+  color: #042f2e !important;
+}
+
+.crypto-logo-token.crypto-ltc {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .34), transparent 4.5rem), linear-gradient(135deg, #94a3b8, #475569) !important;
+  color: #ffffff !important;
+}
+
+.crypto-logo-token.crypto-bnb {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .38), transparent 4.5rem), linear-gradient(135deg, #fde047, #eab308) !important;
+  color: #1f2937 !important;
+}
+
+.crypto-logo-token.crypto-trx {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .32), transparent 4.5rem), linear-gradient(135deg, #ef4444, #be123c) !important;
+  color: #ffffff !important;
+}
+
+.crypto-logo-token.crypto-default {
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, .28), transparent 4.5rem), linear-gradient(135deg, #0ea5e9, #7c3aed) !important;
+  color: #ffffff !important;
+}
+
+.crypto-logo-token strong {
+  color: inherit !important;
+  text-shadow: 0 1px 12px rgba(0,0,0,.18);
+}

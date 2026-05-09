@@ -205,3 +205,24 @@ body,
   0%, 100% { opacity: .55; transform: scale(.96); }
   50% { opacity: 1; transform: scale(1.05); }
 }
+
+/* Shared colorful sports and generated team logo classes */
+.sport-football { background: linear-gradient(135deg,#22c55e,#16a34a); color: #03120a; }
+.sport-cricket { background: linear-gradient(135deg,#facc15,#f97316); color: #1f1300; }
+.sport-basketball { background: linear-gradient(135deg,#fb923c,#ea580c); color: #1f0a00; }
+.sport-tennis { background: linear-gradient(135deg,#a3e635,#65a30d); color: #102000; }
+.sport-hockey { background: linear-gradient(135deg,#38bdf8,#2563eb); color: #001529; }
+.sport-baseball { background: linear-gradient(135deg,#fb7185,#be123c); color: #fff; }
+.sport-rugby { background: linear-gradient(135deg,#14b8a6,#0f766e); color: #001b18; }
+.sport-volleyball { background: linear-gradient(135deg,#c084fc,#7c3aed); color: #fff; }
+.sport-boxing { background: linear-gradient(135deg,#f97316,#dc2626); color: #fff; }
+.sport-default { background: linear-gradient(135deg,#8b5cf6,#2563eb); color: #fff; }
+
+.team-logo-1 { background: linear-gradient(135deg,#22c55e,#15803d); }
+.team-logo-2 { background: linear-gradient(135deg,#3b82f6,#1d4ed8); }
+.team-logo-3 { background: linear-gradient(135deg,#f97316,#dc2626); }
+.team-logo-4 { background: linear-gradient(135deg,#a855f7,#6d28d9); }
+.team-logo-5 { background: linear-gradient(135deg,#06b6d4,#0e7490); }
+.team-logo-6 { background: linear-gradient(135deg,#f43f5e,#be123c); }
+.team-logo-7 { background: linear-gradient(135deg,#eab308,#ca8a04); }
+.team-logo-8 { background: linear-gradient(135deg,#14b8a6,#0f766e); }

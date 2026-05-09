@@ -79,7 +79,7 @@ export default function AgentPaymentMethodsPage() {
             <span className="page-eyebrow">Logged Agent</span>
             <h2>{agent.agentId} — {agent.name}</h2>
           </div>
-          <strong>Balance {formatCurrency(agent.balance || 0)}</strong>
+          <strong>Balance {formatCurrency(agent.balance || 0, agent)}</strong>
         </div>
       )}
 
@@ -97,7 +97,7 @@ export default function AgentPaymentMethodsPage() {
                 <span className="page-eyebrow">Assigned Payment Method</span>
                 <h2>{method.title}</h2>
                 <p className="agent-method-subtitle">
-                  Key: {method.key} • Min {formatCurrency(method.minAmount || 0)} / Max {formatCurrency(method.maxAmount || 0)}
+                  Key: {method.key} • Min {formatCurrency(method.minAmount || 0, agent)} / Max {formatCurrency(method.maxAmount || 0, agent)}
                 </p>
               </div>
               <MethodBadge method={method} />

@@ -40,6 +40,16 @@ export function AuthProvider({ children }) {
     checkSession();
   }, [checkSession]);
 
+  useEffect(() => {
+    if (!user) return undefined;
+
+    const timer = window.setInterval(() => {
+      refreshUser().catch(() => null);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, [user?._id, refreshUser]);
+
   const login = useCallback(async (payload) => {
     const response = await AuthAPI.login(payload);
     saveAuthTokens(response.data);

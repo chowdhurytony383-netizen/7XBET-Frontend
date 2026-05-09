@@ -1,143 +1,78 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Activity, Clock, Radio, ShieldCheck, Ticket, Trophy, Wallet } from 'lucide-react';
 import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
+import {
+  buildSportsSlipItem,
+  getMatchId,
+  getScore,
+  getTeamName,
+  normalizeMatchOdds,
+  sportMetaFromMatch,
+  statusClass,
+  teamLogoClass,
+  teamLogoText,
+} from '../utils/sportsVisuals.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import PageHeader from '../components/PageHeader.jsx';
+import SportsBetSlip from '../components/SportsBetSlip.jsx';
 import './SportsPage.css';
 
-function getTeamName(team) {
-  if (!team) return 'Team';
-  if (typeof team === 'string') return team;
-  return team.name || team.displayName || 'Team';
-}
-
-function getScore(match, side) {
-  const score = match?.score || {};
-  return score?.[side] ?? score?.[side === 'home' ? 'homeScore' : 'awayScore'] ?? 0;
-}
-
-function normalizeOdds(match) {
-  const odds = match?.mainOdds || match?.odds || match?.markets || [];
-  if (!Array.isArray(odds)) return [];
-  return odds.map((odd) => ({
-    selectionId: odd.selectionId || odd.key || odd.id,
-    marketKey: odd.marketKey || 'h2h',
-    marketName: odd.marketName || 'Match Winner',
-    label: odd.label || odd.name || 'Selection',
-    price: Number(odd.price || odd.odds || odd.value || 0),
-  })).filter((odd) => odd.selectionId && odd.price > 1);
-}
-
-function sportIcon(sport = '') {
-  const clean = String(sport).toLowerCase();
-  if (clean.includes('cricket')) return '🏏';
-  if (clean.includes('basket')) return '🏀';
-  if (clean.includes('tennis')) return '🎾';
-  if (clean.includes('football') || clean.includes('soccer')) return '⚽';
-  return '🏆';
-}
-
-function statusClass(status = '') {
-  const clean = String(status).toLowerCase();
-  if (clean.includes('live')) return 'live';
-  if (clean.includes('finish')) return 'finished';
-  return 'upcoming';
-}
-
-function SportsBetModal({ betSlip, onClose, onSubmit, placing }) {
-  const [stake, setStake] = useState('');
-
-  if (!betSlip) return null;
-
-  const amount = Number(stake || 0);
-  const possibleReturn = Number.isFinite(amount) ? amount * betSlip.selection.price : 0;
-
+function MatchTeam({ team, sportKey, score }) {
   return (
-    <div className="sports-modal-backdrop" role="dialog" aria-modal="true">
-      <div className="sports-bet-modal">
-        <button type="button" className="sports-modal-close" onClick={onClose}>×</button>
-        <span className="page-eyebrow">Bet Slip</span>
-        <h3>{betSlip.match.home} vs {betSlip.match.away}</h3>
-        <div className="sports-slip-lines">
-          <div><span>Market</span><strong>{betSlip.selection.marketName}</strong></div>
-          <div><span>Selection</span><strong>{betSlip.selection.label}</strong></div>
-          <div><span>Odds</span><strong>{betSlip.selection.price.toFixed(2)}</strong></div>
-        </div>
-
-        <label className="sports-stake-field">
-          Stake amount
-          <input
-            type="number"
-            min="1"
-            step="1"
-            value={stake}
-            placeholder="Enter stake"
-            onChange={(event) => setStake(event.target.value)}
-          />
-        </label>
-
-        <div className="sports-return-box">
-          <span>Potential return</span>
-          <strong>{formatCurrency(possibleReturn)}</strong>
-        </div>
-
-        <button
-          type="button"
-          className="btn btn-primary btn-full"
-          disabled={placing || !amount || amount <= 0}
-          onClick={() => onSubmit({ ...betSlip, stake: amount })}
-        >
-          <Ticket size={18} /> {placing ? 'Placing bet...' : 'Place bet'}
-        </button>
-      </div>
+    <div className="sports-team-row">
+      <span className={`sports-team-logo ${teamLogoClass(team, sportKey)}`}>{teamLogoText(team)}</span>
+      <strong>{getTeamName(team)}</strong>
+      <b>{score}</b>
     </div>
   );
 }
 
-function MatchCard({ match, onSelect }) {
-  const home = getTeamName(match.homeTeam || match.home);
-  const away = getTeamName(match.awayTeam || match.away);
-  const odds = normalizeOdds(match);
+function MatchCard({ match, onSelect, selectedIds }) {
+  const homeTeam = match.homeTeam || match.home;
+  const awayTeam = match.awayTeam || match.away;
+  const odds = normalizeMatchOdds(match);
   const status = match.status || 'Upcoming';
-  const sport = match.sport || match.sportTitle || 'Sports';
+  const sportMeta = sportMetaFromMatch(match);
+  const matchId = getMatchId(match);
+  const disabled = match.completed || statusClass(status) === 'finished';
 
   return (
     <article className="sports-live-card">
       <div className="sports-live-card-top">
-        <div>
-          <span className="sports-competition"><span>{sportIcon(sport)}</span>{sport}</span>
-          <h3>{home} <span>vs</span> {away}</h3>
-          <p>{match.league || match.tournament || 'Live market'} · {match.startTime || 'Auto sync'}</p>
+        <div className="sports-card-title-block">
+          <span className={`sports-competition ${sportMeta.className}`}><span>{sportMeta.icon}</span>{match.sport || match.sportTitle || sportMeta.name}</span>
+          <h3>{getTeamName(homeTeam)} <span>vs</span> {getTeamName(awayTeam)}</h3>
+          <p>{match.league || match.tournament || sportMeta.name} · {match.startTime || 'Auto sync'}</p>
         </div>
         <span className={`sports-status-pill ${statusClass(status)}`}>{status}</span>
       </div>
 
-      <div className="sports-score-row">
-        <div><span>{home}</span><strong>{getScore(match, 'home')}</strong></div>
-        <div><span>{away}</span><strong>{getScore(match, 'away')}</strong></div>
+      <div className="sports-score-board">
+        <MatchTeam team={homeTeam} sportKey={match.sportKey} score={getScore(match, 'home')} />
+        <MatchTeam team={awayTeam} sportKey={match.sportKey} score={getScore(match, 'away')} />
       </div>
 
       <div className="sports-odds-grid">
-        {odds.length ? odds.map((odd) => (
-          <button
-            type="button"
-            className="sports-odd-button"
-            key={odd.selectionId}
-            disabled={match.completed || statusClass(status) === 'finished'}
-            onClick={() => onSelect({
-              match: { id: match._id || match.id, home, away },
-              selection: odd,
-            })}
-          >
-            <small>{odd.label}</small>
-            <strong>{odd.price.toFixed(2)}</strong>
-          </button>
-        )) : (
-          <span className="sports-no-odds">Odds unavailable from free provider</span>
+        {odds.length ? odds.map((odd) => {
+          const selected = selectedIds.has(`${matchId}:${odd.selectionId}`);
+          return (
+            <button
+              type="button"
+              className={`sports-odd-button ${selected ? 'selected' : ''}`}
+              key={odd.selectionId}
+              disabled={disabled}
+              onClick={() => onSelect(match, odd)}
+            >
+              <small>{odd.label}</small>
+              <strong>{odd.price.toFixed(2)}</strong>
+            </button>
+          );
+        }) : (
+          <span className="sports-no-odds">Odds unavailable from provider</span>
         )}
       </div>
     </article>
@@ -161,7 +96,7 @@ function BetHistory({ bets = [] }) {
           <div>
             <span className={`sports-bet-status ${String(bet.status).toLowerCase()}`}>{bet.status}</span>
             <strong>{formatCurrency(bet.stake)} @ {Number(bet.odds || 0).toFixed(2)}</strong>
-            <small>Return: {formatCurrency(bet.potentialReturn)}</small>
+            <small>{String(bet.status).toUpperCase() === 'WON' ? 'Won' : 'Return'}: {formatCurrency(bet.payoutAmount || bet.potentialReturn)}</small>
           </div>
         </article>
       ))}
@@ -171,13 +106,14 @@ function BetHistory({ bets = [] }) {
 
 export default function SportsPage() {
   const { user, refreshUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [matches, setMatches] = useState([]);
   const [status, setStatus] = useState(null);
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [placing, setPlacing] = useState(false);
-  const [selectedSport, setSelectedSport] = useState('all');
-  const [betSlip, setBetSlip] = useState(null);
+  const [selectedSport, setSelectedSport] = useState(searchParams.get('sport') || 'all');
+  const [betSlipItems, setBetSlipItems] = useState([]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -208,36 +144,92 @@ export default function SportsPage() {
     return () => clearInterval(timer);
   }, [load]);
 
+  useEffect(() => {
+    const sportFromUrl = searchParams.get('sport') || 'all';
+    setSelectedSport(sportFromUrl);
+  }, [searchParams]);
+
   const sports = useMemo(() => {
     const unique = new Map();
     matches.forEach((match) => {
-      const key = String(match.sportKey || match.sport || 'sports').toLowerCase();
-      unique.set(key, match.sport || match.sportTitle || key);
+      const meta = sportMetaFromMatch(match);
+      unique.set(meta.key, meta);
     });
-    return Array.from(unique.entries()).map(([key, label]) => ({ key, label }));
+    return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [matches]);
 
   const visibleMatches = useMemo(() => {
     if (selectedSport === 'all') return matches;
-    return matches.filter((match) => String(match.sportKey || match.sport || '').toLowerCase() === selectedSport);
+    return matches.filter((match) => sportMetaFromMatch(match).key === selectedSport);
   }, [matches, selectedSport]);
 
-  const submitBet = async (slip) => {
+  const groupedMatches = useMemo(() => {
+    const groups = new Map();
+    visibleMatches.forEach((match) => {
+      const meta = sportMetaFromMatch(match);
+      if (!groups.has(meta.key)) groups.set(meta.key, { meta, items: [] });
+      groups.get(meta.key).items.push(match);
+    });
+    return Array.from(groups.values());
+  }, [visibleMatches]);
+
+  const selectedIds = useMemo(() => new Set(betSlipItems.map((item) => item.id)), [betSlipItems]);
+
+  const changeSport = (key) => {
+    setSelectedSport(key);
+    if (key === 'all') setSearchParams({});
+    else setSearchParams({ sport: key });
+  };
+
+  const addSelection = (match, odd) => {
+    const item = buildSportsSlipItem(match, odd, 1);
+    if (!item.eventId || !item.selectionId) {
+      toast.error('This selection is not ready for betting');
+      return;
+    }
+
+    setBetSlipItems((current) => {
+      if (current.some((existing) => existing.id === item.id)) {
+        toast('Already added to bet slip');
+        return current;
+      }
+      return [...current, item];
+    });
+  };
+
+  const updateStake = (id, stake) => {
+    setBetSlipItems((current) => current.map((item) => (
+      item.id === id ? { ...item, stake } : item
+    )));
+  };
+
+  const removeSlipItem = (id) => {
+    setBetSlipItems((current) => current.filter((item) => item.id !== id));
+  };
+
+  const submitBets = async () => {
     if (!user) {
       toast.error('Please login to place a sports bet');
       return;
     }
 
+    const selections = betSlipItems.map((item) => ({
+      eventId: item.eventId,
+      marketKey: item.marketKey,
+      selectionId: item.selectionId,
+      stake: Number(item.stake),
+    })).filter((item) => item.eventId && item.selectionId && Number.isFinite(item.stake) && item.stake > 0);
+
+    if (!selections.length) {
+      toast.error('Enter a valid stake amount');
+      return;
+    }
+
     setPlacing(true);
     try {
-      await SportsAPI.placeBet({
-        eventId: slip.match.id,
-        marketKey: slip.selection.marketKey,
-        selectionId: slip.selection.selectionId,
-        stake: slip.stake,
-      });
-      setBetSlip(null);
-      toast.success('Sports bet placed successfully');
+      await SportsAPI.placeMultipleBets({ selections });
+      setBetSlipItems([]);
+      toast.success(`${selections.length} sports bet${selections.length === 1 ? '' : 's'} placed successfully`);
       await Promise.all([load(), refreshUser?.()]);
     } catch (error) {
       toast.error(getApiError(error, 'Sports bet failed'));
@@ -250,35 +242,33 @@ export default function SportsPage() {
     <div className="page-stack sports-page">
       <PageHeader
         eyebrow="Sportsbook"
-        title="Automatic Live Sports"
-        description="Live matches, odds and settlement are synced automatically from the configured sports odds provider."
+        title="Live Sports Betting"
+        description="Live and upcoming matches are grouped by sports category. Select one or many odds, then place them from the bet slip."
       />
 
       <section className="sports-hero-panel">
         <div>
-          <span className="page-eyebrow">Realtime automatic mode</span>
-          <h2>All available sports with automatic odds</h2>
-          <p>All available free-provider sports, live matches and h2h match winner odds update automatically. Winning bets settle when final scores arrive.</p>
+          <span className="page-eyebrow">Automatic live mode</span>
+          <h2>Category based sports with live odds</h2>
+          <p>Football, cricket, basketball, tennis and other available provider sports appear with colorful sports and team logos. Win/loss settlement updates the wallet automatically.</p>
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
           <div><Ticket size={18} /><span>Open bets</span><strong>{status?.openBets ?? 0}</strong></div>
-          <div><Wallet size={18} /><span>Balance</span><strong>{formatCurrency(user?.wallet)}</strong></div>
+          <div><Wallet size={18} /><span>Balance</span><strong>{formatCurrency(user?.wallet, user)}</strong></div>
         </div>
       </section>
 
       <div className="sports-toolbar">
         <div className="sports-tabs">
-          <button type="button" className={selectedSport === 'all' ? 'active' : ''} onClick={() => setSelectedSport('all')}>All</button>
+          <button type="button" className={selectedSport === 'all' ? 'active' : ''} onClick={() => changeSport('all')}>All</button>
           {sports.map((sport) => (
-            <button type="button" key={sport.key} className={selectedSport === sport.key ? 'active' : ''} onClick={() => setSelectedSport(sport.key)}>
-              {sportIcon(sport.label)} {sport.label}
+            <button type="button" key={sport.key} className={selectedSport === sport.key ? `active ${sport.className}` : ''} onClick={() => changeSport(sport.key)}>
+              <span>{sport.icon}</span> {sport.name}
             </button>
           ))}
         </div>
-        <span className="sports-live-sync-pill">
-          <Radio size={16} /> Realtime auto update
-        </span>
+        <span className="sports-live-sync-pill"><Radio size={16} /> Auto update</span>
       </div>
 
       {!status?.enabled ? (
@@ -286,22 +276,35 @@ export default function SportsPage() {
           <ShieldCheck size={20} />
           <div>
             <strong>Provider API key missing</strong>
-            <p>Add SPORTS_ODDS_API_KEY in Render Backend Environment to load real automatic odds.</p>
+            <p>Add SPORTS_ODDS_API_KEY in Render Backend Environment to load automatic odds.</p>
           </div>
         </div>
       ) : null}
 
       <div className="sports-layout-grid">
         <section className="sports-live-list">
-          <div className="section-row-title">
-            <h2><Clock size={20} /> Live & Upcoming</h2>
+          <div className="section-row-title sports-live-title-row">
+            <h2><Clock size={20} /> Live Sports / খেলা</h2>
             <span>{visibleMatches.length} matches</span>
           </div>
 
           {loading && !visibleMatches.length ? (
             <div className="sports-empty-panel">Loading automatic sports feed...</div>
-          ) : visibleMatches.length ? (
-            visibleMatches.map((match) => <MatchCard key={match._id || match.id} match={match} onSelect={setBetSlip} />)
+          ) : groupedMatches.length ? (
+            groupedMatches.map((group) => (
+              <div className="sports-category-block" key={group.meta.key}>
+                <div className="sports-category-heading">
+                  <span className={`sports-category-icon ${group.meta.className}`}>{group.meta.icon}</span>
+                  <div>
+                    <h3>{group.meta.name}</h3>
+                    <small>{group.items.length} event{group.items.length === 1 ? '' : 's'}</small>
+                  </div>
+                </div>
+                {group.items.map((match) => (
+                  <MatchCard key={getMatchId(match)} match={match} onSelect={addSelection} selectedIds={selectedIds} />
+                ))}
+              </div>
+            ))
           ) : (
             <div className="sports-empty-panel">No matches from provider. Check API key, sport keys, quota or provider coverage.</div>
           )}
@@ -326,7 +329,15 @@ export default function SportsPage() {
         </aside>
       </div>
 
-      <SportsBetModal betSlip={betSlip} onClose={() => setBetSlip(null)} onSubmit={submitBet} placing={placing} />
+      <SportsBetSlip
+        items={betSlipItems}
+        user={user}
+        placing={placing}
+        onStakeChange={updateStake}
+        onRemove={removeSlipItem}
+        onClear={() => setBetSlipItems([])}
+        onPlaceAll={submitBets}
+      />
     </div>
   );
 }
