@@ -7,6 +7,7 @@ export const API_BASE_URL = `${API_ORIGIN}/api`;
 
 const ACCESS_TOKEN_KEY = '7xbet.auth.accessToken';
 const REFRESH_TOKEN_KEY = '7xbet.auth.refreshToken';
+const AGENT_TOKEN_KEY = '7xbet.agent.accessToken';
 
 function storageAvailable() {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
@@ -37,6 +38,10 @@ export function getStoredRefreshToken() {
   return readStorage(REFRESH_TOKEN_KEY);
 }
 
+export function getStoredAgentToken() {
+  return readStorage(AGENT_TOKEN_KEY);
+}
+
 export function saveAuthTokens(payload = {}) {
   const source = payload?.data?.tokens || payload?.tokens || payload?.data || payload || {};
   const accessToken = source.accessToken || source.access_token || payload?.accessToken || payload?.access_token || '';
@@ -49,6 +54,24 @@ export function saveAuthTokens(payload = {}) {
     accessToken: accessToken || getStoredAccessToken(),
     refreshToken: refreshToken || getStoredRefreshToken(),
   };
+}
+
+export function saveAgentAuthToken(payload = {}) {
+  const source = payload?.data?.tokens || payload?.tokens || payload?.data || payload || {};
+  const agentToken = source.agentToken
+    || source.agent_token
+    || source.accessToken
+    || source.access_token
+    || payload?.agentToken
+    || payload?.agent_token
+    || '';
+
+  if (agentToken) writeStorage(AGENT_TOKEN_KEY, agentToken);
+  return agentToken || getStoredAgentToken();
+}
+
+export function clearAgentAuthToken() {
+  writeStorage(AGENT_TOKEN_KEY, '');
 }
 
 export function clearAuthTokens() {
@@ -99,6 +122,11 @@ export function consumeAuthTokensFromUrl() {
   return true;
 }
 
+function isAgentApiRequest(url = '') {
+  const value = String(url || '');
+  return value === '/agent' || value.startsWith('/agent/');
+}
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
@@ -106,11 +134,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const accessToken = getStoredAccessToken();
+  const requestUrl = config.url || '';
+  const token = isAgentApiRequest(requestUrl) ? getStoredAgentToken() : getStoredAccessToken();
 
-  if (accessToken && !config.headers?.Authorization) {
+  if (token && !config.headers?.Authorization) {
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
@@ -124,6 +153,12 @@ api.interceptors.response.use(
 
     if (status === 401 && original?.__skipAuthRefresh) {
       clearAuthTokens();
+      clearAgentAuthToken();
+      return Promise.reject(error);
+    }
+
+    if (status === 401 && original && isAgentApiRequest(original.url)) {
+      clearAgentAuthToken();
       return Promise.reject(error);
     }
 

@@ -1,8 +1,18 @@
-import api from './client.js';
+import api, { clearAgentAuthToken, saveAgentAuthToken } from './client.js';
 
 export const AgentAPI = {
-  login: (payload) => api.post('/agent/login', payload),
-  logout: () => api.post('/agent/logout'),
+  login: async (payload) => {
+    const response = await api.post('/agent/login', payload);
+    saveAgentAuthToken(response.data);
+    return response;
+  },
+  logout: async () => {
+    try {
+      return await api.post('/agent/logout');
+    } finally {
+      clearAgentAuthToken();
+    }
+  },
   me: () => api.get('/agent/me'),
   transactions: () => api.get('/agent/transactions'),
   paymentMethods: () => api.get('/agent/payment-methods'),
