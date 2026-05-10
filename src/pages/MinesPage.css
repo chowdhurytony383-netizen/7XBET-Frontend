@@ -272,3 +272,69 @@
     height: 16px;
   }
 }
+/* Mines mobile manual extra compact fix */
+@media (max-width: 520px) {
+  .mines-page {
+    gap: 4px !important;
+  }
+
+  .mines-page > .page-header {
+    padding: 0 8px !important;
+    gap: 0 !important;
+    margin-bottom: -4px !important;
+  }
+
+  .mines-page > .page-header .page-eyebrow {
+    font-size: 9px !important;
+    line-height: 1 !important;
+    letter-spacing: 2px !important;
+  }
+
+  .mines-page > .page-header h1 {
+    font-size: ২০px !important;
+    line-height: 0.9 !important;
+    margin: 0 !important;
+  }
+
+  .mines-page > .page-header p {
+    display: none !important;
+  }
+
+  .mines-page .mines-stats-grid {
+    padding: 0 8px !important;
+    gap: 5px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .mines-page .mines-stats-grid .stat-card {
+    min-height: 32px !important;
+    padding: 5px 7px !important;
+    gap: 6px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .mines-page .mines-stats-grid .stat-icon {
+    width: 19px !important;
+    height: 19px !important;
+    min-width: 19px !important;
+    border-radius: 6px !important;
+  }
+
+  .mines-page .mines-stats-grid .stat-icon svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .mines-page .mines-stats-grid .stat-card span {
+    font-size: 10px !important;
+    line-height: 1 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .mines-page .mines-stats-grid .stat-card strong {
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+}
