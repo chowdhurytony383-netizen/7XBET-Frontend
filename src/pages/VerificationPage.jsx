@@ -97,32 +97,32 @@ export default function VerificationPage() {
 
   return (
     <div className="page-stack verification-page">
-      <PageHeader eyebrow="Profile" title="Verification" description="Submit identity and address information." />
+      <PageHeader eyebrow="Profile" title="Verification" description="Email, full name, address and identity document are required for withdrawal. Other fields are optional." />
       <section className="card verification-status-card">
         <FileCheck2 size={26} />
         <div><span>Current status</span><strong>{status}</strong></div>
       </section>
       <form className="card verification-form" onSubmit={submit}>
-        <div className="verification-section-title"><h3>Personal information</h3><p>Use the same details that match the submitted document.</p></div>
+        <div className="verification-section-title"><h3>Personal information</h3><p>Required for withdrawal: email verification, full name, address and identity document. Other fields are optional.</p></div>
         <div className="verification-grid">
-          <div className="input-group"><label htmlFor="fullName">Full Name</label><input id="fullName" name="fullName" value={form.fullName} onChange={updateField} autoComplete="name" required /></div>
-          <div className="input-group"><label htmlFor="email">Email</label><input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" required /></div>
-          <div className="input-group"><label htmlFor="phone">Phone</label><input id="phone" name="phone" value={form.phone} onChange={updateField} autoComplete="tel" required /></div>
-          <div className="input-group"><label htmlFor="dateOfBirth">Date of birth</label><input id="dateOfBirth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={updateField} required /></div>
+          <div className="input-group"><label htmlFor="fullName">Full Name <small>Required</small></label><input id="fullName" name="fullName" value={form.fullName} onChange={updateField} autoComplete="name" required /></div>
+          <div className="input-group"><label htmlFor="email">Email <small>Required</small></label><input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" required /></div>
+          <div className="input-group"><label htmlFor="phone">Phone <small>Optional</small></label><input id="phone" name="phone" value={form.phone} onChange={updateField} autoComplete="tel" /></div>
+          <div className="input-group"><label htmlFor="dateOfBirth">Date of birth <small>Optional</small></label><input id="dateOfBirth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={updateField} /></div>
         </div>
         <div className="verification-section-title"><h3>Address</h3></div>
         <div className="verification-grid">
-          <div className="input-group wide"><label htmlFor="address">Address</label><input id="address" name="address" value={form.address} onChange={updateField} autoComplete="street-address" required /></div>
-          <div className="input-group"><label htmlFor="street">Street</label><input id="street" name="street" value={form.street} onChange={updateField} required /></div>
-          <div className="input-group"><label htmlFor="city">City</label><input id="city" name="city" value={form.city} onChange={updateField} autoComplete="address-level2" required /></div>
-          <div className="input-group"><label htmlFor="postCode">Post code</label><input id="postCode" name="postCode" value={form.postCode} onChange={updateField} autoComplete="postal-code" required /></div>
+          <div className="input-group wide"><label htmlFor="address">Address <small>Required</small></label><input id="address" name="address" value={form.address} onChange={updateField} autoComplete="street-address" required /></div>
+          <div className="input-group"><label htmlFor="street">Street <small>Optional</small></label><input id="street" name="street" value={form.street} onChange={updateField} /></div>
+          <div className="input-group"><label htmlFor="city">City <small>Optional</small></label><input id="city" name="city" value={form.city} onChange={updateField} autoComplete="address-level2" /></div>
+          <div className="input-group"><label htmlFor="postCode">Post code <small>Optional</small></label><input id="postCode" name="postCode" value={form.postCode} onChange={updateField} autoComplete="postal-code" /></div>
         </div>
         <div className="verification-section-title"><h3>Document</h3></div>
         <div className="verification-grid">
-          <div className="input-group"><label htmlFor="documentType">Documents Type</label><select id="documentType" name="documentType" value={form.documentType} onChange={updateField} required>{documentTypes.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></div>
-          <div className="input-group"><label htmlFor="documentNumber">Document-Number</label><input id="documentNumber" name="documentNumber" value={form.documentNumber} onChange={updateField} required /></div>
-          <label className="upload-box" htmlFor="documentFront"><UploadCloud size={20} /><span>Document front</span><input id="documentFront" type="file" accept="image/*,.pdf" onChange={(event) => setDocumentFront(event.target.files?.[0] || null)} /><small>{documentFront?.name || 'Choose file'}</small></label>
-          <label className="upload-box" htmlFor="documentBack"><UploadCloud size={20} /><span>Document back</span><input id="documentBack" type="file" accept="image/*,.pdf" onChange={(event) => setDocumentBack(event.target.files?.[0] || null)} /><small>{documentBack?.name || 'Choose file'}</small></label>
+          <div className="input-group"><label htmlFor="documentType">Documents Type <small>Required</small></label><select id="documentType" name="documentType" value={form.documentType} onChange={updateField} required>{documentTypes.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></div>
+          <div className="input-group"><label htmlFor="documentNumber">Document Number <small>Optional</small></label><input id="documentNumber" name="documentNumber" value={form.documentNumber} onChange={updateField} /></div>
+          <label className="upload-box" htmlFor="documentFront"><UploadCloud size={20} /><span>Identity document front <small>Required</small></span><input id="documentFront" type="file" accept="image/*,.pdf" onChange={(event) => setDocumentFront(event.target.files?.[0] || null)} /><small>{documentFront?.name || 'Choose file'}</small></label>
+          <label className="upload-box" htmlFor="documentBack"><UploadCloud size={20} /><span>Document back <small>Optional</small></span><input id="documentBack" type="file" accept="image/*,.pdf" onChange={(event) => setDocumentBack(event.target.files?.[0] || null)} /><small>{documentBack?.name || 'Choose file'}</small></label>
         </div>
         <button className="btn btn-primary verification-submit" type="submit" disabled={submitting}><Save size={18} /> {submitting ? 'Submitting...' : 'Submit verification'}</button>
       </form>
