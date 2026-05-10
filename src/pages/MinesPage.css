@@ -1,5 +1,5 @@
 .mines-page {
-  gap: 16px;
+  gap: 14px;
 }
 
 .mines-page .game-play-grid {
@@ -57,27 +57,32 @@
 
 @media (max-width: 980px) {
   .mines-page {
-    gap: 10px;
+    gap: 8px;
   }
 
   .mines-page > .page-header {
-    gap: 6px;
-    padding: 0 14px;
+    gap: 3px;
+    padding: 0 10px;
+    margin-bottom: -2px;
   }
 
   .mines-page > .page-header .page-eyebrow {
-    font-size: .7rem;
-    letter-spacing: .08em;
+    font-size: .62rem;
+    letter-spacing: .12em;
+    line-height: 1;
   }
 
   .mines-page > .page-header h1 {
-    margin: 2px 0 6px;
-    font-size: clamp(2rem, 9vw, 2.9rem);
+    margin: 0;
+    font-size: clamp(1.75rem, 8vw, 2.4rem);
+    line-height: .96;
   }
 
   .mines-page > .page-header p {
-    font-size: .88rem;
-    line-height: 1.4;
+    font-size: .74rem;
+    line-height: 1.25;
+    max-width: none;
+    opacity: .88;
   }
 
   .mines-page .game-play-grid {
@@ -87,7 +92,7 @@
   .mines-page .play-form-card,
   .mines-page .result-card {
     padding: 14px;
-    border-radius: 20px;
+    border-radius: 18px;
   }
 
   .mines-page .play-form-card.form-grid {
@@ -123,41 +128,45 @@
   }
 
   .mines-page .mines-stats-grid {
-    gap: 8px !important;
-    padding: 0 14px;
+    gap: 6px !important;
+    padding: 0 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   .mines-page .mines-stats-grid .stat-card {
-    min-height: 82px;
-    padding: 10px;
+    min-height: 62px;
+    padding: 8px 9px;
     gap: 8px;
-    border-radius: 18px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
   }
 
   .mines-page .mines-stats-grid .stat-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 8px;
   }
 
   .mines-page .mines-stats-grid .stat-icon svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 
   .mines-page .mines-stats-grid .stat-card span {
-    font-size: .68rem;
-    margin-bottom: 2px;
-  }
-
-  .mines-page .mines-stats-grid .stat-card strong {
-    font-size: clamp(.98rem, 4.2vw, 1.2rem);
+    font-size: .62rem;
+    margin-bottom: 1px;
     line-height: 1.05;
   }
 
+  .mines-page .mines-stats-grid .stat-card strong {
+    font-size: clamp(.95rem, 4vw, 1.08rem);
+    line-height: 1.02;
+  }
+
   .mines-page .mines-stats-grid .stat-card small {
-    font-size: .68rem;
-    margin-top: 2px;
+    display: none;
   }
 
   .mines-page .result-card {
@@ -181,9 +190,57 @@
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 520px) {
+  .mines-page {
+    gap: 6px;
+  }
+
+  .mines-page > .page-header {
+    padding: 0 8px;
+  }
+
+  .mines-page > .page-header .page-eyebrow {
+    font-size: .58rem;
+  }
+
+  .mines-page > .page-header h1 {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
   .mines-page > .page-header p {
     display: none;
+  }
+
+  .mines-page .mines-stats-grid {
+    gap: 5px !important;
+    padding: 0 8px;
+  }
+
+  .mines-page .mines-stats-grid .stat-card {
+    min-height: 54px;
+    padding: 7px 8px;
+    gap: 7px;
+    border-radius: 14px;
+  }
+
+  .mines-page .mines-stats-grid .stat-icon {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 7px;
+  }
+
+  .mines-page .mines-stats-grid .stat-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .mines-page .mines-stats-grid .stat-card span {
+    font-size: .58rem;
+  }
+
+  .mines-page .mines-stats-grid .stat-card strong {
+    font-size: .92rem;
   }
 
   .mines-page .play-form-card,
