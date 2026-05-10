@@ -117,7 +117,10 @@ export default function AgentRequestsPage() {
             <span className="page-eyebrow">Logged Agent</span>
             <h2>{agent.agentId} — {agent.name}</h2>
           </div>
-          <strong>Balance {formatCurrency(agent.balance || 0, agent)}</strong>
+          <div className="agent-summary-balances">
+            <strong>Balance {formatCurrency(agent.balance || 0, agent)}</strong>
+            <strong>Commission {formatCurrency(agent.commissionBalance || 0, agent)}</strong>
+          </div>
         </div>
       )}
 
