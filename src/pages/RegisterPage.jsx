@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, MousePointerClick, Search } from 'lucide-react';
+import { Eye, EyeOff, MousePointerClick } from 'lucide-react';
 import { FaFacebookF, FaGoogle } from 'react-icons/fa';
 import Logo from '../components/Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -40,7 +40,6 @@ export default function RegisterPage() {
   const [quickSubmitting, setQuickSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [showQuickForm, setShowQuickForm] = useState(false);
-  const [countrySearch, setCountrySearch] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const selectedManualCountry = useMemo(() => {
@@ -50,26 +49,6 @@ export default function RegisterPage() {
   const selectedQuickCountry = useMemo(() => {
     return countries.find((item) => item.code === quickForm.countryCode) || defaultCountry;
   }, [quickForm.countryCode]);
-
-  const filteredCountries = useMemo(() => {
-    const search = countrySearch.trim().toLowerCase();
-
-    if (!search) return countries;
-
-    return countries.filter((country) => {
-      const countryName = country.name?.toLowerCase() || '';
-      const countryCode = country.code?.toLowerCase() || '';
-      const countryCurrency = country.currency?.toLowerCase() || '';
-      const countryCurrencyLabel = currencyLabel(country.currency)?.toLowerCase() || '';
-
-      return (
-        countryName.includes(search) ||
-        countryCode.includes(search) ||
-        countryCurrency.includes(search) ||
-        countryCurrencyLabel.includes(search)
-      );
-    });
-  }, [countrySearch]);
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -92,14 +71,14 @@ export default function RegisterPage() {
     }));
   };
 
-  const chooseQuickCountry = (country) => {
+  const updateQuickCountry = (event) => {
+    const country = countries.find((item) => item.code === event.target.value) || defaultCountry;
+
     setQuickForm((current) => ({
       ...current,
       countryCode: country.code,
       currency: country.currency,
     }));
-
-    setCountrySearch('');
   };
 
   const submit = async (event) => {
@@ -235,47 +214,33 @@ export default function RegisterPage() {
 
           {showQuickForm && (
             <div className="one-click-panel">
-              <div className="country-picker">
-                <div className="input-group">
-                  <label htmlFor="quickCountrySearch">Country</label>
+              <div className="input-group">
+                <label htmlFor="quickCountryCode">Country</label>
 
-                  <div className="country-search-box">
-                    <Search size={17} />
-
-                    <input
-                      id="quickCountrySearch"
-                      value={countrySearch}
-                      onChange={(event) => setCountrySearch(event.target.value)}
-                      placeholder={`${selectedQuickCountry.flag} ${selectedQuickCountry.name}`}
-                    />
-                  </div>
-                </div>
-
-                <div className="country-option-list">
-                  {filteredCountries.length ? (
-                    filteredCountries.map((country) => (
-                      <button
-                        key={country.code}
-                        type="button"
-                        className={`country-option ${
-                          country.code === quickForm.countryCode ? 'selected' : ''
-                        }`}
-                        onClick={() => chooseQuickCountry(country)}
-                      >
-                        <span>{country.flag}</span>
-                        <strong>{country.name}</strong>
-                        <small>{country.currency}</small>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="country-empty">No country found</div>
-                  )}
-                </div>
+                <select
+                  id="quickCountryCode"
+                  name="quickCountryCode"
+                  value={quickForm.countryCode}
+                  onChange={updateQuickCountry}
+                  required
+                >
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.flag} {country.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="one-click-select">
-                <span>{currencyLabel(quickForm.currency)}</span>
-                <span>{selectedQuickCountry.flag}</span>
+              <div className="input-group">
+                <label htmlFor="quickCurrency">Currency</label>
+
+                <input
+                  id="quickCurrency"
+                  name="quickCurrency"
+                  value={currencyLabel(quickForm.currency)}
+                  readOnly
+                />
               </div>
 
               <div className="bonus-card">
