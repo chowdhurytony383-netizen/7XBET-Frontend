@@ -267,7 +267,7 @@ export default function HomePage() {
           <div className="home-hero-image">
             <div className="home-brand-card">
               <div className="home-brand-logo">
-                <img src="/images/brand/7xbet-logo.svg" alt="7XBET" />
+                <img src="/images/brand/7xbet-premium-logo.png" alt="7XBET" />
               </div>
 
               <p>Premium • Professional • Stylish</p>

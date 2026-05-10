@@ -400,3 +400,37 @@
     max-height: 52px !important;
   }
 }
+
+/* Premium uploaded logo in home hero banner */
+.home-brand-card {
+  min-height: 190px !important;
+  padding: 18px 18px 14px !important;
+}
+
+.home-brand-logo {
+  width: min(96%, 720px) !important;
+}
+
+.home-brand-logo img {
+  width: 100% !important;
+  max-height: 190px !important;
+  object-fit: contain !important;
+  filter:
+    drop-shadow(0 0 16px rgba(0, 195, 255, .45))
+    drop-shadow(0 12px 24px rgba(0, 0, 0, .25)) !important;
+}
+
+@media (max-width: 560px) {
+  .home-brand-card {
+    min-height: 122px !important;
+    padding: 10px 12px 8px !important;
+  }
+
+  .home-brand-logo {
+    width: 96% !important;
+  }
+
+  .home-brand-logo img {
+    max-height: 92px !important;
+  }
+}
