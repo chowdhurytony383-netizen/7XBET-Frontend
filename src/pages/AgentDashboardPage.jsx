@@ -86,8 +86,8 @@ export default function AgentDashboardPage() {
       <section className="card admin-table-card">
         <h3>Agent balance history</h3>
         <p className="agent-dashboard-commission-note">
-          Deposit commission: 6 per 100. Withdraw commission: 2 per 100.
-          Commission Balance moves to main Balance automatically on the 3rd day of every month.
+          Deposit commission: 6%. Withdraw commission: 2%. It is calculated in this agent's own currency
+          (for example BDT 100 → BDT 6, USD 1 → USD 0.06). Commission Balance moves to main Balance automatically on the 3rd day of every month.
         </p>
         <div className="table-scroll">
           <table className="admin-table">
