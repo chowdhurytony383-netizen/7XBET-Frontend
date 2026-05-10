@@ -140,7 +140,45 @@ function GenericDataList({ items = [], empty = 'Not available yet' }) {
 
 function ScoresPanel({ scores }) {
   if (!scores) return <p className="sports-detail-muted">Not available yet</p>;
-  return <pre className="sports-detail-mini-json">{JSON.stringify(scores, null, 2)}</pre>;
+
+  const normalized = (() => {
+    if (Array.isArray(scores)) {
+      return scores.map((score, index) => ({
+        label: textValue(score.period || score.type || score.name || score.description || score.id || `Period ${index + 1}`),
+        home: score.home ?? score.localteam_score ?? score.home_score ?? score.score?.home ?? score.scores?.home,
+        away: score.away ?? score.visitorteam_score ?? score.away_score ?? score.score?.away ?? score.scores?.away,
+      }));
+    }
+
+    if (typeof scores === 'object') {
+      const home = scores.home ?? scores.localteam_score ?? scores.home_score ?? scores.score?.home ?? scores.scores?.home;
+      const away = scores.away ?? scores.visitorteam_score ?? scores.away_score ?? scores.score?.away ?? scores.scores?.away;
+      if (home !== undefined || away !== undefined) {
+        return [{ label: 'Current score', home, away }];
+      }
+
+      return Object.entries(scores).map(([key, value]) => ({
+        label: key,
+        home: typeof value === 'object' ? value.home ?? value.localteam_score ?? value.home_score : value,
+        away: typeof value === 'object' ? value.away ?? value.visitorteam_score ?? value.away_score : undefined,
+      }));
+    }
+
+    return [];
+  })().filter((item) => item.home !== undefined || item.away !== undefined);
+
+  if (!normalized.length) return <p className="sports-detail-muted">Not available yet</p>;
+
+  return (
+    <div className="sports-detail-stat-grid">
+      {normalized.map((item, index) => (
+        <div className="sports-detail-stat" key={`${item.label}-${index}`}>
+          <span>{textValue(item.label, `Score ${index + 1}`)}</span>
+          <strong>{textValue(item.home)}{item.away !== undefined ? ` - ${textValue(item.away)}` : ''}</strong>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function OddsList({ market }) {
@@ -164,7 +202,6 @@ function MatchDetailsModal({ data, loading, onClose }) {
   const event = data?.event || data?.data?.event;
   const market = data?.market || data?.data?.market;
   const details = data?.details || data?.data?.details;
-  const rawDetails = details?.raw || details;
 
   return (
     <div className="sports-detail-backdrop" role="dialog" aria-modal="true">
@@ -248,12 +285,6 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <GenericDataList items={details?.standings} />
             </DetailsSection>
 
-            <DetailsSection icon={<Info size={18} />} title="Full provider JSON">
-              <details className="sports-detail-raw">
-                <summary>Open raw provider data</summary>
-                <pre>{JSON.stringify(rawDetails || {}, null, 2)}</pre>
-              </details>
-            </DetailsSection>
           </div>
         ) : null}
       </div>
@@ -550,15 +581,6 @@ export default function SportsPage() {
         <span className="sports-live-sync-pill"><Radio size={16} /> Auto update</span>
       </div>
 
-      {!status?.enabled ? (
-        <div className="sports-warning-panel">
-          <ShieldCheck size={20} />
-          <div>
-            <strong>Provider API key missing</strong>
-            <p>Add SPORTS_ODDS_API_KEY in Render Backend Environment to load automatic odds.</p>
-          </div>
-        </div>
-      ) : null}
 
       <div className="sports-layout-grid">
         <section className="sports-live-list">
@@ -590,17 +612,6 @@ export default function SportsPage() {
         </section>
 
         <aside className="sports-side-panel">
-          <div className="sports-provider-card">
-            <Trophy size={22} />
-            <h3>Automatic System</h3>
-            <p>Odds and scores sync automatically. Admin does not need to create odds manually.</p>
-            <div><span>Odds provider</span><strong>{status?.provider || 'theoddsapi'}</strong></div>
-            <div><span>Details provider</span><strong>{status?.detailsEnabled ? (status?.detailsProvider || 'sportmonks') : 'OFF'}</strong></div>
-            <div><span>Auto settlement</span><strong>{status?.autoSettlement ? 'ON' : 'OFF'}</strong></div>
-            <div><span>Last odds sync</span><strong>{status?.lastOdds?.finishedAt ? formatDate(status.lastOdds.finishedAt) : '—'}</strong></div>
-            <div><span>Last scores sync</span><strong>{status?.lastScores?.finishedAt ? formatDate(status.lastScores.finishedAt) : '—'}</strong></div>
-          </div>
-
           <div className="sports-provider-card">
             <h3>My Sports Bets</h3>
             <BetHistory bets={bets} />
