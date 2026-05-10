@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, ArrowUpFromLine, CreditCard, Globe2, LogOut, Shield, Wallet } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, BadgeDollarSign, CreditCard, Globe2, LogOut, Shield, Wallet } from 'lucide-react';
 import { AgentAPI } from '../api/agent.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -68,6 +68,7 @@ export default function AgentDashboardPage() {
       <div className="grid-4">
         <StatCard icon={Shield} label="Agent ID" value={agent?.agentId || '—'} />
         <StatCard icon={Wallet} label="Balance" value={formatCurrency(agent?.balance || 0, agent)} />
+        <StatCard icon={BadgeDollarSign} label="Commission Balance" value={formatCurrency(agent?.commissionBalance || 0, agent)} />
         <StatCard icon={Globe2} label="Country / Currency" value={`${agent?.country || 'Bangladesh'} / ${agent?.currency || 'BDT'}`} />
         <StatCard icon={ArrowDownToLine} label="Pending deposits" value={depositRequests.length} />
         <StatCard icon={ArrowUpFromLine} label="Pending withdrawals" value={withdrawRequests.length} />
@@ -84,6 +85,10 @@ export default function AgentDashboardPage() {
 
       <section className="card admin-table-card">
         <h3>Agent balance history</h3>
+        <p className="agent-dashboard-commission-note">
+          Deposit commission: 6 per 100. Withdraw commission: 2 per 100.
+          Commission Balance moves to main Balance automatically on the 3rd day of every month.
+        </p>
         <div className="table-scroll">
           <table className="admin-table">
             <thead>
