@@ -7,6 +7,7 @@ import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
 import PageHeader from '../components/PageHeader.jsx';
+import CryptoMethodIcon, { getCryptoBrandClass, getCryptoShortLabel } from '../components/CryptoMethodIcon.jsx';
 import './DepositPage.css';
 
 const categoryLabels = {
@@ -21,22 +22,6 @@ const categoryOrder = ['recommended', 'e-wallets', 'bank', 'crypto', 'other'];
 
 function getOptionImage(option) {
   return option?.image || option?.logo || '';
-}
-
-function cryptoLogoText(option) {
-  const symbol = option.symbol || option.coin || option.methodTitle || '?';
-  return String(symbol).slice(0, 4).toUpperCase();
-}
-
-function cryptoLogoClass(option) {
-  const value = String(`${option?.symbol || ''} ${option?.coin || ''} ${option?.methodTitle || ''} ${option?.key || ''}`).toUpperCase();
-  if (value.includes('BTC') || value.includes('BITCOIN')) return 'crypto-btc';
-  if (value.includes('ETH') || value.includes('ETHEREUM')) return 'crypto-eth';
-  if (value.includes('USDT') || value.includes('TETHER')) return 'crypto-usdt';
-  if (value.includes('LTC') || value.includes('LITECOIN')) return 'crypto-ltc';
-  if (value.includes('BNB') || value.includes('BSC') || value.includes('BINANCE')) return 'crypto-bnb';
-  if (value.includes('TRX') || value.includes('TRON')) return 'crypto-trx';
-  return 'crypto-default';
 }
 
 function getQrUrl(value) {
@@ -251,11 +236,11 @@ Before making a crypto deposit, please carefully verify that you have selected t
             <div className="deposit-method-grid">
               {group.items.map((option) => (
                 <button className={`deposit-method-card ${option.type === 'crypto' ? 'crypto-method-card' : ''}`} key={option.id || option.key || option.methodKey} type="button" onClick={() => openDepositPopup(option)}>
-                  <span className={`deposit-method-logo-box ${option.type === 'crypto' ? `crypto-logo-token ${cryptoLogoClass(option)}` : ''}`}>
-                    {getOptionImage(option) ? (
+                  <span className={`deposit-method-logo-box ${option.type === 'crypto' ? `crypto-logo-token ${getCryptoBrandClass(option)}` : ''}`}>
+                    {option.type === 'crypto' ? (
+                      <CryptoMethodIcon option={option} />
+                    ) : getOptionImage(option) ? (
                       <img src={getOptionImage(option)} alt={option.methodTitle} />
-                    ) : option.type === 'crypto' ? (
-                      <strong>{cryptoLogoText(option)}</strong>
                     ) : (
                       <strong>{String(option.methodTitle || '?').slice(0, 2)}</strong>
                     )}
@@ -333,8 +318,9 @@ Before making a crypto deposit, please carefully verify that you have selected t
           <div className="deposit-popup crypto-deposit-popup" onMouseDown={(event) => event.stopPropagation()}>
             <button className="deposit-popup-close" type="button" onClick={closeCryptoPopup} aria-label="Close"><X size={28} /></button>
 
-            <div className={`deposit-popup-logo crypto-popup-logo crypto-logo-token ${cryptoLogoClass(selectedCrypto)}`}>
-              <strong>{cryptoLogoText(selectedCrypto)}</strong>
+            <div className={`deposit-popup-logo crypto-popup-logo crypto-logo-token ${getCryptoBrandClass(selectedCrypto)}`}>
+              <CryptoMethodIcon option={selectedCrypto} size="popup" />
+              <strong className="crypto-popup-symbol">{getCryptoShortLabel(selectedCrypto)}</strong>
             </div>
 
             <div className="crypto-popup-title">

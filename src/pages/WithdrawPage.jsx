@@ -7,6 +7,7 @@ import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
 import PageHeader from '../components/PageHeader.jsx';
+import CryptoMethodIcon, { getCryptoBrandClass } from '../components/CryptoMethodIcon.jsx';
 import './DepositPage.css';
 import './WithdrawPage.css';
 
@@ -26,17 +27,6 @@ function getOptionImage(option) {
 
 function compactTitle(value) {
   return String(value || '?').slice(0, 4).toUpperCase();
-}
-
-function cryptoLogoClass(option) {
-  const value = String(`${option?.symbol || ''} ${option?.coin || ''} ${option?.methodTitle || ''} ${option?.key || ''} ${option?.network || ''}`).toUpperCase();
-  if (value.includes('BTC') || value.includes('BITCOIN')) return 'crypto-btc';
-  if (value.includes('ETH') || value.includes('ETHEREUM')) return 'crypto-eth';
-  if (value.includes('USDT') || value.includes('TETHER')) return 'crypto-usdt';
-  if (value.includes('LTC') || value.includes('LITECOIN')) return 'crypto-ltc';
-  if (value.includes('BNB') || value.includes('BSC') || value.includes('BINANCE')) return 'crypto-bnb';
-  if (value.includes('TRX') || value.includes('TRON')) return 'crypto-trx';
-  return 'crypto-default';
 }
 
 function buildReceivingPlaceholder(option) {
@@ -259,8 +249,10 @@ Before making a crypto withdrawal, please carefully verify the correct network a
             <div className="deposit-method-grid withdraw-method-grid">
               {group.items.map((option) => (
                 <button className={`deposit-method-card withdraw-method-card ${option.type === 'crypto-withdraw' ? 'crypto-method-card' : ''}`} key={option.id || option.key || option.methodKey} type="button" onClick={() => openWithdrawPopup(option)}>
-                  <span className={`deposit-method-logo-box ${option.type === 'crypto-withdraw' ? `crypto-logo-token ${cryptoLogoClass(option)}` : ''}`}>
-                    {getOptionImage(option) ? (
+                  <span className={`deposit-method-logo-box ${option.type === 'crypto-withdraw' ? `crypto-logo-token ${getCryptoBrandClass(option)}` : ''}`}>
+                    {option.type === 'crypto-withdraw' ? (
+                      <CryptoMethodIcon option={option} />
+                    ) : getOptionImage(option) ? (
                       <img src={getOptionImage(option)} alt={option.methodTitle} />
                     ) : (
                       <strong>{compactTitle(option.methodTitle || option.coin)}</strong>
@@ -290,8 +282,14 @@ Before making a crypto withdrawal, please carefully verify the correct network a
           <form className="deposit-popup withdraw-popup" onSubmit={submitWithdrawRequest} onMouseDown={(event) => event.stopPropagation()}>
             <button className="deposit-popup-close" type="button" onClick={closeWithdrawPopup} aria-label="Close"><X size={28} /></button>
 
-            <div className={`deposit-popup-logo ${isCryptoWithdraw ? `crypto-popup-logo crypto-logo-token ${cryptoLogoClass(selectedOption)}` : ''}`}>
-              {selectedOption.image ? <img src={selectedOption.image} alt={selectedOption.methodTitle} /> : <strong>{compactTitle(selectedOption.methodTitle || selectedOption.coin)}</strong>}
+            <div className={`deposit-popup-logo ${isCryptoWithdraw ? `crypto-popup-logo crypto-logo-token ${getCryptoBrandClass(selectedOption)}` : ''}`}>
+              {isCryptoWithdraw ? (
+                <CryptoMethodIcon option={selectedOption} size="popup" />
+              ) : selectedOption.image ? (
+                <img src={selectedOption.image} alt={selectedOption.methodTitle} />
+              ) : (
+                <strong>{compactTitle(selectedOption.methodTitle || selectedOption.coin)}</strong>
+              )}
             </div>
 
             <div className="withdraw-popup-heading">
