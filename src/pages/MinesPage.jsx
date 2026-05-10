@@ -110,10 +110,10 @@ export default function MinesPage() {
   };
 
   return (
-    <div className="page-stack">
+    <div className="page-stack mines-page">
       <PageHeader eyebrow="Game" title="Mines" description="Start, reveal and cash out actions are handled by backend mines routes." />
 
-      <div className="grid-4">
+      <div className="grid-4 mines-stats-grid">
         <StatCard icon={Wallet} label="Wallet balance" value={formatCurrency(user?.wallet)} />
         <StatCard icon={Bomb} label="Mines" value={form.minesCount} />
         <StatCard icon={Gem} label="Safe tiles" value={safeCount} />
