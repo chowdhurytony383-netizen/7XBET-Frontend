@@ -55,3 +55,51 @@
     padding: 4px 8px;
   }
 }
+
+/* Premium image logo: exact uploaded 7XBET artwork */
+.logo-mark {
+  width: 172px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(0, 195, 255, .35));
+}
+
+.logo-mark-compact {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 0;
+}
+
+@media (max-width: 680px) {
+  .logo-mark {
+    width: 132px;
+    height: 46px;
+    padding: 0;
+  }
+
+  .logo-mark-compact {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo-mark {
+    width: 126px;
+    height: 44px;
+    padding: 0;
+  }
+}

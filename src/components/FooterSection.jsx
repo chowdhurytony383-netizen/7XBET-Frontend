@@ -13,10 +13,9 @@ const FooterSection = () => {
     <footer className="footer-wrapper">
       <div className="footer-top">
         <div className="footer-brand">
-          <h2 className="footer-logo">
-            <span className="logo-white">7X</span>
-            <span className="logo-green">BET</span>
-          </h2>
+          <Link className="footer-logo" to="/" aria-label="7XBET home">
+            <img src="/images/brand/7xbet-premium-logo.png" alt="7XBET" loading="lazy" />
+          </Link>
           <p className="footer-support">
             For questions or suggestions, please Contact us:
  support-en@7xbet.asia

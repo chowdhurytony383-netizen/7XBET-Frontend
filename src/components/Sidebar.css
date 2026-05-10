@@ -277,3 +277,17 @@ body {
 body > .skiptranslate {
   display: none !important;
 }
+
+/* Sidebar premium logo fit */
+.sidebar-top .logo-mark {
+  width: 220px;
+  height: 86px;
+  max-width: 100%;
+}
+
+@media (max-width: 680px) {
+  .sidebar-top .logo-mark {
+    width: 220px;
+    height: 86px;
+  }
+}

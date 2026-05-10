@@ -4,7 +4,7 @@ import './Logo.css';
 export default function Logo({ compact = false, className = '' }) {
   const src = compact
     ? '/images/brand/7xbet-icon.svg'
-    : '/images/brand/7xbet-logo.svg';
+    : '/images/brand/7xbet-premium-logo.png';
 
   return (
     <Link
