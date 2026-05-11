@@ -26,11 +26,14 @@ export default function VerificationPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const status = useMemo(() => user?.verificationStatus || user?.kyc?.status || user?.identityVerification?.status || 'Not submitted', [user]);
+  const userId = user?._id || user?.id || '';
 
   useEffect(() => {
     let active = true;
+
     async function load() {
       setLoading(true);
+
       const profileValues = {
         fullName: user?.fullName || user?.name || '',
         email: user?.email || '',
@@ -43,10 +46,13 @@ export default function VerificationPage() {
         documentType: user?.documentType || user?.kyc?.documentType || 'NID',
         documentNumber: user?.documentNumber || user?.kyc?.documentNumber || '',
       };
+
       try {
         const response = await VerificationAPI.getMine();
         const data = response.data?.data || response.data?.verification || response.data || {};
+
         if (!active) return;
+
         setForm({
           ...profileValues,
           fullName: data.fullName || profileValues.fullName,
@@ -66,9 +72,13 @@ export default function VerificationPage() {
         if (active) setLoading(false);
       }
     }
+
     load();
-    return () => { active = false; };
-  }, [user]);
+
+    return () => {
+      active = false;
+    };
+  }, [userId]);
 
   const updateField = (event) => {
     const { name, value } = event.target;
