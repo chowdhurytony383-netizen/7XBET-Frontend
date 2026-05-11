@@ -10,7 +10,7 @@ export default function SlotsPage() {
       endpoint="/casino/slots"
       emptyTitle="No slots available"
       emptyMessage=" "
-      actions={[{ to: '/', label: 'Main page' }]}
+      actions={[{ to: '/jili-games', label: 'JILI games' }, { to: '/', label: 'Main page' }]}
     />
   );
 }
