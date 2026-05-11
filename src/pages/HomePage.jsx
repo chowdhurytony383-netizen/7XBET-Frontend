@@ -5,6 +5,7 @@ import {
   Activity,
   BarChart3,
   CircleDollarSign,
+  Flame,
   LogIn,
   Trophy,
   UserPlus,
@@ -13,6 +14,7 @@ import {
 
 import { AccountAPI } from '../api/account.js';
 import { GamesAPI } from '../api/games.js';
+import { JiliAPI } from '../api/jili.js';
 import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -52,6 +54,133 @@ function normalizeObject(payload, keys = []) {
   }
 
   return payload?.data || null;
+}
+
+
+const HOT_GAME_IDS = [49, 109, 223, 51, 103, 126, 2, 5, 6, 27, 30, 1];
+const HOT_GAME_NAMES = [
+  'super ace',
+  'fortune gems',
+  'money coming',
+  'golden empire',
+  'roma',
+  'crazy777',
+  'royal fishing',
+  'jackpot fishing',
+  'boxing king',
+  'lucky coming',
+  'fortune coins',
+  'cash coin',
+];
+
+const JILI_CATEGORY_ID_MAP = {
+  1: 'slots',
+  2: 'cards',
+  3: 'arcade',
+  5: 'fish',
+  8: 'casino',
+};
+
+function pickJiliGameName(raw = {}) {
+  const candidates = [
+    raw.displayName,
+    raw.Name,
+    raw.GameName,
+    raw.name,
+    raw.gameName,
+    raw.title,
+    raw.config?.providerGame?.Name,
+    raw.config?.providerGame?.name,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim().replace(/^JILI\s+/i, '');
+    }
+
+    if (candidate && typeof candidate === 'object') {
+      const value = candidate['en-US'] || candidate.en_US || candidate.en || candidate.English || candidate['zh-CN'] || candidate['zh-TW'];
+      if (value) return String(value).trim().replace(/^JILI\s+/i, '');
+    }
+  }
+
+  return '';
+}
+
+function pickJiliGameId(raw = {}) {
+  return raw.GameId || raw.gameId || raw.GameID || raw.id || raw.game || raw.gameCode || raw.code || raw.config?.gameId || raw.config?.providerGame?.GameId;
+}
+
+function detectJiliCategory(raw = {}) {
+  const typeSource = String(
+    raw.Type
+    || raw.type
+    || raw.GameType
+    || raw.gameType
+    || raw.Category
+    || raw.category
+    || raw.categoryLabel
+    || raw.GameCategoryName
+    || raw.gameCategoryName
+    || raw.config?.categoryLabel
+    || raw.config?.providerGame?.Type
+    || raw.config?.providerGame?.type
+    || raw.config?.providerGame?.Category
+    || raw.config?.providerGame?.category
+    || ''
+  ).toLowerCase();
+
+  if (typeSource.includes('fish')) return 'Fishing';
+  if (typeSource.includes('card') || typeSource.includes('poker') || typeSource.includes('rummy') || typeSource.includes('teenpatti')) return 'Card';
+  if (typeSource.includes('crash') || typeSource.includes('mines') || typeSource.includes('plinko') || typeSource.includes('limbo')) return 'Crash';
+  if (typeSource.includes('slot')) return 'Slots';
+  if (typeSource.includes('arcade') || typeSource.includes('lobby')) return 'Arcade';
+  if (typeSource.includes('casino') || typeSource.includes('table') || typeSource.includes('bingo') || typeSource.includes('roulette') || typeSource.includes('baccarat')) return 'Casino';
+
+  const categoryId = Number(raw.GameCategoryId || raw.gameCategoryId || raw.categoryId || raw.gameCategory || raw.config?.providerGame?.GameCategoryId || 0);
+  const key = JILI_CATEGORY_ID_MAP[categoryId];
+  if (key === 'slots') return 'Slots';
+  if (key === 'fish') return 'Fishing';
+  if (key === 'cards') return 'Card';
+  if (key === 'arcade') return 'Arcade';
+  return 'Casino';
+}
+
+function normalizeJiliGame(raw = {}) {
+  const gameId = pickJiliGameId(raw);
+  const name = pickJiliGameName(raw) || `JILI Game ${gameId}`;
+  const image = raw.Image || raw.image || raw.Icon || raw.icon || raw.thumbnail || raw.config?.image || '';
+  const categoryLabel = detectJiliCategory(raw);
+
+  return {
+    gameId,
+    name,
+    image,
+    categoryLabel,
+    hotScore: HOT_GAME_IDS.indexOf(Number(gameId)),
+  };
+}
+
+function pickHotJiliGames(list = []) {
+  const normalized = list
+    .map(normalizeJiliGame)
+    .filter((game) => game.gameId)
+    .filter((game, index, all) => all.findIndex((item) => String(item.gameId) === String(game.gameId)) === index);
+
+  const byPreferredId = normalized
+    .filter((game) => HOT_GAME_IDS.includes(Number(game.gameId)))
+    .sort((a, b) => HOT_GAME_IDS.indexOf(Number(a.gameId)) - HOT_GAME_IDS.indexOf(Number(b.gameId)));
+
+  const byPreferredName = normalized.filter((game) => {
+    const name = game.name.toLowerCase();
+    return !byPreferredId.some((item) => String(item.gameId) === String(game.gameId))
+      && HOT_GAME_NAMES.some((keyword) => name.includes(keyword));
+  });
+
+  const selected = [...byPreferredId, ...byPreferredName];
+  const fallback = normalized.filter((game) => !selected.some((item) => String(item.gameId) === String(game.gameId)));
+
+  return [...selected, ...fallback].slice(0, 12);
 }
 
 const casinoLobbyCategories = [
@@ -101,6 +230,8 @@ export default function HomePage() {
   const { user, refreshUser } = useAuth();
 
   const [games, setGames] = useState([]);
+  const [jiliGames, setJiliGames] = useState([]);
+  const [jiliLoading, setJiliLoading] = useState(true);
   const [sportsCategories, setSportsCategories] = useState([]);
   const [liveMatches, setLiveMatches] = useState([]);
   const [matchOfTheDay, setMatchOfTheDay] = useState(null);
@@ -129,6 +260,29 @@ export default function HomePage() {
     }
 
     loadGames();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadJiliGames() {
+      setJiliLoading(true);
+      try {
+        const response = await JiliAPI.games();
+        if (!active) return;
+        setJiliGames(normalizeList(response.data, ['games', 'data']));
+      } catch (_) {
+        if (active) setJiliGames([]);
+      } finally {
+        if (active) setJiliLoading(false);
+      }
+    }
+
+    loadJiliGames();
 
     return () => {
       active = false;
@@ -258,6 +412,7 @@ export default function HomePage() {
   };
 
   const featuredGames = useMemo(() => games.slice(0, 2), [games]);
+  const hotJiliGames = useMemo(() => pickHotJiliGames(jiliGames), [jiliGames]);
 
   return (
     <>
@@ -351,6 +506,38 @@ export default function HomePage() {
                 <strong>{category.countLabel}</strong>
               </Link>
             ))}
+          </div>
+
+          <div className="casino-hot-panel">
+            <div className="casino-hot-heading">
+              <div>
+                <span><Flame size={16} /> Hot</span>
+                <h3>Hot Games</h3>
+              </div>
+              <Link to="/jili/80?title=lobby">Open Lobby</Link>
+            </div>
+
+            {jiliLoading ? (
+              <div className="casino-hot-loading">Loading hot games...</div>
+            ) : hotJiliGames.length ? (
+              <div className="casino-hot-grid">
+                {hotJiliGames.map((game) => (
+                  <Link
+                    className="casino-hot-card"
+                    key={`hot-${game.gameId}`}
+                    to={`/jili/${game.gameId}?title=${encodeURIComponent(game.name)}`}
+                  >
+                    <div className="casino-hot-media">
+                      {game.image ? <img src={game.image} alt={game.name} /> : <span>🎮</span>}
+                    </div>
+                    <strong>{game.name}</strong>
+                    <em>{game.categoryLabel}</em>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="casino-hot-loading">Hot games not available right now.</div>
+            )}
           </div>
         </section>
 
