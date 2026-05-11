@@ -1,6 +1,8 @@
 .jili-games-hero,
+.jili-category-panel,
 .jili-games-filter,
-.jili-games-note {
+.jili-games-note,
+.jili-games-empty {
   border: 1px solid var(--border);
   border-radius: 26px;
   background: linear-gradient(135deg, rgba(15,23,42,.94), rgba(30,41,59,.74));
@@ -8,6 +10,10 @@
 }
 
 .jili-games-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   padding: 34px;
 }
 
@@ -20,23 +26,121 @@
 
 .jili-games-hero p,
 .jili-game-card-body p,
-.jili-game-card-body span {
+.jili-game-card-body span,
+.jili-games-empty p {
   color: var(--muted);
 }
 
+.jili-games-hero-stat {
+  min-width: 150px;
+  display: grid;
+  gap: 4px;
+  place-items: center;
+  border: 1px solid rgba(34,197,94,.28);
+  border-radius: 24px;
+  background: rgba(34,197,94,.10);
+  padding: 18px;
+  color: #bbf7d0;
+}
+
+.jili-games-hero-stat strong {
+  font-size: 2.1rem;
+  color: #fff;
+}
+
+.jili-category-panel {
+  padding: 18px;
+}
+
+.jili-category-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.jili-category-header h2 {
+  margin: 6px 0 0;
+}
+
+.jili-category-header > span {
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #bbf7d0;
+  font-weight: 900;
+  background: rgba(15,23,42,.54);
+}
+
+.jili-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.jili-category-card {
+  min-height: 94px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(148,163,184,.20);
+  border-radius: 20px;
+  background: rgba(8,19,27,.78);
+  color: #fff;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.jili-category-card:hover,
+.jili-category-card.active {
+  transform: translateY(-2px);
+  border-color: rgba(34,197,94,.56);
+  background: linear-gradient(135deg, rgba(34,197,94,.20), rgba(15,23,42,.86));
+}
+
+.jili-category-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: rgba(34,197,94,.14);
+  font-size: 1.25rem;
+}
+
+.jili-category-name,
+.jili-category-card strong {
+  font-weight: 900;
+}
+
+.jili-category-card strong {
+  color: #bbf7d0;
+}
+
 .jili-games-filter {
-  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  color: var(--muted);
 }
 
 .jili-games-filter input {
   width: 100%;
-  min-height: 52px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: rgba(8,19,27,.88);
+  min-height: 46px;
+  border: 0;
+  outline: 0;
+  background: transparent;
   color: #fff;
-  padding: 0 16px;
   font-weight: 800;
+}
+
+.jili-games-filter input::placeholder {
+  color: rgba(148,163,184,.72);
 }
 
 .jili-games-note {
@@ -47,7 +151,7 @@
 
 .jili-games-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -66,7 +170,8 @@
 }
 
 .jili-game-card-media {
-  height: 180px;
+  position: relative;
+  height: 164px;
   display: grid;
   place-items: center;
   background: radial-gradient(circle at 50% 20%, rgba(34,197,94,.22), rgba(15,23,42,.92));
@@ -79,6 +184,19 @@
   object-fit: cover;
 }
 
+.jili-game-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  border: 1px solid rgba(34,197,94,.35);
+  border-radius: 999px;
+  background: rgba(2,6,23,.72);
+  color: #bbf7d0;
+  padding: 6px 10px;
+  font-size: .78rem;
+  font-weight: 900;
+}
+
 .jili-game-card-body {
   display: grid;
   gap: 8px;
@@ -86,12 +204,32 @@
 }
 
 .jili-game-card-body h3 {
+  min-height: 2.75em;
   margin: 0;
-  font-size: 1.22rem;
+  font-size: 1.08rem;
+  line-height: 1.28;
 }
 
 .jili-game-card-body p {
+  min-height: 1.25em;
   margin: 0;
+}
+
+.jili-game-tags {
+  min-height: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.jili-game-tags em {
+  border-radius: 999px;
+  background: rgba(34,197,94,.12);
+  color: #bbf7d0;
+  padding: 4px 8px;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .jili-game-card-body strong {
@@ -101,16 +239,66 @@
   color: #bbf7d0;
 }
 
+.jili-load-more {
+  width: 100%;
+  border: 1px solid rgba(34,197,94,.35);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(34,197,94,.92), rgba(37,99,235,.92));
+  color: #fff;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.jili-games-empty {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 220px;
+  padding: 24px;
+  text-align: center;
+  color: #bbf7d0;
+}
+
+.jili-games-empty h3 {
+  margin: 4px 0 0;
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .jili-games-grid,
+  .jili-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
-  .jili-games-grid {
+  .jili-games-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .jili-games-grid,
+  .jili-category-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
   .jili-games-hero,
+  .jili-category-panel,
   .jili-games-filter {
     border-radius: 18px;
-    padding: 18px;
+    padding: 16px;
+  }
+
+  .jili-category-card {
+    min-height: 76px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .jili-category-icon {
+    display: none;
   }
 
   .jili-game-card {
@@ -118,10 +306,14 @@
   }
 
   .jili-game-card-media {
-    height: 120px;
+    height: 118px;
   }
 
   .jili-game-card-body {
     padding: 12px;
+  }
+
+  .jili-game-card-body h3 {
+    font-size: .98rem;
   }
 }
