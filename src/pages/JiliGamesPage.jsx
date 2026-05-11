@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Gamepad2, Play, Search } from 'lucide-react';
 import { JiliAPI } from '../api/jili.js';
 import { getApiError } from '../api/client.js';
@@ -21,6 +21,11 @@ const CATEGORY_BY_KEY = CATEGORY_DEFINITIONS.reduce((acc, item) => {
   acc[item.key] = item;
   return acc;
 }, {});
+
+function normalizeCategoryKey(value) {
+  const key = String(value || 'all').trim().toLowerCase();
+  return CATEGORY_BY_KEY[key] ? key : 'all';
+}
 
 const CATEGORY_ID_MAP = {
   1: 'slots',
@@ -140,9 +145,10 @@ function sortGames(a, b) {
 }
 
 export default function JiliGamesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [games, setGames] = useState([]);
   const [query, setQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(() => normalizeCategoryKey(searchParams.get('category')));
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -172,8 +178,24 @@ export default function JiliGamesPage() {
   }, []);
 
   useEffect(() => {
+    const categoryFromUrl = normalizeCategoryKey(searchParams.get('category'));
+    setSelectedCategory((current) => (current === categoryFromUrl ? current : categoryFromUrl));
+  }, [searchParams]);
+
+  useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [query, selectedCategory]);
+
+  const changeCategory = (categoryKey) => {
+    const nextCategory = normalizeCategoryKey(categoryKey);
+    setSelectedCategory(nextCategory);
+
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextCategory === 'all') nextParams.delete('category');
+    else nextParams.set('category', nextCategory);
+
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const normalizedGames = useMemo(() => {
     const seen = new Set();
@@ -246,7 +268,7 @@ export default function JiliGamesPage() {
               type="button"
               key={category.key}
               className={`jili-category-card ${selectedCategory === category.key ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category.key)}
+              onClick={() => changeCategory(category.key)}
             >
               <span className="jili-category-icon">{category.icon}</span>
               <span className="jili-category-name">{category.label}</span>

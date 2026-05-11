@@ -54,6 +54,49 @@ function normalizeObject(payload, keys = []) {
   return payload?.data || null;
 }
 
+const casinoLobbyCategories = [
+  {
+    key: 'slots',
+    title: 'Slots',
+    countLabel: '153 games',
+    icon: '🎰',
+    description: 'JILI slot games, jackpots and bonus rounds.',
+    to: '/jili-games?category=slots',
+  },
+  {
+    key: 'fish',
+    title: 'Fishing',
+    countLabel: '15 games',
+    icon: '🐟',
+    description: 'Fishing lobby with fast arcade-style action.',
+    to: '/jili-games?category=fish',
+  },
+  {
+    key: 'casino',
+    title: 'Table / Casino',
+    countLabel: '75 games',
+    icon: '♦️',
+    description: 'Roulette, baccarat, bingo and casino table games.',
+    to: '/jili-games?category=casino',
+  },
+  {
+    key: 'cards',
+    title: 'Card / Poker',
+    countLabel: '21 games',
+    icon: '♠️',
+    description: 'Poker, rummy and card game collection.',
+    to: '/jili-games?category=cards',
+  },
+  {
+    key: 'arcade',
+    title: 'Crash / Arcade',
+    countLabel: '2 games',
+    icon: '🚀',
+    description: 'Crash-style and arcade lobby games.',
+    to: '/jili-games?category=arcade',
+  },
+];
+
 export default function HomePage() {
   const { user, refreshUser } = useAuth();
 
@@ -282,6 +325,34 @@ export default function HomePage() {
           matchOfTheDay={matchOfTheDay}
           onSelectBet={addHomeSelection}
         />
+
+
+        <section className="casino-lobby-section">
+          <div className="casino-lobby-heading">
+            <div>
+              <span className="page-eyebrow">Casino</span>
+              <h2>Casino Lobby</h2>
+              <p>Category অনুযায়ী JILI casino games দেখুন—Slots, Fishing, Table/Casino, Card/Poker এবং Crash/Arcade।</p>
+            </div>
+
+            <Link className="btn btn-soft casino-lobby-view-all" to="/jili-games">
+              View all games
+            </Link>
+          </div>
+
+          <div className="casino-lobby-grid">
+            {casinoLobbyCategories.map((category) => (
+              <Link className={`casino-lobby-card casino-lobby-card-${category.key}`} key={category.key} to={category.to}>
+                <span className="casino-lobby-icon" aria-hidden="true">{category.icon}</span>
+                <div>
+                  <h3>{category.title}</h3>
+                  <p>{category.description}</p>
+                </div>
+                <strong>{category.countLabel}</strong>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {error && <div className="auth-message">{error}</div>}
 
