@@ -609,3 +609,122 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Mobile Casino Lobby: 3 small cards per row */
+@media (max-width: 720px) {
+  .casino-lobby-section {
+    gap: 10px !important;
+    padding: 12px 9px !important;
+    border-radius: 18px !important;
+  }
+
+  .casino-lobby-heading {
+    gap: 8px !important;
+  }
+
+  .casino-lobby-heading h2 {
+    margin: 4px 0 5px !important;
+    font-size: 1.35rem !important;
+  }
+
+  .casino-lobby-heading p {
+    display: none !important;
+  }
+
+  .casino-lobby-view-all {
+    min-height: 32px !important;
+    padding: 0 12px !important;
+    border-radius: 12px !important;
+    font-size: .8rem !important;
+  }
+
+  .casino-lobby-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .casino-lobby-card {
+    min-height: 96px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-content: center !important;
+    justify-items: center !important;
+    gap: 6px !important;
+    padding: 9px 6px !important;
+    border-radius: 15px !important;
+    text-align: center !important;
+  }
+
+  .casino-lobby-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+    font-size: 1rem !important;
+  }
+
+  .casino-lobby-card h3 {
+    margin: 0 !important;
+    font-size: .72rem !important;
+    line-height: 1.12 !important;
+    letter-spacing: -.01em !important;
+  }
+
+  .casino-lobby-card p {
+    display: none !important;
+  }
+
+  .casino-lobby-card strong {
+    width: auto !important;
+    grid-column: auto !important;
+    padding: 4px 6px !important;
+    border-radius: 999px !important;
+    font-size: .6rem !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .casino-lobby-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .casino-lobby-card {
+    min-height: 90px !important;
+    padding: 8px 5px !important;
+  }
+
+  .casino-lobby-icon {
+    width: 31px !important;
+    height: 31px !important;
+    font-size: .95rem !important;
+  }
+
+  .casino-lobby-card h3 {
+    font-size: .66rem !important;
+  }
+
+  .casino-lobby-card strong {
+    font-size: .56rem !important;
+    padding: 4px 5px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .casino-lobby-grid {
+    gap: 6px !important;
+  }
+
+  .casino-lobby-card {
+    min-height: 84px !important;
+    padding: 7px 4px !important;
+  }
+
+  .casino-lobby-card h3 {
+    font-size: .61rem !important;
+  }
+
+  .casino-lobby-card strong {
+    font-size: .51rem !important;
+  }
+}
