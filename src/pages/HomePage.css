@@ -817,8 +817,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  background: #020617;
 }
 
+.casino-hot-fallback,
 .casino-hot-media span {
   font-size: 2rem;
 }

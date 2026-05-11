@@ -146,16 +146,106 @@ function detectJiliCategory(raw = {}) {
   return 'Casino';
 }
 
+function isUsableImageValue(value) {
+  if (!value || typeof value !== 'string') return false;
+  const text = value.trim();
+  if (!text) return false;
+  if (/^(icon|download|material)$/i.test(text)) return false;
+  return /^(https?:)?\/\//i.test(text) || text.startsWith('/') || /\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(text);
+}
+
+function collectImageCandidates(raw = {}) {
+  const providerGame = raw.config?.providerGame || {};
+  const candidates = [
+    raw.image,
+    raw.Image,
+    raw.icon,
+    raw.Icon,
+    raw.thumbnail,
+    raw.thumb,
+    raw.logo,
+    raw.picture,
+    raw.cover,
+    raw.banner,
+    raw.displayImage,
+    raw.imageUrl,
+    raw.iconUrl,
+    raw.IconUrl,
+    raw.GameIcon,
+    raw.gameIcon,
+    raw.config?.image,
+    raw.config?.icon,
+    raw.config?.thumbnail,
+    raw.config?.imageUrl,
+    raw.config?.iconUrl,
+    providerGame.image,
+    providerGame.Image,
+    providerGame.icon,
+    providerGame.Icon,
+    providerGame.thumbnail,
+    providerGame.imageUrl,
+    providerGame.iconUrl,
+    providerGame.IconUrl,
+    providerGame.GameIcon,
+    providerGame.gameIcon,
+  ];
+
+  return candidates
+    .filter(isUsableImageValue)
+    .map((item) => String(item).trim())
+    .filter((item, index, all) => all.indexOf(item) === index);
+}
+
+function buildJiliImageSources(raw = {}, gameId) {
+  const id = String(gameId || '').trim();
+  const sources = [...collectImageCandidates(raw)];
+
+  if (id) {
+    // Put official JILI icons here after downloading from the ICON folder:
+    // public/images/jili/49.webp, public/images/jili/49.png, etc.
+    sources.push(
+      `/images/jili/${id}.webp`,
+      `/images/jili/${id}.png`,
+      `/images/jili/${id}.jpg`,
+      `/images/jili/jili-${id}.webp`,
+      `/images/jili/jili-${id}.png`,
+      `/images/jili/jili-${id}.jpg`
+    );
+  }
+
+  return sources.filter((item, index, all) => item && all.indexOf(item) === index);
+}
+
+function JiliHotGameImage({ game }) {
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const sources = game.imageSources || [];
+  const src = sources[sourceIndex];
+
+  if (!src) {
+    return <span className="casino-hot-fallback">🎮</span>;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={game.name}
+      loading="lazy"
+      decoding="async"
+      onError={() => setSourceIndex((index) => index + 1)}
+    />
+  );
+}
+
 function normalizeJiliGame(raw = {}) {
   const gameId = pickJiliGameId(raw);
   const name = pickJiliGameName(raw) || `JILI Game ${gameId}`;
-  const image = raw.Image || raw.image || raw.Icon || raw.icon || raw.thumbnail || raw.config?.image || '';
+  const imageSources = buildJiliImageSources(raw, gameId);
   const categoryLabel = detectJiliCategory(raw);
 
   return {
     gameId,
     name,
-    image,
+    imageSources,
     categoryLabel,
     hotScore: HOT_GAME_IDS.indexOf(Number(gameId)),
   };
@@ -528,7 +618,7 @@ export default function HomePage() {
                     to={`/jili/${game.gameId}?title=${encodeURIComponent(game.name)}`}
                   >
                     <div className="casino-hot-media">
-                      {game.image ? <img src={game.image} alt={game.name} /> : <span>🎮</span>}
+                      <JiliHotGameImage game={game} />
                     </div>
                     <strong>{game.name}</strong>
                     <em>{game.categoryLabel}</em>
