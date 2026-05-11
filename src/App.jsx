@@ -42,6 +42,8 @@ import AgentRequestsPage from './pages/agent/AgentRequestsPage.jsx';
 import DicePage from './pages/DicePage.jsx';
 import MinesPage from './pages/MinesPage.jsx';
 import SourceGamePage from './pages/SourceGamePage.jsx';
+import JiliGamesPage from './pages/JiliGamesPage.jsx';
+import JiliGamePage from './pages/JiliGamePage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import WalletPage from './pages/WalletPage.jsx';
 import DepositPage from './pages/DepositPage.jsx';
@@ -93,6 +95,7 @@ export default function App() {
         <Route path="crash" element={<CrashPage />} />
         <Route path="live-casino" element={<LiveCasinoPage />} />
         <Route path="slots" element={<SlotsPage />} />
+        <Route path="jili-games" element={<JiliGamesPage />} />
         <Route path="bonuses" element={<BonusesPage />} />
         <Route path="bonuses/welcome-bonus" element={<WelcomeBonusPage />} />
         <Route path="bonuses/cashback" element={<CashbackPage />} />
@@ -131,6 +134,7 @@ export default function App() {
           <Route path="games/dice" element={<DicePage />} />
           <Route path="games/mines" element={<MinesPage />} />
           <Route path="source-games/:gameCode" element={<SourceGamePage />} />
+          <Route path="jili/:gameId" element={<JiliGamePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="wallet" element={<WalletPage />} />
           <Route path="deposit" element={<DepositPage />} />
