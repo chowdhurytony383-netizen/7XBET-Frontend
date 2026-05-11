@@ -59,6 +59,11 @@ function resolveGameKey(game) {
 }
 
 function getGamePath(game, key) {
+  if (game?.provider === 'JILI' || game?.config?.provider === 'JILI') {
+    const gameId = game?.config?.gameId || game?.jiliGameId || game?.gameId || game?.gameCode?.replace(/^jili-?/i, '');
+    if (gameId) return `/jili/${gameId}?title=${encodeURIComponent(game?.displayName || game?.name || 'JILI Game')}`;
+  }
+
   if (game?.route) return game.route;
 
   if (game?.type === 'source' || game?.distribution === 'source') {
