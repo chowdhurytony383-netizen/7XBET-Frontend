@@ -16,6 +16,15 @@ import './ProfilePage.css';
 
 const DEFAULT_PROFILE_PICTURE = '/images/brand/7xbet-icon.svg';
 
+function normalizeOtpInput(value) {
+  return String(value || '')
+    .replace(/[\u09E6-\u09EF]/g, (digit) => String(digit.charCodeAt(0) - 0x09E6))
+    .replace(/[\u0660-\u0669]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[\u06F0-\u06F9]/g, (digit) => String(digit.charCodeAt(0) - 0x06F0))
+    .replace(/\D/g, '')
+    .slice(0, 6);
+}
+
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
@@ -137,7 +146,8 @@ export default function ProfilePage() {
   };
 
   const verifyEmailOtp = async () => {
-    const otp = String(emailOtp || '').trim();
+    const otp = normalizeOtpInput(emailOtp);
+    setEmailOtp(otp);
 
     if (!/^\d{6}$/.test(otp)) {
       toast.error('Enter the 6 digit OTP');
@@ -317,7 +327,8 @@ export default function ProfilePage() {
                   pattern="[0-9]*"
                   maxLength={6}
                   placeholder="Enter 6 digit OTP"
-                  onChange={(event) => setEmailOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                  autoComplete="one-time-code"
+                  onChange={(event) => setEmailOtp(normalizeOtpInput(event.target.value))}
                 />
                 <button
                   className="btn btn-primary"
