@@ -936,3 +936,20 @@
     font-size: .58rem !important;
   }
 }
+
+/* Home page: hide Casino Lobby category cards, keep only Hot Games */
+.casino-lobby-section-hot-only {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.casino-lobby-section-hot-only:before {
+  display: none !important;
+}
+
+.casino-lobby-section-hot-only .casino-hot-panel {
+  margin-top: 0 !important;
+}
