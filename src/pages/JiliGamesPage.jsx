@@ -393,18 +393,17 @@ export default function JiliGamesPage() {
                 to={`/jili/${game.gameId}?title=${encodeURIComponent(game.name)}`}
               >
                 <div className="jili-game-card-media">
-                  <JiliGameImage game={game} size={48} />
-                  <span className="jili-game-badge">{game.categoryLabel}</span>
+                  <JiliGameImage game={game} size={44} />
                 </div>
                 <div className="jili-game-card-body">
-                  <span>Game ID: {game.gameId}</span>
                   <h3>{game.name}</h3>
-                  <p>{game.type}</p>
-                  <div className="jili-game-tags">
-                    {game.jp && <em>JP</em>}
-                    {game.freeSpin && <em>Free Spin</em>}
-                  </div>
-                  <strong>Play <Play size={16} /></strong>
+                  {(game.jp || game.freeSpin) && (
+                    <div className="jili-game-tags">
+                      {game.jp && <em>JP</em>}
+                      {game.freeSpin && <em>Free Spin</em>}
+                    </div>
+                  )}
+                  <strong>Play <Play size={14} /></strong>
                 </div>
               </Link>
             ))}

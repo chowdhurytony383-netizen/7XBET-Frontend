@@ -424,3 +424,104 @@
     transition: none;
   }
 }
+
+
+/* Compact JILI game cards: remove repeated labels/game ID and reduce mobile height */
+.jili-game-badge,
+.jili-game-card-body > span,
+.jili-game-card-body > p {
+  display: none !important;
+}
+
+.jili-game-card-body {
+  gap: 7px;
+}
+
+.jili-game-card-body h3 {
+  min-height: 0;
+}
+
+.jili-game-tags {
+  min-height: 0;
+}
+
+.jili-game-card-body strong {
+  font-size: .92rem;
+}
+
+@media (max-width: 900px) {
+  .jili-games-page,
+  .jili-games-page--compact {
+    gap: 8px;
+  }
+
+  .jili-games-filter {
+    border-radius: 16px;
+    padding: 8px 12px;
+  }
+
+  .jili-games-filter input {
+    min-height: 36px;
+    font-size: .88rem;
+  }
+
+  .jili-games-grid {
+    gap: 8px;
+  }
+
+  .jili-game-card {
+    border-radius: 14px;
+  }
+
+  .jili-game-card-media {
+    height: 94px;
+  }
+
+  .jili-game-card-media svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .jili-game-card-body {
+    gap: 6px;
+    padding: 9px 10px 10px;
+  }
+
+  .jili-game-card-body h3 {
+    font-size: .9rem;
+    line-height: 1.2;
+    min-height: 2.15em;
+  }
+
+  .jili-game-card-body strong {
+    gap: 4px;
+    font-size: .85rem;
+  }
+
+  .jili-game-card-body strong svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .jili-games-grid {
+    gap: 7px;
+  }
+
+  .jili-game-card-media {
+    height: 86px;
+  }
+
+  .jili-game-card-body {
+    padding: 8px 9px 9px;
+  }
+
+  .jili-game-card-body h3 {
+    font-size: .84rem;
+  }
+
+  .jili-game-card-body strong {
+    font-size: .8rem;
+  }
+}
