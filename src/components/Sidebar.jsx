@@ -40,8 +40,8 @@ const mainNavItems = [
   { to: '/esports', label: 'Esports', icon: Gamepad2 },
   { to: '/bet-slip', label: 'Bet slip', icon: Ticket },
   { to: '/crash', label: 'Crash', icon: Rocket },
-  { to: '/live-casino', label: 'Live Casino', icon: Dice5 },
-  { to: '/slots', label: 'Slots', icon: Cherry },
+  { to: '/jili-games?category=casino', label: 'Live Casino', icon: Dice5 },
+  { to: '/jili-games?category=slots', label: 'Slots', icon: Cherry },
   { to: '/jili-games', label: 'JILI Games', icon: Cherry },
   { to: '/tournaments', label: 'Tournaments', icon: Medal },
   { to: '/customer-support', label: 'Customer Support', icon: MessageCircle },
@@ -85,13 +85,20 @@ const otherChildren = [
 
 function SidebarLink({ item, onClose }) {
   const Icon = item.icon;
+  const location = useLocation();
+  const itemUrl = typeof item.to === 'string' ? item.to : '';
+  const currentUrl = `${location.pathname}${location.search}`;
+  const hasSearchTarget = itemUrl.includes('?');
 
   return (
     <NavLink
       key={item.to}
       to={item.to}
       end={item.end}
-      className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+      className={({ isActive }) => {
+        const linkIsActive = hasSearchTarget ? currentUrl === itemUrl : isActive;
+        return `sidebar-link ${linkIsActive ? 'active' : ''}`;
+      }}
       onClick={onClose}
     >
       <span className="sidebar-link-left">
