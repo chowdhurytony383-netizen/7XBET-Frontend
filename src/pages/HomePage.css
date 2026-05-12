@@ -1069,3 +1069,125 @@
     transition: none;
   }
 }
+
+
+/* Home page slot category banner under Hot Games */
+.home-slot-banner {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: clamp(96px, 15vw, 150px);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(92, 9, 79, .92), rgba(163, 16, 115, .88));
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, .30),
+    inset 0 0 0 1px rgba(255, 255, 255, .05);
+  text-decoration: none;
+  isolation: isolate;
+}
+
+.home-slot-banner img {
+  width: 100%;
+  height: clamp(96px, 15vw, 150px);
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.01);
+  transition: transform .28s ease, filter .28s ease;
+}
+
+.home-slot-banner::before {
+  content: '';
+  position: absolute;
+  inset: -42% -55%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 38%,
+      rgba(255, 255, 255, .08) 44%,
+      rgba(255, 255, 255, .72) 50%,
+      rgba(255, 255, 255, .12) 57%,
+      transparent 64%
+    );
+  transform: translateX(-60%) rotate(8deg);
+  animation: home-slot-banner-reflection 4.2s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.home-slot-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, .16), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(2,6,23,.10));
+}
+
+.home-slot-banner:hover img {
+  transform: scale(1.045);
+  filter: saturate(1.12) brightness(1.06);
+}
+
+.home-slot-banner-cta {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: 3;
+  border: 1px solid rgba(255, 255, 255, .34);
+  border-radius: 999px;
+  padding: 9px 14px;
+  background: rgba(2, 6, 23, .62);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 1000;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+}
+
+@keyframes home-slot-banner-reflection {
+  0% { transform: translateX(-68%) rotate(8deg); opacity: 0; }
+  18% { opacity: .72; }
+  48% { opacity: .90; }
+  76% { opacity: 0; }
+  100% { transform: translateX(72%) rotate(8deg); opacity: 0; }
+}
+
+@media (max-width: 720px) {
+  .home-slot-banner {
+    min-height: 84px;
+    border-radius: 18px;
+  }
+
+  .home-slot-banner img {
+    height: 84px;
+  }
+
+  .home-slot-banner-cta {
+    right: 10px;
+    bottom: 8px;
+    padding: 6px 9px;
+    font-size: .56rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-slot-banner {
+    min-height: 74px;
+    border-radius: 16px;
+  }
+
+  .home-slot-banner img {
+    height: 74px;
+  }
+
+  .home-slot-banner-cta {
+    display: none;
+  }
+}

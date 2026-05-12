@@ -564,6 +564,15 @@ export default function HomePage() {
           </div>
         </section>
 
+        <Link
+          className="home-slot-banner"
+          to="/jili-games?category=slots"
+          aria-label="View all JILI slot games"
+        >
+          <img src="/images/jili/slots-banner.webp" alt="Slots games" loading="lazy" decoding="async" />
+          <span className="home-slot-banner-cta">View all slot games</span>
+        </Link>
+
         {error && <div className="auth-message">{error}</div>}
 
         {user && (
