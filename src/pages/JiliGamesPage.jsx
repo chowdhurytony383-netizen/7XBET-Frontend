@@ -327,12 +327,14 @@ export default function JiliGamesPage() {
   }, [normalizedGames, query, selectedCategory]);
 
   const activeCategory = CATEGORY_BY_KEY[selectedCategory] || CATEGORY_BY_KEY.all;
-  const hideBrowseHeader = selectedCategory === 'slots' || selectedCategory === 'casino';
+  // Keep the JILI games page clean: no big hero/category browser block.
+  // Sidebar JILI Games, Slots and Live Casino now open directly to the compact game grid.
+  const hideBrowseHeader = true;
   const visibleGames = filteredGames.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredGames.length;
 
   return (
-    <div className={`page-stack jili-games-page ${hideBrowseHeader ? 'jili-games-page--compact' : ''}`}>
+    <div className={`page-stack jili-games-page jili-games-page--no-header ${hideBrowseHeader ? 'jili-games-page--compact' : ''}`}>
       {!hideBrowseHeader && (
         <>
           <section className="jili-games-hero">

@@ -525,3 +525,97 @@
     font-size: .8rem;
   }
 }
+
+
+/* Hide the large JILI Games hero/category browser on every JILI games list page */
+.jili-games-page--no-header .jili-games-hero,
+.jili-games-page--no-header .jili-category-panel {
+  display: none !important;
+}
+
+.jili-games-page--no-header {
+  gap: 8px;
+}
+
+.jili-games-page--no-header .jili-games-filter {
+  margin-top: 0;
+}
+
+/* Extra compact mobile list: show more games at once */
+@media (max-width: 768px) {
+  .jili-games-page--no-header {
+    gap: 7px;
+  }
+
+  .jili-games-page--no-header .jili-games-filter {
+    border-radius: 14px;
+    padding: 7px 10px;
+  }
+
+  .jili-games-page--no-header .jili-games-filter input {
+    min-height: 32px;
+    font-size: .78rem;
+  }
+
+  .jili-games-page--no-header .jili-games-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .jili-games-page--no-header .jili-game-card {
+    border-radius: 12px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-media {
+    height: 68px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-media svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body {
+    padding: 7px 7px 8px;
+    gap: 4px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body h3 {
+    font-size: .68rem;
+    line-height: 1.12;
+    min-height: 2.25em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body strong {
+    font-size: .68rem;
+    gap: 3px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body strong svg {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .jili-games-page--no-header .jili-games-grid {
+    gap: 5px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-media {
+    height: 62px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body {
+    padding: 6px;
+  }
+
+  .jili-games-page--no-header .jili-game-card-body h3,
+  .jili-games-page--no-header .jili-game-card-body strong {
+    font-size: .62rem;
+  }
+}
