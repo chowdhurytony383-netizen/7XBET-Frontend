@@ -9,6 +9,20 @@
   box-shadow: var(--shadow);
 }
 
+.jili-games-page--compact {
+  gap: 12px;
+}
+
+.jili-games-page--compact .jili-games-filter {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .jili-games-page--compact {
+    gap: 10px;
+  }
+}
+
 .jili-games-hero {
   display: flex;
   align-items: center;

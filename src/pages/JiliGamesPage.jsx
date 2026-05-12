@@ -327,47 +327,52 @@ export default function JiliGamesPage() {
   }, [normalizedGames, query, selectedCategory]);
 
   const activeCategory = CATEGORY_BY_KEY[selectedCategory] || CATEGORY_BY_KEY.all;
+  const hideBrowseHeader = selectedCategory === 'slots' || selectedCategory === 'casino';
   const visibleGames = filteredGames.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredGames.length;
 
   return (
-    <div className="page-stack jili-games-page">
-      <section className="jili-games-hero">
-        <div>
-          <span className="page-eyebrow">JILI Seamless Wallet</span>
-          <h1>JILI Games</h1>
-          <p>Category অনুযায়ী JILI games দেখুন এবং 7XBET single wallet balance দিয়ে খেলুন।</p>
-        </div>
-        <div className="jili-games-hero-stat">
-          <strong>{categoryCounts.all}</strong>
-          <span>Total games</span>
-        </div>
-      </section>
+    <div className={`page-stack jili-games-page ${hideBrowseHeader ? 'jili-games-page--compact' : ''}`}>
+      {!hideBrowseHeader && (
+        <>
+          <section className="jili-games-hero">
+            <div>
+              <span className="page-eyebrow">JILI Seamless Wallet</span>
+              <h1>JILI Games</h1>
+              <p>Category অনুযায়ী JILI games দেখুন এবং 7XBET single wallet balance দিয়ে খেলুন।</p>
+            </div>
+            <div className="jili-games-hero-stat">
+              <strong>{categoryCounts.all}</strong>
+              <span>Total games</span>
+            </div>
+          </section>
 
-      <section className="jili-category-panel">
-        <div className="jili-category-header">
-          <div>
-            <span className="page-eyebrow">Categories</span>
-            <h2>{activeCategory.label}</h2>
-          </div>
-          <span>{filteredGames.length} games</span>
-        </div>
+          <section className="jili-category-panel">
+            <div className="jili-category-header">
+              <div>
+                <span className="page-eyebrow">Categories</span>
+                <h2>{activeCategory.label}</h2>
+              </div>
+              <span>{filteredGames.length} games</span>
+            </div>
 
-        <div className="jili-category-grid">
-          {CATEGORY_DEFINITIONS.filter((category) => category.key === 'all' || categoryCounts[category.key] > 0).map((category) => (
-            <button
-              type="button"
-              key={category.key}
-              className={`jili-category-card ${selectedCategory === category.key ? 'active' : ''}`}
-              onClick={() => changeCategory(category.key)}
-            >
-              <span className="jili-category-icon">{category.icon}</span>
-              <span className="jili-category-name">{category.label}</span>
-              <strong>{categoryCounts[category.key] || 0}</strong>
-            </button>
-          ))}
-        </div>
-      </section>
+            <div className="jili-category-grid">
+              {CATEGORY_DEFINITIONS.filter((category) => category.key === 'all' || categoryCounts[category.key] > 0).map((category) => (
+                <button
+                  type="button"
+                  key={category.key}
+                  className={`jili-category-card ${selectedCategory === category.key ? 'active' : ''}`}
+                  onClick={() => changeCategory(category.key)}
+                >
+                  <span className="jili-category-icon">{category.icon}</span>
+                  <span className="jili-category-name">{category.label}</span>
+                  <strong>{categoryCounts[category.key] || 0}</strong>
+                </button>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
 
       <div className="jili-games-filter">
         <Search size={18} />
