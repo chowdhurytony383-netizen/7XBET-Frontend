@@ -6,6 +6,7 @@ export const AccountAPI = {
   betStats: () => api.get('/bet/get-user-totalwin-and-winningstreak'),
   betStatsByGame: (gameId) => api.get('/bet/get-user-totalwin-and-winningstreak-by-game', { params: { gameId } }),
   transactions: () => api.get('/transaction/get-all-transaction-by-user-id'),
+  rejectFirstDepositBonus: () => api.post('/transaction/reject-first-deposit-bonus'),
   walletStats: () => api.get('/user/get-day-wise-wallet-stats'),
   createWithdrawTransaction: (payload) => api.post('/transaction/create-transaction', payload),
   requestRazorpayPayout: (transactionId) => api.post('/razorpay/withdraw-payout-razorpay', { transactionId }),
