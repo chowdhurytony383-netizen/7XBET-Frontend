@@ -1191,3 +1191,27 @@
     display: none;
   }
 }
+
+/* Home page stacked category banners under Hot Games */
+.home-casino-banner-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.home-category-banner {
+  margin: 0;
+}
+
+.home-live-casino-banner {
+  background: linear-gradient(135deg, rgba(30, 7, 45, .94), rgba(127, 29, 29, .88));
+}
+
+.home-live-casino-banner .home-slot-banner-cta {
+  background: rgba(17, 24, 39, .66);
+}
+
+@media (max-width: 720px) {
+  .home-casino-banner-stack {
+    gap: 8px;
+  }
+}

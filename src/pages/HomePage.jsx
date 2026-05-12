@@ -564,14 +564,25 @@ export default function HomePage() {
           </div>
         </section>
 
-        <Link
-          className="home-slot-banner"
-          to="/jili-games?category=slots"
-          aria-label="View all JILI slot games"
-        >
-          <img src="/images/jili/slots-banner.webp" alt="Slots games" loading="lazy" decoding="async" />
-          <span className="home-slot-banner-cta">View all slot games</span>
-        </Link>
+        <div className="home-casino-banner-stack">
+          <Link
+            className="home-slot-banner home-category-banner"
+            to="/jili-games?category=slots"
+            aria-label="View all JILI slot games"
+          >
+            <img src="/images/jili/slots-banner.webp" alt="Slots games" loading="lazy" decoding="async" />
+            <span className="home-slot-banner-cta">View all slot games</span>
+          </Link>
+
+          <Link
+            className="home-slot-banner home-category-banner home-live-casino-banner"
+            to="/jili-games?category=casino"
+            aria-label="View all JILI table and casino games"
+          >
+            <img src="/images/jili/live-casino-banner.webp" alt="Live Casino games" loading="lazy" decoding="async" />
+            <span className="home-slot-banner-cta">View live casino</span>
+          </Link>
+        </div>
 
         {error && <div className="auth-message">{error}</div>}
 
