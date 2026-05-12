@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, Gift, Wallet } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Gift, Wallet, XCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -16,6 +17,7 @@ function numberValue(value) {
 }
 
 function bonusStatusText(summary) {
+  if (summary?.rejected || summary?.status === 'CANCELLED') return 'Bonus balance was rejected. Bonus turnover was cancelled.';
   if (!summary?.awarded) return 'First deposit bonus has not been awarded yet.';
   if (numberValue(summary.remainingTurnover) <= 0) return 'Bonus turnover completed. Bonus balance is now withdrawable.';
   return 'Bonus balance is locked until the required bonus turnover is completed.';
@@ -26,6 +28,7 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState([]);
   const [bonusSummary, setBonusSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [rejectingBonus, setRejectingBonus] = useState(false);
   const [error, setError] = useState('');
 
   const load = async () => {
@@ -45,12 +48,31 @@ export default function WalletPage() {
 
   useEffect(() => { load(); }, []);
 
+  const handleRejectBonus = async () => {
+    const confirmed = window.confirm('Reject first deposit bonus? The bonus balance will be removed and bonus turnover will be cancelled.');
+    if (!confirmed) return;
+
+    setRejectingBonus(true);
+    try {
+      const response = await AccountAPI.rejectFirstDepositBonus();
+      toast.success(response.data?.message || 'Bonus rejected');
+      await load();
+      await refreshUser().catch(() => null);
+    } catch (err) {
+      toast.error(getApiError(err, 'Bonus rejection failed'));
+    } finally {
+      setRejectingBonus(false);
+    }
+  };
+
   const deposits = transactions.filter((item) => item.type === 'DEPOSIT');
   const withdrawals = transactions.filter((item) => item.type === 'WITHDRAW');
   const bonuses = transactions.filter((item) => item.type === 'BONUS');
-  const bonusAwardedAmount = numberValue(bonusSummary?.amount || user?.firstDepositBonusAmount);
-  const bonusRemainingTurnover = numberValue(bonusSummary?.remainingTurnover);
-  const showBonusCard = bonusAwardedAmount > 0 || user?.firstDepositBonusAwarded || bonusSummary?.awarded;
+  const bonusRejected = Boolean(bonusSummary?.rejected || bonusSummary?.status === 'CANCELLED');
+  const bonusAwardedAmount = bonusRejected ? 0 : numberValue(bonusSummary?.amount || user?.firstDepositBonusAmount);
+  const bonusRemainingTurnover = bonusRejected ? 0 : numberValue(bonusSummary?.remainingTurnover);
+  const canRejectBonus = Boolean(bonusSummary?.canReject && !bonusRejected && bonusAwardedAmount > 0);
+  const showBonusCard = bonusAwardedAmount > 0 || bonusSummary?.awarded || bonusRejected;
 
   return (
     <div className="page-stack">
@@ -84,6 +106,17 @@ export default function WalletPage() {
             <small>Remaining bonus turnover</small>
             <b>{formatCurrency(bonusRemainingTurnover, user)}</b>
           </div>
+          {canRejectBonus && (
+            <button
+              type="button"
+              className="wallet-bonus-reject-btn"
+              onClick={handleRejectBonus}
+              disabled={rejectingBonus}
+            >
+              <XCircle size={16} />
+              {rejectingBonus ? 'Rejecting...' : 'Reject bonus'}
+            </button>
+          )}
         </section>
       )}
 
