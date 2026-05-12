@@ -44,6 +44,95 @@ const fallbackGames = [
   { GameId: 1, Name: 'Royal Fishing', Type: 'fish', GameCategoryId: 5 },
 ];
 
+
+function normalizeImageGameId(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^\d+$/.test(raw)) return String(Number(raw));
+
+  const match = raw.match(/(?:gameid|game|jili)[^0-9]{0,4}0*(\d{1,5})/i);
+  if (match?.[1]) return String(Number(match[1]));
+
+  return raw;
+}
+
+function isUsableImageValue(value) {
+  if (!value || typeof value !== 'string') return false;
+  const text = value.trim();
+  if (!text) return false;
+  if (/^(icon|download|material)$/i.test(text)) return false;
+  return /^(https?:)?\/\//i.test(text) || text.startsWith('/') || /\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(text);
+}
+
+function buildJiliImageSources(raw = {}, gameId) {
+  const providerGame = raw.config?.providerGame || {};
+  const id = normalizeImageGameId(gameId);
+  const candidates = [
+    raw.image,
+    raw.Image,
+    raw.icon,
+    raw.Icon,
+    raw.thumbnail,
+    raw.thumb,
+    raw.logo,
+    raw.picture,
+    raw.cover,
+    raw.banner,
+    raw.displayImage,
+    raw.imageUrl,
+    raw.iconUrl,
+    raw.IconUrl,
+    raw.GameIcon,
+    raw.gameIcon,
+    raw.config?.image,
+    raw.config?.icon,
+    raw.config?.thumbnail,
+    raw.config?.imageUrl,
+    raw.config?.iconUrl,
+    providerGame.image,
+    providerGame.Image,
+    providerGame.icon,
+    providerGame.Icon,
+    providerGame.thumbnail,
+    providerGame.imageUrl,
+    providerGame.iconUrl,
+    providerGame.IconUrl,
+    providerGame.GameIcon,
+    providerGame.gameIcon,
+  ].filter(isUsableImageValue).map((item) => String(item).trim());
+
+  if (id) {
+    candidates.push(
+      `/images/jili/${id}.webp`,
+      `/images/jili/${id}.png`,
+      `/images/jili/${id}.jpg`,
+      `/images/jili/jili-${id}.webp`,
+      `/images/jili/jili-${id}.png`,
+      `/images/jili/jili-${id}.jpg`
+    );
+  }
+
+  return candidates.filter((item, index, all) => item && all.indexOf(item) === index);
+}
+
+function JiliGameImage({ game, size = 48 }) {
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const sources = game.imageSources || [];
+  const src = sources[sourceIndex];
+
+  if (!src) return <Gamepad2 size={size} />;
+
+  return (
+    <img
+      src={src}
+      alt={game.name}
+      loading="lazy"
+      decoding="async"
+      onError={() => setSourceIndex((index) => index + 1)}
+    />
+  );
+}
+
 function cleanText(value = '') {
   return String(value || '').trim();
 }
@@ -123,7 +212,8 @@ function normalizeGame(raw = {}) {
   const name = pickName(raw) || `JILI Game ${gameId}`;
   const category = detectCategory(raw);
   const definition = CATEGORY_BY_KEY[category] || CATEGORY_BY_KEY.casino;
-  const image = raw.Image || raw.image || raw.Icon || raw.icon || raw.thumbnail || raw.config?.image || '';
+  const imageSources = buildJiliImageSources(raw, gameId);
+  const image = imageSources[0] || '';
   const sorting = Number(raw.Sorting ?? raw.sorting ?? raw.sortOrder ?? raw.config?.providerGame?.Sorting ?? 0);
 
   return {
@@ -133,6 +223,7 @@ function normalizeGame(raw = {}) {
     categoryLabel: definition.label,
     type: getTypeSource(raw) || definition.label,
     image,
+    imageSources,
     sorting: Number.isFinite(sorting) ? sorting : 0,
     jp: Boolean(raw.JP || raw.jp || raw.config?.jp || raw.config?.providerGame?.JP),
     freeSpin: Boolean(raw.Freespin || raw.FreeSpin || raw.freespin || raw.config?.freeSpin || raw.config?.providerGame?.Freespin),
@@ -297,7 +388,7 @@ export default function JiliGamesPage() {
                 to={`/jili/${game.gameId}?title=${encodeURIComponent(game.name)}`}
               >
                 <div className="jili-game-card-media">
-                  {game.image ? <img src={game.image} alt={game.name} /> : <Gamepad2 size={48} />}
+                  <JiliGameImage game={game} size={48} />
                   <span className="jili-game-badge">{game.categoryLabel}</span>
                 </div>
                 <div className="jili-game-card-body">

@@ -317,3 +317,96 @@
     font-size: .98rem;
   }
 }
+
+/* Local JILI images and animated reflection for game cards */
+.jili-game-card-media {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.jili-game-card-media img {
+  position: relative;
+  z-index: 1;
+  transform: scale(1.01);
+  transition: transform .28s ease, filter .28s ease;
+}
+
+.jili-game-card-media::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: -55%;
+  bottom: -55%;
+  width: 42%;
+  left: -70%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, .06) 34%,
+    rgba(255, 255, 255, .40) 49%,
+    rgba(255, 255, 255, .10) 64%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  pointer-events: none;
+  animation: jili-card-reflection 4.6s ease-in-out infinite;
+}
+
+.jili-game-card-media::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .10), transparent 34%),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, .15), transparent 28%);
+  mix-blend-mode: screen;
+  opacity: .55;
+  pointer-events: none;
+}
+
+.jili-game-card:hover .jili-game-card-media img {
+  transform: scale(1.07);
+  filter: saturate(1.12) contrast(1.04);
+}
+
+.jili-game-card-media svg {
+  position: relative;
+  z-index: 1;
+}
+
+.jili-game-badge {
+  z-index: 4;
+}
+
+@keyframes jili-card-reflection {
+  0%, 18% {
+    left: -70%;
+    opacity: 0;
+  }
+
+  28% {
+    opacity: .95;
+  }
+
+  58% {
+    left: 126%;
+    opacity: 0;
+  }
+
+  100% {
+    left: 126%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jili-game-card-media::before {
+    animation: none;
+    display: none;
+  }
+
+  .jili-game-card-media img {
+    transition: none;
+  }
+}

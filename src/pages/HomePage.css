@@ -953,3 +953,119 @@
 .casino-lobby-section-hot-only .casino-hot-panel {
   margin-top: 0 !important;
 }
+
+/* JILI real game images + premium moving reflection */
+.casino-hot-card {
+  overflow: hidden;
+}
+
+.casino-hot-media {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .05),
+    0 10px 24px rgba(0, 0, 0, .18);
+}
+
+.casino-hot-media img {
+  transform: scale(1.01);
+  transition: transform .28s ease, filter .28s ease;
+}
+
+.casino-hot-media::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: -55%;
+  bottom: -55%;
+  width: 45%;
+  left: -72%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, .06) 34%,
+    rgba(255, 255, 255, .42) 48%,
+    rgba(255, 255, 255, .10) 62%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  filter: blur(.2px);
+  pointer-events: none;
+  animation: casino-hot-reflection 4.4s ease-in-out infinite;
+}
+
+.casino-hot-media::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .10), transparent 34%),
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, .16), transparent 28%);
+  mix-blend-mode: screen;
+  opacity: .58;
+  pointer-events: none;
+}
+
+.casino-hot-card:hover .casino-hot-media img {
+  transform: scale(1.07);
+  filter: saturate(1.12) contrast(1.04);
+}
+
+@keyframes casino-hot-reflection {
+  0%, 18% {
+    left: -72%;
+    opacity: 0;
+  }
+
+  28% {
+    opacity: .95;
+  }
+
+  58% {
+    left: 128%;
+    opacity: 0;
+  }
+
+  100% {
+    left: 128%;
+    opacity: 0;
+  }
+}
+
+@media (min-width: 721px) {
+  .casino-hot-media {
+    height: 86px;
+  }
+}
+
+@media (max-width: 720px) {
+  .casino-hot-card {
+    min-height: 112px !important;
+  }
+
+  .casino-hot-media {
+    height: 58px !important;
+  }
+
+  .casino-hot-media::before {
+    animation-duration: 5.2s;
+  }
+}
+
+@media (max-width: 360px) {
+  .casino-hot-media {
+    height: 54px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casino-hot-media::before {
+    animation: none;
+    display: none;
+  }
+
+  .casino-hot-media img {
+    transition: none;
+  }
+}
