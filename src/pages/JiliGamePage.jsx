@@ -50,24 +50,23 @@ export default function JiliGamePage() {
   return (
     <div className="jili-game-page">
       <div className="jili-game-topbar">
-        <button className="btn btn-soft" type="button" onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
-          Back
-        </button>
-
         <div className="jili-game-title">
           <span className="page-eyebrow">JILI Seamless Wallet</span>
           <h1>{title}</h1>
         </div>
 
         <div className="jili-game-actions">
-          <button className="btn btn-soft" type="button" onClick={launchGame} disabled={loading}>
-            <RefreshCw size={18} />
-            Reload game
+          <button className="btn btn-soft jili-game-action-btn" type="button" onClick={() => navigate(-1)}>
+            <ArrowLeft size={16} />
+            Back
           </button>
-          <button className="btn btn-primary" type="button" onClick={openFullScreen} disabled={!launchUrl}>
-            <Maximize2 size={18} />
-            Full screen
+          <button className="btn btn-soft jili-game-action-btn" type="button" onClick={launchGame} disabled={loading}>
+            <RefreshCw size={16} />
+            Reload
+          </button>
+          <button className="btn btn-primary jili-game-action-btn" type="button" onClick={openFullScreen} disabled={!launchUrl}>
+            <Maximize2 size={16} />
+            Full
           </button>
         </div>
       </div>
