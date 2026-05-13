@@ -10,5 +10,4 @@ Disallow: /deposit
 Disallow: /withdraw
 Disallow: /history
 
-Sitemap: https://7xbet.asia/sitemap.txt
-Sitemap: https://7xbet.asia/sitemap.xml
+Sitemap: https://7xbet.asia/google-sitemap.xml
