@@ -1215,3 +1215,42 @@
     gap: 8px;
   }
 }
+
+/* Remove the big welcome hero copy block on Home page, keep only the 7XBET brand banner */
+.home-hero {
+  min-height: auto !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.home-hero::before,
+.home-hero::after {
+  display: none !important;
+}
+
+.home-hero-copy {
+  display: none !important;
+}
+
+.home-hero-image {
+  width: 100% !important;
+}
+
+.home-hero .home-brand-card {
+  margin: 0 !important;
+}
+
+@media (max-width: 560px) {
+  .home-hero {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+}
