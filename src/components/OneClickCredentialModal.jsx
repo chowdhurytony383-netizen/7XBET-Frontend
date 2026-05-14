@@ -57,7 +57,10 @@ export default function OneClickCredentialModal() {
   const saveToFile = () => {
     if (!createdAccount) return;
 
-    const text = `7XBET One Click Registration\n\nLogin: ${createdAccount.login}\nPassword: ${createdAccount.password}\n\nPlease save your login and password. Password is shown only once.`;
+    const bonusLine = createdAccount.signupBonus?.awarded
+      ? `\nSignup bonus: ${createdAccount.signupBonus.amount} ${createdAccount.signupBonus.currency}`
+      : '';
+    const text = `7XBET One Click Registration\n\nLogin: ${createdAccount.login}\nPassword: ${createdAccount.password}${bonusLine}\n\nPlease save your login and password. Password is shown only once.`;
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -114,6 +117,12 @@ export default function OneClickCredentialModal() {
         <button className="credential-action" type="button" onClick={() => window.print()}>
           Save as picture
         </button>
+
+        {createdAccount.signupBonus?.awarded && (
+          <small className="credential-note">
+            Signup bonus credited: {createdAccount.signupBonus.amount} {createdAccount.signupBonus.currency}. Wager 2x before withdrawal.
+          </small>
+        )}
 
         <small className="credential-note">
           Please save your login and password. Password is shown only once.

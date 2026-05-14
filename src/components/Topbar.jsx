@@ -15,7 +15,7 @@ function getDisplayName(user) {
 
 function getVerificationStatus(user) {
   if (!user) return '';
-  return user.verificationStatus || user.kyc?.status || (user.isVerified ? 'verified' : 'not_submitted');
+  return 'No KYC required';
 }
 
 function TopbarBrand() {
