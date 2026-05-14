@@ -193,7 +193,7 @@ export default function ProfilePage() {
   const displayEmail = getDisplayEmail(user?.email);
   const emailVerified = Boolean(displayEmail && user?.isVerified);
   const emailStatus = displayEmail ? (emailVerified ? 'Verified' : 'Not verified') : 'Not added';
-  const verificationStatus = user?.verificationStatus || user?.kyc?.status || (user?.isVerified ? 'Verified' : 'Pending');
+  const verificationStatus = 'Not required';
   const profilePicture = picturePreview || user?.picture || DEFAULT_PROFILE_PICTURE;
   const canShowEmailOtp = Boolean(displayEmail && !emailVerified);
 
@@ -230,7 +230,7 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <span>Verification</span>
+              <span>Document verification</span>
               <strong>{verificationStatus}</strong>
             </div>
 
@@ -247,7 +247,7 @@ export default function ProfilePage() {
 
           <Link className="btn btn-soft btn-full" to="/profile/verification">
             <FileCheck2 size={18} />
-            Verification page
+            Account information
           </Link>
 
           <form className="form-grid" onSubmit={updateProfile}>
@@ -362,7 +362,7 @@ export default function ProfilePage() {
               label="Email verified"
               value={displayEmail ? (emailVerified ? 'Yes' : 'No') : 'Not added'}
             />
-            <StatCard icon={FileCheck2} label="Identity verification" value={verificationStatus} />
+            <StatCard icon={FileCheck2} label="Document verification" value={verificationStatus} />
           </div>
 
           <div className="profile-tabs">

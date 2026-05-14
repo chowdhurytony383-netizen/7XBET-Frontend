@@ -9,7 +9,6 @@ import { AuthAPI } from '../api/auth.js';
 import { getApiError } from '../api/client.js';
 import { countries, currencyLabel, defaultCountry } from '../utils/countries.js';
 import { getDefaultRegistrationCountry } from '../utils/currency.js';
-import { formatCurrency } from '../utils/format.js';
 import './AuthPages.css';
 
 const ONE_CLICK_CREDENTIALS_KEY = 'oneClickCredentials';
@@ -105,14 +104,19 @@ export default function RegisterPage() {
         referralCode: form.referralCode,
       });
 
+      const signupBonus = response.data?.signupBonus || response.data?.data?.signupBonus;
       const nextMessage =
-        response.data?.message || 'Account created. Check your inbox for verification.';
+        response.data?.message || 'Account created. Check your inbox for email verification.';
 
       const loginId =
         response.data?.data?.login ||
         response.data?.data?.user?.userId;
 
-      setMessage(loginId ? `${nextMessage} Your User ID: ${loginId}` : nextMessage);
+      const bonusText = signupBonus?.awarded
+        ? ` Signup bonus credited: ${signupBonus.amount} ${signupBonus.currency}.`
+        : '';
+
+      setMessage(loginId ? `${nextMessage}${bonusText} Your User ID: ${loginId}` : `${nextMessage}${bonusText}`);
       toast.success('Registration successful');
     } catch (error) {
       toast.error(getApiError(error, 'Registration failed'));
@@ -152,8 +156,9 @@ export default function RegisterPage() {
         return;
       }
 
-      saveOneClickCredentials({ login, password });
-      toast.success('Registration completed');
+      const signupBonus = response.data?.signupBonus || account.signupBonus;
+      saveOneClickCredentials({ login, password, signupBonus });
+      toast.success(signupBonus?.awarded ? 'Registration completed. Signup bonus credited.' : 'Registration completed');
     } catch (error) {
       toast.error(getApiError(error, 'One click registration failed'));
     } finally {
@@ -189,7 +194,7 @@ export default function RegisterPage() {
         <div className="auth-card register-card">
           <div className="register-card-header">
             <h2>Registration</h2>
-            <p>Every registration method creates a unique User ID automatically.</p>
+            <p>Every registration method creates a unique User ID and credits a BDT 100 equivalent signup bonus automatically.</p>
           </div>
 
           <div className="quick-register-box">
@@ -244,11 +249,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="bonus-card">
-                <div className="bonus-thumb">100%</div>
+                <div className="bonus-thumb">100</div>
 
                 <div>
-                  <strong>Bonus for sports</strong>
-                  <span>First deposit bonus up to {formatCurrency(14000, quickForm.currency)}</span>
+                  <strong>New account bonus</strong>
+                  <span>Get BDT 100 equivalent in your selected currency after signup. Wager 2x before withdrawal.</span>
                 </div>
 
                 <span className="bonus-arrow">›</span>
