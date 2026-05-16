@@ -35,7 +35,7 @@ export default function AffiliateApplyPage() {
       <PageHeader
         eyebrow="Approved Partner Program"
         title="Apply for 7XBET Affiliate"
-        description="Approved partners earn GGR-based revenue share. Default commission is 30%; VIP affiliates can receive 30%–40%. Negative carryover is enabled."
+        description="Responsive layout optimized for desktop and mobile. Approved partners earn GGR-based revenue share with a 30% default commission rate."
       />
 
       <section className="affiliate-policy-grid">
@@ -46,11 +46,29 @@ export default function AffiliateApplyPage() {
       </section>
 
       <form className="affiliate-form-card" onSubmit={submit}>
-        <label>Display name<input name="displayName" value={form.displayName} onChange={updateField} placeholder="Your brand/name" /></label>
-        <label>Company name<input name="companyName" value={form.companyName} onChange={updateField} placeholder="Optional" /></label>
-        <label>Website / social link<input name="website" value={form.website} onChange={updateField} placeholder="https://..." /></label>
-        <label>Preferred affiliate code<input name="preferredCode" value={form.preferredCode} onChange={updateField} placeholder="Example: AFFJONY" /></label>
-        <label>Traffic plan / countries / notes<textarea name="applyNote" value={form.applyNote} onChange={updateField} rows="6" placeholder="Tell admin how you will promote 7XBET..." /></label>
+        <div className="affiliate-form-grid">
+          <label>
+            Display name
+            <input name="displayName" value={form.displayName} onChange={updateField} placeholder="Your brand/name" />
+          </label>
+          <label>
+            Company name
+            <input name="companyName" value={form.companyName} onChange={updateField} placeholder="Optional" />
+          </label>
+          <label>
+            Website / social link
+            <input name="website" value={form.website} onChange={updateField} placeholder="https://..." />
+          </label>
+          <label>
+            Preferred affiliate code
+            <input name="preferredCode" value={form.preferredCode} onChange={updateField} placeholder="Example: AFFJONY" />
+          </label>
+        </div>
+
+        <label className="affiliate-textarea-field">
+          Traffic plan / countries / notes
+          <textarea name="applyNote" value={form.applyNote} onChange={updateField} rows="6" placeholder="Tell admin how you will promote 7XBET..." />
+        </label>
 
         <div className="affiliate-actions">
           <button type="submit" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit application'}</button>
