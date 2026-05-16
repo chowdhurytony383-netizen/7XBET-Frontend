@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Download, ShieldAlert } from 'lucide-react';
 import { AdminAffiliateAPI } from '../../api/affiliate.js';
 import { getApiError } from '../../api/client.js';
-import { formatCurrency, formatDate } from '../../utils/format.js';
+import { formatCurrency } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import './AdminAffiliatesPage.css';
 
@@ -49,8 +49,8 @@ export default function AdminAffiliatesPage() {
 
   const calculate = async (affiliateId) => {
     try {
-      const response = await AdminAffiliateAPI.calculatePeriod(affiliateId, { ...period, overwrite: true });
-      toast.success(`Commission calculated: ${formatCurrency(response.data?.data?.commissionAmount || 0, 'BDT')}`);
+      await AdminAffiliateAPI.calculatePeriod(affiliateId, { ...period, overwrite: true });
+      toast.success('Commission calculated');
       await load();
     } catch (error) {
       toast.error(getApiError(error, 'Commission calculation failed'));
@@ -102,19 +102,20 @@ export default function AdminAffiliatesPage() {
       <PageHeader
         eyebrow="Admin"
         title="Affiliate Partners"
-        description="30% default, VIP 30%–40%, negative carryover, $30 minimum payout equivalent, Tuesday weekly auto calculation and payout."
+        description="Desktop and mobile optimized management view for affiliate applications, fraud flags, and Tuesday weekly automation."
       />
 
       <section className="admin-affiliate-period-card">
         <label>Period start<input type="date" value={period.periodStart} onChange={(event) => setPeriod((current) => ({ ...current, periodStart: event.target.value }))} /></label>
         <label>Period end<input type="date" value={period.periodEnd} onChange={(event) => setPeriod((current) => ({ ...current, periodEnd: event.target.value }))} /></label>
         <button onClick={runAutomation}>Run Tuesday automation now</button>
-        <small>Automation calculates the last weekly period, scans fraud, approves clear periods, and credits eligible payouts to affiliate main wallet.</small>
+        <small>Automation calculates the weekly period, scans fraud, approves clear periods, and credits eligible payouts to affiliate main wallet.</small>
       </section>
 
       <section className="admin-affiliate-table-card">
-        <h2>Open fraud flags</h2>
-        <div className="admin-affiliate-table-wrap">
+        <div className="admin-affiliate-head"><h2>Open fraud flags</h2><span>{flags.length} open</span></div>
+
+        <div className="admin-affiliate-table-wrap desktop-only">
           <table>
             <thead><tr><th>Partner</th><th>Severity</th><th>Type</th><th>Message</th><th>Actions</th></tr></thead>
             <tbody>
@@ -135,11 +136,33 @@ export default function AdminAffiliatesPage() {
             </tbody>
           </table>
         </div>
+
+        <div className="admin-affiliate-mobile-list mobile-only">
+          {flags.slice(0, 20).map((flag) => (
+            <article className="admin-affiliate-mobile-card" key={flag._id}>
+              <div className="admin-affiliate-mobile-top">
+                <strong>{flag.affiliate?.displayName || flag.affiliate?.affiliateCode}</strong>
+                <span className={`admin-affiliate-status ${flag.severity}`}>{flag.severity}</span>
+              </div>
+              <div className="admin-affiliate-mobile-grid">
+                <div><span>Type</span><strong>{flag.type}</strong></div>
+                <div><span>Message</span><strong>{flag.message}</strong></div>
+              </div>
+              <div className="admin-affiliate-actions stacked">
+                <button onClick={() => updateFlag(flag._id, 'reviewed')}>Reviewed</button>
+                <button onClick={() => updateFlag(flag._id, 'cleared')}>Clear</button>
+                <button onClick={() => updateFlag(flag._id, 'confirmed')}>Confirm</button>
+              </div>
+            </article>
+          ))}
+          {!loading && flags.length === 0 && <div className="admin-affiliate-empty-state">No open fraud flags.</div>}
+        </div>
       </section>
 
       <section className="admin-affiliate-table-card">
-        <h2>Affiliate list</h2>
-        <div className="admin-affiliate-table-wrap">
+        <div className="admin-affiliate-head"><h2>Affiliate list</h2><span>{affiliates.length} partners</span></div>
+
+        <div className="admin-affiliate-table-wrap desktop-only">
           <table>
             <thead>
               <tr>
@@ -176,6 +199,40 @@ export default function AdminAffiliatesPage() {
               {!loading && affiliates.length === 0 && <tr><td colSpan="10">No affiliate applications yet.</td></tr>}
             </tbody>
           </table>
+        </div>
+
+        <div className="admin-affiliate-mobile-list mobile-only">
+          {affiliates.map((affiliate) => (
+            <article className="admin-affiliate-mobile-card" key={affiliate._id}>
+              <div className="admin-affiliate-mobile-top">
+                <strong>{affiliate.displayName || affiliate.user?.fullName || affiliate.user?.userId}</strong>
+                <span className={`admin-affiliate-status ${affiliate.status}`}>{affiliate.status}</span>
+              </div>
+              <div className="admin-affiliate-mobile-grid">
+                <div><span>Code</span><strong>{affiliate.affiliateCode}</strong></div>
+                <div><span>Tier</span><strong>{affiliate.tier}</strong></div>
+                <div><span>Rate</span><strong>{Math.round(Number(affiliate.commissionRate || 0) * 100)}%</strong></div>
+                <div><span>Risk</span><strong>{affiliate.payoutHold ? 'Hold' : affiliate.fraud?.lastRiskLevel || 'low'}</strong></div>
+                <div><span>Carryover</span><strong>{formatCurrency(affiliate.carryoverBalance || 0, affiliate.user?.currency || 'BDT')}</strong></div>
+                <div><span>Pending</span><strong>{formatCurrency(affiliate.stats?.pendingCommission || 0, affiliate.user?.currency || 'BDT')}</strong></div>
+                <div><span>Min payout</span><strong>$ {affiliate.minimumPayoutUsd || 30}</strong></div>
+              </div>
+              <div className="admin-affiliate-actions stacked">
+                {affiliate.status !== 'approved' && <button onClick={() => updateStatus(affiliate._id, 'approved')}>Approve</button>}
+                {affiliate.status !== 'suspended' && <button onClick={() => updateStatus(affiliate._id, 'suspended')}>Suspend</button>}
+                <button onClick={() => scanFraud(affiliate._id)}>Scan fraud</button>
+                <button onClick={() => calculate(affiliate._id)}>Calculate</button>
+                <a href={AdminAffiliateAPI.exportUsersCsvUrl(affiliate._id, period)} target="_blank" rel="noreferrer"><Download size={14} /> CSV</a>
+                <select defaultValue="" onChange={(event) => event.target.value && setVipRate(affiliate._id, event.target.value)}>
+                  <option value="">VIP rate</option>
+                  <option value="30">30%</option>
+                  <option value="35">35%</option>
+                  <option value="40">40%</option>
+                </select>
+              </div>
+            </article>
+          ))}
+          {!loading && affiliates.length === 0 && <div className="admin-affiliate-empty-state">No affiliate applications yet.</div>}
         </div>
       </section>
     </main>
