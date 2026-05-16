@@ -1,11 +1,13 @@
-import api from './client.js';
+import api, { API_BASE_URL } from './client.js';
 
 export const AffiliateAPI = {
   validateAffiliateCode: (code) => api.get(`/affiliate/validate/${encodeURIComponent(code)}`),
   trackClick: (code, payload = {}) => api.post(`/affiliate/track-click/${encodeURIComponent(code)}`, payload),
   apply: (payload) => api.post('/affiliate/apply', payload),
-  dashboard: () => api.get('/affiliate/dashboard'),
-  users: () => api.get('/affiliate/users'),
+  dashboard: (params = {}) => api.get('/affiliate/dashboard', { params }),
+  users: (params = {}) => api.get('/affiliate/users', { params }),
+  exportUsersCsvUrl: (params = {}) => `${API_BASE_URL}/affiliate/users/export.csv?${new URLSearchParams(params).toString()}`,
+  exportPeriodsCsvUrl: () => `${API_BASE_URL}/affiliate/periods/export.csv`,
   requestPayout: (payload) => api.post('/affiliate/payout-request', payload),
 };
 
@@ -24,4 +26,9 @@ export const AdminAffiliateAPI = {
   approvePeriod: (periodId) => api.patch(`/admin/affiliate-periods/${periodId}/approve`),
   payouts: (params = {}) => api.get('/admin/affiliate-payouts', { params }),
   updatePayoutStatus: (payoutId, payload) => api.patch(`/admin/affiliate-payouts/${payoutId}/status`, payload),
+  fraudFlags: (params = {}) => api.get('/admin/affiliate-fraud-flags', { params }),
+  updateFraudFlag: (flagId, payload) => api.patch(`/admin/affiliate-fraud-flags/${flagId}/status`, payload),
+  runAutomation: (payload = { force: true }) => api.post('/admin/affiliate-automation/run', payload),
+  scanFraud: (affiliateId, payload = {}) => api.post(`/admin/affiliates/${affiliateId}/fraud-scan`, payload),
+  exportUsersCsvUrl: (affiliateId, params = {}) => `${API_BASE_URL}/admin/affiliates/${affiliateId}/users/export.csv?${new URLSearchParams(params).toString()}`,
 };
