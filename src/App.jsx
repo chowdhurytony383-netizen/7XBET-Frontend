@@ -48,6 +48,9 @@ import DepositPage from './pages/DepositPage.jsx';
 import WithdrawPage from './pages/WithdrawPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import VerificationPage from './pages/VerificationPage.jsx';
+import InvitePage from './pages/InvitePage.jsx';
+import AffiliateApplyPage from './pages/affiliate/AffiliateApplyPage.jsx';
+import AffiliateDashboardPage from './pages/affiliate/AffiliateDashboardPage.jsx';
 
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
@@ -57,6 +60,7 @@ import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage.jsx';
 import AdminAgentsPage from './pages/admin/AdminAgentsPage.jsx';
 import AdminAgentPaymentMethodsPage from './pages/admin/AdminAgentPaymentMethodsPage.jsx';
 import AdminAgentRequestsPage from './pages/admin/AdminAgentRequestsPage.jsx';
+import AdminAffiliatesPage from './pages/admin/AdminAffiliatesPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
@@ -139,6 +143,9 @@ export default function App() {
           <Route path="withdraw" element={<WithdrawPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="profile/verification" element={<VerificationPage />} />
+          <Route path="profile/invite" element={<InvitePage />} />
+          <Route path="affiliate/apply" element={<AffiliateApplyPage />} />
+          <Route path="affiliate/dashboard" element={<AffiliateDashboardPage />} />
 
           <Route element={<AdminRoute />}>
             <Route path="admin" element={<AdminDashboardPage />} />
@@ -149,6 +156,7 @@ export default function App() {
             <Route path="admin/agents" element={<AdminAgentsPage />} />
             <Route path="admin/agent-payments" element={<AdminAgentPaymentMethodsPage />} />
             <Route path="admin/agent-requests" element={<AdminAgentRequestsPage />} />
+            <Route path="admin/affiliates" element={<AdminAffiliatesPage />} />
           </Route>
         </Route>
       </Route>
