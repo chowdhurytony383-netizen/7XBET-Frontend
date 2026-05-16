@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, MousePointerClick } from 'lucide-react';
 import { FaFacebookF, FaGoogle } from 'react-icons/fa';
@@ -9,12 +9,22 @@ import { AuthAPI } from '../api/auth.js';
 import { getApiError } from '../api/client.js';
 import { countries, currencyLabel, defaultCountry } from '../utils/countries.js';
 import { getDefaultRegistrationCountry } from '../utils/currency.js';
+import { formatCurrency } from '../utils/format.js';
 import './AuthPages.css';
 
 const ONE_CLICK_CREDENTIALS_KEY = 'oneClickCredentials';
 
 export default function RegisterPage() {
   const { register, oneClickRegister } = useAuth();
+  const location = useLocation();
+
+  const acquisitionCodes = useMemo(() => {
+    const params = new URLSearchParams(location.search || '');
+    return {
+      referralCode: params.get('ref') || params.get('inviteCode') || '',
+      affiliateCode: params.get('aff') || params.get('affiliateCode') || '',
+    };
+  }, [location.search]);
 
   const detectedCountry = useMemo(() => getDefaultRegistrationCountry() || defaultCountry, []);
 
@@ -25,13 +35,15 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    referralCode: '',
+    referralCode: acquisitionCodes.referralCode || acquisitionCodes.affiliateCode || '',
+    affiliateCode: acquisitionCodes.affiliateCode,
   }));
 
   const [quickForm, setQuickForm] = useState(() => ({
     countryCode: detectedCountry.code,
     currency: detectedCountry.currency,
-    referralCode: '',
+    referralCode: acquisitionCodes.referralCode || acquisitionCodes.affiliateCode || '',
+    affiliateCode: acquisitionCodes.affiliateCode,
     acceptedTerms: false,
   }));
 
@@ -101,22 +113,18 @@ export default function RegisterPage() {
         country: selectedManualCountry.name,
         countryCode: selectedManualCountry.code,
         currency: form.currency,
-        referralCode: form.referralCode,
+        referralCode: acquisitionCodes.affiliateCode ? '' : form.referralCode,
+        affiliateCode: acquisitionCodes.affiliateCode || form.affiliateCode || '',
       });
 
-      const signupBonus = response.data?.signupBonus || response.data?.data?.signupBonus;
       const nextMessage =
-        response.data?.message || 'Account created. Check your inbox for email verification.';
+        response.data?.message || 'Account created. Check your inbox for verification.';
 
       const loginId =
         response.data?.data?.login ||
         response.data?.data?.user?.userId;
 
-      const bonusText = signupBonus?.awarded
-        ? ` Signup bonus credited: ${signupBonus.amount} ${signupBonus.currency}.`
-        : '';
-
-      setMessage(loginId ? `${nextMessage}${bonusText} Your User ID: ${loginId}` : `${nextMessage}${bonusText}`);
+      setMessage(loginId ? `${nextMessage} Your User ID: ${loginId}` : nextMessage);
       toast.success('Registration successful');
     } catch (error) {
       toast.error(getApiError(error, 'Registration failed'));
@@ -144,7 +152,8 @@ export default function RegisterPage() {
         country: selectedQuickCountry.name,
         countryCode: selectedQuickCountry.code,
         currency: quickForm.currency,
-        referralCode: quickForm.referralCode,
+        referralCode: acquisitionCodes.affiliateCode ? '' : quickForm.referralCode,
+        affiliateCode: acquisitionCodes.affiliateCode || quickForm.affiliateCode || '',
       });
 
       const account = response.data?.data || {};
@@ -156,9 +165,8 @@ export default function RegisterPage() {
         return;
       }
 
-      const signupBonus = response.data?.signupBonus || account.signupBonus;
-      saveOneClickCredentials({ login, password, signupBonus });
-      toast.success(signupBonus?.awarded ? 'Registration completed. Signup bonus credited.' : 'Registration completed');
+      saveOneClickCredentials({ login, password });
+      toast.success('Registration completed');
     } catch (error) {
       toast.error(getApiError(error, 'One click registration failed'));
     } finally {
@@ -194,7 +202,7 @@ export default function RegisterPage() {
         <div className="auth-card register-card">
           <div className="register-card-header">
             <h2>Registration</h2>
-            <p>Every registration method creates a unique User ID and credits a BDT 100 equivalent signup bonus automatically.</p>
+            <p>Every registration method creates a unique User ID automatically.</p>
           </div>
 
           <div className="quick-register-box">
@@ -249,11 +257,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="bonus-card">
-                <div className="bonus-thumb">100</div>
+                <div className="bonus-thumb">100%</div>
 
                 <div>
-                  <strong>New account bonus</strong>
-                  <span>Get BDT 100 equivalent in your selected currency after signup. Wager 2x before withdrawal.</span>
+                  <strong>Bonus for sports</strong>
+                  <span>First deposit bonus up to {formatCurrency(14000, quickForm.currency)}</span>
                 </div>
 
                 <span className="bonus-arrow">›</span>
