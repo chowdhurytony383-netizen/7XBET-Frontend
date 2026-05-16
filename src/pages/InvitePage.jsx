@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Copy, Gift, Link2, Share2, ShieldCheck, Users, WalletCards } from 'lucide-react';
+import { Copy, Gift, Users, WalletCards } from 'lucide-react';
 import { ReferralAPI } from '../api/affiliate.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -8,40 +8,12 @@ import PageHeader from '../components/PageHeader.jsx';
 import StatCard from '../components/StatCard.jsx';
 import './InvitePage.css';
 
-async function copyText(value, successMessage = 'Copied') {
-  if (!value) return;
-
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(value);
-    } else {
-      const textarea = document.createElement('textarea');
-      textarea.value = value;
-      textarea.setAttribute('readonly', '');
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-    }
-    toast.success(successMessage);
-  } catch (_) {
-    toast.error('Copy failed');
-  }
-}
-
-function statusClass(status = '') {
-  return String(status || 'pending').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-}
-
 export default function InvitePage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-
     async function load() {
       setLoading(true);
       try {
@@ -53,88 +25,42 @@ export default function InvitePage() {
         if (active) setLoading(false);
       }
     }
-
     load();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   const totals = data?.totals || {};
-  const rewards = useMemo(() => data?.rewards || [], [data?.rewards]);
+  const rewards = data?.rewards || [];
   const invitedUsers = data?.invitedUsers || [];
-  const inviteCode = data?.inviteCode || '';
-  const inviteLink = data?.inviteLink || '';
 
-  const qualifiedCount = useMemo(
-    () => rewards.filter((reward) => ['qualified', 'credited'].includes(reward.status)).length,
-    [rewards]
-  );
-
-  const shareInvite = async () => {
-    if (!inviteLink) return;
-
+  const copyLink = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Join 7XBET',
-          text: 'Create your 7XBET account using my invite link.',
-          url: inviteLink,
-        });
-      } else {
-        await copyText(inviteLink, 'Invite link copied');
-      }
+      await navigator.clipboard.writeText(data?.inviteLink || '');
+      toast.success('Invite link copied');
     } catch (_) {
-      // User cancelled native share sheet. No error toast needed.
+      toast.error('Copy failed');
     }
   };
+
+  const qualifiedCount = useMemo(() => rewards.filter((reward) => ['qualified', 'credited'].includes(reward.status)).length, [rewards]);
 
   return (
     <main className="invite-page">
       <PageHeader
         eyebrow="Invite & earn"
         title="My Invite Program"
-        description="Share your invite link with friends. Rewards are tracked automatically after their first deposit and required turnover."
+        description="Share your invite link. Reward unlocks after your invited user completes the required first-deposit turnover."
       />
 
       <section className="invite-hero-card">
-        <div className="invite-hero-content">
-          <span className="invite-kicker">Your invite code</span>
-          <div className="invite-code-row">
-            <strong>{loading ? 'Loading...' : inviteCode || 'Not available'}</strong>
-            <button type="button" onClick={() => copyText(inviteCode, 'Invite code copied')} disabled={!inviteCode}>
-              <Copy size={17} /> Copy code
-            </button>
-          </div>
-          <p className="invite-hero-text">
-            Use this link for user-to-user invites. One clean acquisition source is easier to audit and prevents commission conflict.
-          </p>
-
-          <div className="invite-link-box">
-            <Link2 size={18} />
-            <span>{inviteLink || 'Your invite link will appear here.'}</span>
-          </div>
-
-          <div className="invite-hero-actions">
-            <button type="button" className="invite-primary-btn" onClick={() => copyText(inviteLink, 'Invite link copied')} disabled={!inviteLink}>
-              <Copy size={18} /> Copy link
-            </button>
-            <button type="button" className="invite-secondary-btn" onClick={shareInvite} disabled={!inviteLink}>
-              <Share2 size={18} /> Share
-            </button>
-          </div>
+        <div>
+          <span className="invite-label">Your invite code</span>
+          <strong>{loading ? 'Loading...' : data?.inviteCode || 'Not available'}</strong>
+          <p>{data?.inviteLink || 'Your invite link will appear here.'}</p>
         </div>
-
-        <aside className="invite-summary-panel">
-          <div className="invite-summary-icon"><Gift size={28} /></div>
-          <h2>Referral reward</h2>
-          <p>Invite users and earn after their qualifying activity is completed.</p>
-          <ul>
-            <li><ShieldCheck size={16} /> Self-referral is blocked</li>
-            <li><ShieldCheck size={16} /> Fraud review supported</li>
-            <li><ShieldCheck size={16} /> Admin can hold/cancel suspicious rewards</li>
-          </ul>
-        </aside>
+        <button type="button" className="invite-copy-btn" onClick={copyLink} disabled={!data?.inviteLink}>
+          <Copy size={18} /> Copy link
+        </button>
       </section>
 
       <section className="invite-stats-grid">
@@ -144,32 +70,18 @@ export default function InvitePage() {
         <StatCard icon={WalletCards} label="Credited reward" value={formatCurrency(totals.credited || 0, 'BDT')} />
       </section>
 
-      <section className="invite-rules-grid">
-        <article>
-          <span>Reward</span>
-          <strong>5% of first deposit</strong>
-          <p>Calculated from the invited user’s first successful deposit.</p>
-        </article>
-        <article>
-          <span>Maximum</span>
-          <strong>500 BDT</strong>
-          <p>Admin can adjust this rule later for campaigns or special markets.</p>
-        </article>
-        <article>
-          <span>Unlock</span>
-          <strong>50% turnover</strong>
-          <p>Reward unlocks only after the invited user completes the required turnover.</p>
-        </article>
+      <section className="invite-rules-card">
+        <h2>Reward rules</h2>
+        <ul>
+          <li>Referrer reward: 5% of invited user's first successful deposit.</li>
+          <li>Maximum reward: 500 BDT.</li>
+          <li>Unlock condition: invited user must complete 50% deposit turnover.</li>
+          <li>Self-referral and suspicious accounts can be cancelled by admin.</li>
+        </ul>
       </section>
 
       <section className="invite-table-card">
-        <div className="invite-section-head">
-          <div>
-            <h2>Reward history</h2>
-            <p>Desktop shows a table. Mobile shows compact cards for easier reading.</p>
-          </div>
-        </div>
-
+        <h2>Reward history</h2>
         <div className="invite-table-wrap">
           <table>
             <thead>
@@ -188,11 +100,8 @@ export default function InvitePage() {
                   <td>{reward.referredUser?.userId || reward.referredUser?.name || 'User'}</td>
                   <td>{formatCurrency(reward.depositAmount || 0, reward.rewardCurrency || 'BDT')}</td>
                   <td>{formatCurrency(reward.rewardAmount || 0, reward.rewardCurrency || 'BDT')}</td>
-                  <td>
-                    {formatCurrency(reward.completedTurnover || 0, reward.rewardCurrency || 'BDT')} /{' '}
-                    {formatCurrency(reward.requiredTurnover || 0, reward.rewardCurrency || 'BDT')}
-                  </td>
-                  <td><span className={`invite-status ${statusClass(reward.status)}`}>{reward.status || 'pending'}</span></td>
+                  <td>{formatCurrency(reward.completedTurnover || 0, reward.rewardCurrency || 'BDT')} / {formatCurrency(reward.requiredTurnover || 0, reward.rewardCurrency || 'BDT')}</td>
+                  <td><span className={`invite-status ${reward.status}`}>{reward.status}</span></td>
                   <td>{formatDate(reward.createdAt)}</td>
                 </tr>
               ))}
@@ -201,24 +110,6 @@ export default function InvitePage() {
               )}
             </tbody>
           </table>
-        </div>
-
-        <div className="invite-mobile-list">
-          {rewards.map((reward) => (
-            <article key={reward._id} className="invite-mobile-card">
-              <div className="invite-mobile-card-head">
-                <strong>{reward.referredUser?.userId || reward.referredUser?.name || 'User'}</strong>
-                <span className={`invite-status ${statusClass(reward.status)}`}>{reward.status || 'pending'}</span>
-              </div>
-              <dl>
-                <div><dt>Deposit</dt><dd>{formatCurrency(reward.depositAmount || 0, reward.rewardCurrency || 'BDT')}</dd></div>
-                <div><dt>Reward</dt><dd>{formatCurrency(reward.rewardAmount || 0, reward.rewardCurrency || 'BDT')}</dd></div>
-                <div><dt>Turnover</dt><dd>{formatCurrency(reward.completedTurnover || 0, reward.rewardCurrency || 'BDT')} / {formatCurrency(reward.requiredTurnover || 0, reward.rewardCurrency || 'BDT')}</dd></div>
-                <div><dt>Date</dt><dd>{formatDate(reward.createdAt)}</dd></div>
-              </dl>
-            </article>
-          ))}
-          {!loading && rewards.length === 0 && <p className="invite-empty-state">No referral reward yet.</p>}
         </div>
       </section>
     </main>
