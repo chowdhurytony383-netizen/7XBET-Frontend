@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Download, ShieldAlert } from 'lucide-react';
 import { AdminAffiliateAPI } from '../../api/affiliate.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
@@ -12,31 +13,21 @@ function todayMinus(days) {
   return date.toISOString().slice(0, 10);
 }
 
-function statusClass(status = '') {
-  return String(status || 'pending').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-}
-
 export default function AdminAffiliatesPage() {
   const [affiliates, setAffiliates] = useState([]);
+  const [flags, setFlags] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState({
-    periodStart: todayMinus(7),
-    periodEnd: new Date().toISOString().slice(0, 10),
-  });
-
-  const totals = useMemo(() => affiliates.reduce((acc, affiliate) => {
-    acc.pending += Number(affiliate.stats?.pendingCommission || 0);
-    acc.carryover += Number(affiliate.carryoverBalance || 0);
-    if (affiliate.status === 'approved') acc.approved += 1;
-    if (affiliate.status === 'pending') acc.pendingApplications += 1;
-    return acc;
-  }, { pending: 0, carryover: 0, approved: 0, pendingApplications: 0 }), [affiliates]);
+  const [period, setPeriod] = useState({ periodStart: todayMinus(7), periodEnd: new Date().toISOString().slice(0, 10) });
 
   const load = async () => {
     setLoading(true);
     try {
-      const response = await AdminAffiliateAPI.list();
-      setAffiliates(response.data?.data || response.data?.affiliates || []);
+      const [affiliateResponse, flagsResponse] = await Promise.all([
+        AdminAffiliateAPI.list(),
+        AdminAffiliateAPI.fraudFlags({ status: 'open' }),
+      ]);
+      setAffiliates(affiliateResponse.data?.data || affiliateResponse.data?.affiliates || []);
+      setFlags(flagsResponse.data?.data || flagsResponse.data?.flags || []);
     } catch (error) {
       toast.error(getApiError(error, 'Unable to load affiliates'));
     } finally {
@@ -66,9 +57,19 @@ export default function AdminAffiliatesPage() {
     }
   };
 
+  const scanFraud = async (affiliateId) => {
+    try {
+      await AdminAffiliateAPI.scanFraud(affiliateId, period);
+      toast.success('Fraud scan completed');
+      await load();
+    } catch (error) {
+      toast.error(getApiError(error, 'Fraud scan failed'));
+    }
+  };
+
   const setVipRate = async (affiliateId, rate) => {
     try {
-      await AdminAffiliateAPI.updateCommission(affiliateId, { tier: 'vip', commissionRate: Number(rate) / 100, negativeCarryover: true });
+      await AdminAffiliateAPI.updateCommission(affiliateId, { tier: 'vip', commissionRate: Number(rate) / 100, negativeCarryover: true, minimumPayoutUsd: 30, autoPayoutEnabled: true });
       toast.success('VIP rate updated');
       await load();
     } catch (error) {
@@ -76,99 +77,105 @@ export default function AdminAffiliatesPage() {
     }
   };
 
-  const renderActions = (affiliate) => (
-    <div className="admin-affiliate-actions">
-      {affiliate.status !== 'approved' && <button type="button" onClick={() => updateStatus(affiliate._id, 'approved')}>Approve</button>}
-      {affiliate.status !== 'suspended' && <button type="button" onClick={() => updateStatus(affiliate._id, 'suspended')}>Suspend</button>}
-      <button type="button" onClick={() => calculate(affiliate._id)}>Calculate</button>
-      <select defaultValue="" onChange={(event) => event.target.value && setVipRate(affiliate._id, event.target.value)}>
-        <option value="">VIP rate</option>
-        <option value="30">30%</option>
-        <option value="35">35%</option>
-        <option value="40">40%</option>
-      </select>
-    </div>
-  );
+  const runAutomation = async () => {
+    try {
+      const response = await AdminAffiliateAPI.runAutomation({ force: true });
+      toast.success(`Automation done. Paid ${response.data?.data?.payoutsPaid || 0} affiliates.`);
+      await load();
+    } catch (error) {
+      toast.error(getApiError(error, 'Automation failed'));
+    }
+  };
+
+  const updateFlag = async (flagId, status) => {
+    try {
+      await AdminAffiliateAPI.updateFraudFlag(flagId, { status });
+      toast.success(`Flag ${status}`);
+      await load();
+    } catch (error) {
+      toast.error(getApiError(error, 'Flag update failed'));
+    }
+  };
 
   return (
     <main className="admin-affiliates-page">
       <PageHeader
         eyebrow="Admin"
         title="Affiliate Partners"
-        description="Approve partners, set 30% default or 30%–40% VIP rate, calculate GGR revenue share with negative carryover."
+        description="30% default, VIP 30%–40%, negative carryover, $30 minimum payout equivalent, Tuesday weekly auto calculation and payout."
       />
 
-      <section className="admin-affiliate-summary-grid">
-        <article><span>Total partners</span><strong>{affiliates.length}</strong></article>
-        <article><span>Approved</span><strong>{totals.approved}</strong></article>
-        <article><span>Pending apps</span><strong>{totals.pendingApplications}</strong></article>
-        <article><span>Pending commission</span><strong>{formatCurrency(totals.pending, 'BDT')}</strong></article>
-      </section>
-
       <section className="admin-affiliate-period-card">
-        <div className="admin-affiliate-period-fields">
-          <label>Period start<input type="date" value={period.periodStart} onChange={(event) => setPeriod((current) => ({ ...current, periodStart: event.target.value }))} /></label>
-          <label>Period end<input type="date" value={period.periodEnd} onChange={(event) => setPeriod((current) => ({ ...current, periodEnd: event.target.value }))} /></label>
-        </div>
-        <small>Use this date range before pressing Calculate on any affiliate.</small>
+        <label>Period start<input type="date" value={period.periodStart} onChange={(event) => setPeriod((current) => ({ ...current, periodStart: event.target.value }))} /></label>
+        <label>Period end<input type="date" value={period.periodEnd} onChange={(event) => setPeriod((current) => ({ ...current, periodEnd: event.target.value }))} /></label>
+        <button onClick={runAutomation}>Run Tuesday automation now</button>
+        <small>Automation calculates the last weekly period, scans fraud, approves clear periods, and credits eligible payouts to affiliate main wallet.</small>
       </section>
 
       <section className="admin-affiliate-table-card">
+        <h2>Open fraud flags</h2>
+        <div className="admin-affiliate-table-wrap">
+          <table>
+            <thead><tr><th>Partner</th><th>Severity</th><th>Type</th><th>Message</th><th>Actions</th></tr></thead>
+            <tbody>
+              {flags.slice(0, 20).map((flag) => (
+                <tr key={flag._id}>
+                  <td>{flag.affiliate?.displayName || flag.affiliate?.affiliateCode}</td>
+                  <td><span className={`admin-affiliate-status ${flag.severity}`}>{flag.severity}</span></td>
+                  <td>{flag.type}</td>
+                  <td>{flag.message}</td>
+                  <td className="admin-affiliate-actions">
+                    <button onClick={() => updateFlag(flag._id, 'reviewed')}>Reviewed</button>
+                    <button onClick={() => updateFlag(flag._id, 'cleared')}>Clear</button>
+                    <button onClick={() => updateFlag(flag._id, 'confirmed')}>Confirm</button>
+                  </td>
+                </tr>
+              ))}
+              {!loading && flags.length === 0 && <tr><td colSpan="5">No open fraud flags.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="admin-affiliate-table-card">
+        <h2>Affiliate list</h2>
         <div className="admin-affiliate-table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Partner</th>
-                <th>Code</th>
-                <th>Status</th>
-                <th>Tier</th>
-                <th>Rate</th>
-                <th>Carryover</th>
-                <th>Pending</th>
-                <th>Created</th>
-                <th>Actions</th>
+                <th>Partner</th><th>Code</th><th>Status</th><th>Tier</th><th>Rate</th><th>Risk</th><th>Carryover</th><th>Pending</th><th>Min payout</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {affiliates.map((affiliate) => (
                 <tr key={affiliate._id}>
-                  <td>{affiliate.displayName || affiliate.user?.fullName || affiliate.user?.userId || 'Partner'}</td>
-                  <td>{affiliate.affiliateCode || '—'}</td>
-                  <td><span className={`admin-affiliate-status ${statusClass(affiliate.status)}`}>{affiliate.status || 'pending'}</span></td>
-                  <td>{affiliate.tier || 'standard'}</td>
+                  <td>{affiliate.displayName || affiliate.user?.fullName || affiliate.user?.userId}</td>
+                  <td>{affiliate.affiliateCode}</td>
+                  <td><span className={`admin-affiliate-status ${affiliate.status}`}>{affiliate.status}</span></td>
+                  <td>{affiliate.tier}</td>
                   <td>{Math.round(Number(affiliate.commissionRate || 0) * 100)}%</td>
-                  <td>{formatCurrency(affiliate.carryoverBalance || 0, 'BDT')}</td>
-                  <td>{formatCurrency(affiliate.stats?.pendingCommission || 0, 'BDT')}</td>
-                  <td>{formatDate(affiliate.createdAt)}</td>
-                  <td>{renderActions(affiliate)}</td>
+                  <td>{affiliate.payoutHold ? <span className="admin-affiliate-status critical"><ShieldAlert size={14} /> Hold</span> : affiliate.fraud?.lastRiskLevel || 'low'}</td>
+                  <td>{formatCurrency(affiliate.carryoverBalance || 0, affiliate.user?.currency || 'BDT')}</td>
+                  <td>{formatCurrency(affiliate.stats?.pendingCommission || 0, affiliate.user?.currency || 'BDT')}</td>
+                  <td>$ {affiliate.minimumPayoutUsd || 30}</td>
+                  <td className="admin-affiliate-actions">
+                    {affiliate.status !== 'approved' && <button onClick={() => updateStatus(affiliate._id, 'approved')}>Approve</button>}
+                    {affiliate.status !== 'suspended' && <button onClick={() => updateStatus(affiliate._id, 'suspended')}>Suspend</button>}
+                    <button onClick={() => scanFraud(affiliate._id)}>Scan fraud</button>
+                    <button onClick={() => calculate(affiliate._id)}>Calculate</button>
+                    <a href={AdminAffiliateAPI.exportUsersCsvUrl(affiliate._id, period)} target="_blank" rel="noreferrer"><Download size={14} /> CSV</a>
+                    <select defaultValue="" onChange={(event) => event.target.value && setVipRate(affiliate._id, event.target.value)}>
+                      <option value="">VIP rate</option>
+                      <option value="30">30%</option>
+                      <option value="35">35%</option>
+                      <option value="40">40%</option>
+                    </select>
+                  </td>
                 </tr>
               ))}
-              {!loading && affiliates.length === 0 && <tr><td colSpan="9">No affiliate applications yet.</td></tr>}
+              {!loading && affiliates.length === 0 && <tr><td colSpan="10">No affiliate applications yet.</td></tr>}
             </tbody>
           </table>
-        </div>
-
-        <div className="admin-affiliate-mobile-list">
-          {affiliates.map((affiliate) => (
-            <article key={affiliate._id} className="admin-affiliate-mobile-card">
-              <div className="admin-affiliate-mobile-head">
-                <div>
-                  <strong>{affiliate.displayName || affiliate.user?.fullName || affiliate.user?.userId || 'Partner'}</strong>
-                  <p>{affiliate.affiliateCode || 'No code yet'}</p>
-                </div>
-                <span className={`admin-affiliate-status ${statusClass(affiliate.status)}`}>{affiliate.status || 'pending'}</span>
-              </div>
-              <dl>
-                <div><dt>Tier</dt><dd>{affiliate.tier || 'standard'}</dd></div>
-                <div><dt>Rate</dt><dd>{Math.round(Number(affiliate.commissionRate || 0) * 100)}%</dd></div>
-                <div><dt>Carryover</dt><dd>{formatCurrency(affiliate.carryoverBalance || 0, 'BDT')}</dd></div>
-                <div><dt>Pending</dt><dd>{formatCurrency(affiliate.stats?.pendingCommission || 0, 'BDT')}</dd></div>
-                <div><dt>Created</dt><dd>{formatDate(affiliate.createdAt)}</dd></div>
-              </dl>
-              {renderActions(affiliate)}
-            </article>
-          ))}
-          {!loading && affiliates.length === 0 && <p className="admin-affiliate-empty">No affiliate applications yet.</p>}
         </div>
       </section>
     </main>
