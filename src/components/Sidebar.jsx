@@ -11,6 +11,7 @@ import {
   Grid2X2,
   Home,
   LayoutDashboard,
+  Handshake,
   Layers3,
   LogIn,
   LogOut,
@@ -23,6 +24,7 @@ import {
   Trophy,
   User,
   UserPlus,
+  Share2,
   Wallet,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -57,6 +59,8 @@ const userOnlyNavItems = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { to: '/wallet', label: 'Wallet', icon: Wallet },
   { to: '/profile', label: 'Profile', icon: User },
+  { to: '/profile/invite', label: 'My Invite', icon: Share2 },
+  { to: '/affiliate/dashboard', label: 'Affiliate', icon: Handshake },
 ];
 
 const adminNavItems = [
@@ -67,6 +71,7 @@ const adminNavItems = [
   { to: '/admin/agents', label: 'Agent Admin', icon: Shield },
   { to: '/admin/agent-payments', label: 'Deposit Methods', icon: Wallet },
   { to: '/admin/agent-requests', label: 'Agent Requests', icon: Ticket },
+  { to: '/admin/affiliates', label: 'Affiliates', icon: Handshake },
 ];
 
 const bonusChildren = [
