@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { LifeBuoy, MessageCircle, Plus, Send } from 'lucide-react';
+import { FileText, ImagePlus, LifeBuoy, MessageCircle, Paperclip, Plus, Send, X } from 'lucide-react';
 import PageHeader from '../components/PageHeader.jsx';
 import { getApiError } from '../api/client.js';
 import { SupportAPI } from '../api/support.js';
 import { formatDate } from '../utils/format.js';
-import { getRealtimeSocket } from '../socket/realtimeSocket.js';
+import { connectRealtimeSocket } from '../socket/realtimeSocket.js';
 import './SupportPage.css';
 
 const categories = [
@@ -13,8 +13,78 @@ const categories = [
   ['game', 'Game'], ['affiliate', 'Affiliate'], ['account', 'Account'], ['technical', 'Technical'], ['other', 'Other'],
 ];
 
+const acceptTypes = 'image/*,application/pdf,text/plain,.doc,.docx,.xls,.xlsx';
+
 function ticketTitle(ticket) {
   return ticket?.subject || ticket?.ticketNo || 'Support ticket';
+}
+
+function formatFileSize(bytes = 0) {
+  const size = Number(bytes || 0);
+  if (!size) return '';
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function buildFormData(fields = {}, files = []) {
+  const form = new FormData();
+  Object.entries(fields).forEach(([key, value]) => form.append(key, value ?? ''));
+  files.forEach((file) => form.append('attachments', file));
+  return form;
+}
+
+function FilePicker({ files, setFiles, disabled = false, idPrefix }) {
+  const inputRef = useRef(null);
+
+  const addFiles = (event) => {
+    const next = Array.from(event.target.files || []);
+    if (!next.length) return;
+    setFiles((current) => [...current, ...next].slice(0, 5));
+    event.target.value = '';
+  };
+
+  const removeFile = (index) => {
+    setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index));
+  };
+
+  return (
+    <div className="support-file-picker">
+      <input ref={inputRef} id={`${idPrefix}-files`} type="file" accept={acceptTypes} multiple hidden onChange={addFiles} disabled={disabled} />
+      <button type="button" className="support-attach-btn" onClick={() => inputRef.current?.click()} disabled={disabled}>
+        <ImagePlus size={17} /> Photo / file
+      </button>
+      {files.length > 0 && (
+        <div className="support-selected-files">
+          {files.map((file, index) => (
+            <span key={`${file.name}-${index}`}>
+              <Paperclip size={13} /> {file.name} <small>{formatFileSize(file.size)}</small>
+              <button type="button" onClick={() => removeFile(index)} aria-label="Remove file"><X size={12} /></button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AttachmentList({ attachments = [] }) {
+  if (!attachments.length) return null;
+
+  return (
+    <div className="support-attachments">
+      {attachments.map((attachment, index) => {
+        const isImage = attachment.isImage || String(attachment.mimeType || attachment.type || '').startsWith('image/');
+        const label = attachment.originalName || attachment.name || `Attachment ${index + 1}`;
+        return (
+          <a key={`${attachment.url}-${index}`} className={`support-attachment ${isImage ? 'image' : ''}`} href={attachment.url} target="_blank" rel="noreferrer">
+            {isImage ? <img src={attachment.url} alt={label} loading="lazy" /> : <FileText size={18} />}
+            <span>{label}<small>{formatFileSize(attachment.size)}</small></span>
+          </a>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function SupportPage() {
@@ -23,10 +93,28 @@ export default function SupportPage() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reply, setReply] = useState('');
+  const [replyFiles, setReplyFiles] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
   const [newTicket, setNewTicket] = useState({ subject: '', category: 'general', message: '' });
   const [creating, setCreating] = useState(false);
+  const [sending, setSending] = useState(false);
+  const messagesRef = useRef(null);
 
   const selectedTicket = useMemo(() => tickets.find((ticket) => ticket._id === selectedId), [tickets, selectedId]);
+
+  const appendMessage = (nextMessage) => {
+    if (!nextMessage?._id) return;
+    setMessages((current) => current.some((msg) => msg._id === nextMessage._id) ? current : [...current, nextMessage]);
+  };
+
+  const upsertTicket = (nextTicket) => {
+    if (!nextTicket?._id) return;
+    setTickets((current) => {
+      const exists = current.some((ticket) => ticket._id === nextTicket._id);
+      const next = exists ? current.map((ticket) => ticket._id === nextTicket._id ? { ...ticket, ...nextTicket } : ticket) : [nextTicket, ...current];
+      return next.sort((a, b) => new Date(b.lastMessageAt || b.updatedAt || 0) - new Date(a.lastMessageAt || a.updatedAt || 0));
+    });
+  };
 
   const loadTickets = async () => {
     setLoading(true);
@@ -58,33 +146,36 @@ export default function SupportPage() {
   useEffect(() => { loadTicket(selectedId); }, [selectedId]);
 
   useEffect(() => {
-    const socket = getRealtimeSocket();
+    const socket = connectRealtimeSocket();
     const onMessage = (payload = {}) => {
       const ticket = payload.ticket;
-      if (ticket?._id) {
-        setTickets((current) => {
-          const exists = current.some((item) => item._id === ticket._id);
-          const next = exists ? current.map((item) => item._id === ticket._id ? { ...item, ...ticket } : item) : [ticket, ...current];
-          return next.sort((a, b) => new Date(b.lastMessageAt || b.updatedAt) - new Date(a.lastMessageAt || a.updatedAt));
-        });
-      }
-      if (ticket?._id === selectedId && payload.message) {
-        setMessages((current) => current.some((msg) => msg._id === payload.message._id) ? current : [...current, payload.message]);
-      }
+      if (ticket?._id) upsertTicket(ticket);
+      if (ticket?._id === selectedId && payload.message) appendMessage(payload.message);
     };
+
     socket.on('support:message', onMessage);
-    if (!socket.connected) socket.connect();
+    socket.emit('support:join');
+
     return () => socket.off('support:message', onMessage);
   }, [selectedId]);
 
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages.length, selectedId]);
+
   const createTicket = async (event) => {
     event.preventDefault();
+    if (!newTicket.subject.trim()) return toast.error('Subject is required');
+    if (!newTicket.message.trim() && newFiles.length === 0) return toast.error('Message or attachment is required');
+
     setCreating(true);
     try {
-      const response = await SupportAPI.create(newTicket);
+      const response = await SupportAPI.create(buildFormData(newTicket, newFiles));
       const ticket = response.data?.data;
       toast.success('Support ticket created');
       setNewTicket({ subject: '', category: 'general', message: '' });
+      setNewFiles([]);
       await loadTickets();
       if (ticket?._id) setSelectedId(ticket._id);
     } catch (error) {
@@ -96,15 +187,21 @@ export default function SupportPage() {
 
   const sendReply = async (event) => {
     event.preventDefault();
-    if (!selectedId || !reply.trim()) return;
+    if (!selectedId) return;
+    if (!reply.trim() && replyFiles.length === 0) return;
+
+    setSending(true);
     try {
-      const response = await SupportAPI.sendMessage(selectedId, { message: reply });
+      const response = await SupportAPI.sendMessage(selectedId, buildFormData({ message: reply }, replyFiles));
       const data = response.data?.data || {};
       setReply('');
-      if (data.message) setMessages((current) => [...current, data.message]);
-      if (data.ticket) setTickets((current) => current.map((ticket) => ticket._id === selectedId ? { ...ticket, ...data.ticket } : ticket));
+      setReplyFiles([]);
+      if (data.message) appendMessage(data.message);
+      if (data.ticket) upsertTicket(data.ticket);
     } catch (error) {
       toast.error(getApiError(error, 'Unable to send message'));
+    } finally {
+      setSending(false);
     }
   };
 
@@ -122,7 +219,7 @@ export default function SupportPage() {
 
   return (
     <main className="support-page">
-      <PageHeader eyebrow="Live Support" title="Support Center" description="Chat with the 7XBET support team, track ticket status, and receive real-time replies." />
+      <PageHeader eyebrow="Live Support" title="Support Center" description="Chat with the 7XBET support team in real time and send screenshots, photos, PDFs, or documents." />
 
       <section className="support-layout">
         <aside className="support-sidebar-panel">
@@ -156,21 +253,25 @@ export default function SupportPage() {
                 <button type="button" onClick={closeTicket}>Mark resolved</button>
               </div>
 
-              <div className="support-messages">
+              <div className="support-messages" ref={messagesRef}>
                 {messages.map((message) => (
                   <article key={message._id} className={`support-message ${message.senderRole === 'user' ? 'mine' : 'theirs'}`}>
                     <div>
                       <strong>{message.senderRole === 'user' ? 'You' : '7XBET Support'}</strong>
                       <small>{formatDate(message.createdAt)}</small>
                     </div>
-                    <p>{message.message}</p>
+                    {message.message && <p>{message.message}</p>}
+                    <AttachmentList attachments={message.attachments || []} />
                   </article>
                 ))}
               </div>
 
               <form className="support-reply-form" onSubmit={sendReply}>
-                <textarea value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Write your message..." rows="3" />
-                <button type="submit"><Send size={17} /> Send</button>
+                <div className="support-input-stack">
+                  <textarea value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Write your message..." rows="3" />
+                  <FilePicker idPrefix="reply" files={replyFiles} setFiles={setReplyFiles} disabled={sending} />
+                </div>
+                <button type="submit" disabled={sending || (!reply.trim() && replyFiles.length === 0)}><Send size={17} /> {sending ? 'Sending...' : 'Send'}</button>
               </form>
             </>
           ) : (
@@ -187,6 +288,7 @@ export default function SupportPage() {
             <label>Category<select value={newTicket.category} onChange={(event) => setNewTicket((current) => ({ ...current, category: event.target.value }))}>{categories.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
           </div>
           <label>Message<textarea value={newTicket.message} onChange={(event) => setNewTicket((current) => ({ ...current, message: event.target.value }))} rows="5" placeholder="Describe your issue clearly..." /></label>
+          <FilePicker idPrefix="new-ticket" files={newFiles} setFiles={setNewFiles} disabled={creating} />
           <button type="submit" disabled={creating}>{creating ? 'Creating...' : 'Create ticket'}</button>
         </form>
       </section>
