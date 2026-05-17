@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
 import Logo from './Logo.jsx';
+import NotificationBell from './NotificationBell.jsx';
 import './Topbar.css';
 
 function getDisplayName(user) {
@@ -59,6 +60,8 @@ export default function Topbar({ onMenuClick }) {
       <TopbarBrand />
 
       <div className="topbar-spacer" />
+
+      <NotificationBell />
 
       <Link className="topbar-wallet" to="/wallet" aria-label="Main balance">
         <span className="topbar-wallet-icon"><WalletCards size={16} /></span>

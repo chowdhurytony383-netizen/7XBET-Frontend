@@ -1,0 +1,16 @@
+.notification-bell { position: relative; }
+.notification-bell-button { width: 42px; height: 42px; border-radius: 999px; border: 1px solid var(--border); background: rgba(15,33,47,.92); color: #fff; display: inline-grid; place-items: center; position: relative; cursor: pointer; }
+.notification-bell-button span { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: linear-gradient(135deg,#f43f5e,#f59e0b); color: #fff; font-size: 10px; font-weight: 900; display: inline-grid; place-items: center; border: 1px solid rgba(255,255,255,.35); }
+.notification-menu { position: absolute; top: calc(100% + 10px); right: 0; width: min(360px, calc(100vw - 20px)); border: 1px solid rgba(255,255,255,.1); background: rgba(8,14,24,.98); border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.42); z-index: 100; overflow: hidden; }
+.notification-menu-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.notification-menu-head strong { color: #fff; }
+.notification-menu-head button { display: inline-flex; align-items: center; gap: 5px; border: 0; border-radius: 999px; padding: 7px 10px; background: rgba(59,130,246,.15); color: #bfdbfe; font-weight: 800; cursor: pointer; font-size: 12px; }
+.notification-menu-list { max-height: 360px; overflow-y: auto; }
+.notification-menu-item { display: grid; gap: 5px; padding: 13px 16px; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.06); background: transparent; }
+.notification-menu-item.unread { background: rgba(34,197,94,.08); }
+.notification-menu-item strong { color: #fff; font-size: 14px; }
+.notification-menu-item p { color: #cbd5e1; margin: 0; font-size: 13px; line-height: 1.45; }
+.notification-menu-item small { color: #94a3b8; font-size: 11px; }
+.notification-empty { padding: 18px; color: #94a3b8; text-align: center; }
+.notification-view-all { display: block; text-align: center; padding: 13px; color: #7cff9e; font-weight: 900; text-decoration: none; background: rgba(255,255,255,.03); }
+@media (max-width: 680px) { .notification-bell-button { width: 36px; height: 36px; } .notification-menu { right: -120px; } }
