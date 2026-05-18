@@ -37,9 +37,61 @@ function appendFormValues(formData, method, elements) {
   formData.set('isActive', elements.isActive?.checked ? 'true' : 'false');
 }
 
+function normalizeTitle(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9\u0980-\u09FF]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*(?:no|number|num|serial|sr)?\s*[#:_-]*\s*\d+$/i, '')
+    .trim();
+}
+
+function decorateMethods(methods = []) {
+  const groups = new Map();
+  const sorted = [...methods].sort((a, b) => {
+    const av = Number(a.displayOrder || 100);
+    const bv = Number(b.displayOrder || 100);
+    if (av !== bv) return av - bv;
+    return String(a.key || '').localeCompare(String(b.key || ''));
+  });
+
+  for (const method of sorted) {
+    const groupKey = normalizeTitle(method.title) || normalizeTitle(method.key) || method.key;
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push(method);
+  }
+
+  const channelByKey = new Map();
+  for (const [groupKey, items] of groups.entries()) {
+    const hasMultiple = items.length > 1;
+    items.forEach((method, index) => {
+      const channelNumber = index + 1;
+      const channelLabel = hasMultiple ? `Channel ${channelNumber}` : 'Channel 1';
+      channelByKey.set(method.key, {
+        channelNumber,
+        channelLabel,
+        groupKey,
+        groupSize: items.length,
+        displayTitle: hasMultiple ? `${method.title} - ${channelLabel}` : method.title,
+      });
+    });
+  }
+
+  return methods.map((method) => ({
+    ...method,
+    ...(channelByKey.get(method.key) || {}),
+  }));
+}
+
+function getDisplayTitle(method = {}) {
+  return method.displayTitle || (method.channelLabel ? `${method.title} - ${method.channelLabel}` : method.title);
+}
+
 function MethodBadge({ method }) {
   if (method.image) {
-    return <img className="agent-method-logo" src={method.image} alt={method.title || method.key} />;
+    return <img className="agent-method-logo" src={method.image} alt={getDisplayTitle(method) || method.key} />;
   }
 
   return <span className={`method-badge ${method.key || 'custom'}`}>{String(method.title || method.key || '?').slice(0, 2)}</span>;
@@ -63,9 +115,13 @@ function MethodForm({ method, mode = 'edit', onSubmit, onDisable }) {
     <form className="agent-method-card" onSubmit={(event) => onSubmit(method, event)}>
       <div className="agent-method-top">
         <div>
-          <span className="page-eyebrow">{isCreate ? 'Create New Method' : 'Global Method'}</span>
-          <h2>{isCreate ? 'Add Deposit Option' : method.title}</h2>
-          {!isCreate && <p className="agent-method-subtitle">Key: {method.key}</p>}
+          <span className="page-eyebrow">{isCreate ? 'Create New Method Channel' : 'Global Method Channel'}</span>
+          <h2>{isCreate ? 'Add Deposit/Withdraw Channel' : getDisplayTitle(method)}</h2>
+          {!isCreate && (
+            <p className="agent-method-subtitle">
+              Key: {method.key} {method.channelLabel ? `• ${method.channelLabel}` : ''}
+            </p>
+          )}
         </div>
         {!isCreate && <MethodBadge method={method} />}
       </div>
@@ -75,13 +131,17 @@ function MethodForm({ method, mode = 'edit', onSubmit, onDisable }) {
         Active on website
       </label>
 
+      <div className="agent-payment-hint">
+        To create separate channels, use unique keys with the same display name. Example: key <b>bkash1</b> title <b>bKash</b>, key <b>bkash2</b> title <b>bKash</b>.
+      </div>
+
       <div className="admin-method-two-col">
         <label className="agent-field">
           <span>Method Key</span>
           <input
             name="key"
             defaultValue={method.key || ''}
-            placeholder="bkash / nagad / upay"
+            placeholder="bkash1 / bkash2 / nagad1"
             readOnly={!isCreate}
             required
           />
@@ -130,7 +190,7 @@ function MethodForm({ method, mode = 'edit', onSubmit, onDisable }) {
       </label>
 
       <div className="admin-method-actions">
-        <button type="submit" className="agent-save-btn"><Save size={18} /> {isCreate ? 'Create Method' : 'Save Changes'}</button>
+        <button type="submit" className="agent-save-btn"><Save size={18} /> {isCreate ? 'Create Channel' : 'Save Changes'}</button>
         {!isCreate && (
           <button type="button" className="agent-disable-btn" onClick={() => onDisable(method.key)}>
             <XCircle size={18} /> Disable
@@ -239,8 +299,11 @@ function AgentMethodAccessManager({ methods }) {
       <div className="agent-access-header">
         <div>
           <span className="page-eyebrow">Main Admin Control</span>
-          <h2>Agent Payment Method Access</h2>
-          <p>Choose which deposit method slots each agent can see and update inside Agent Admin Panel. You can assign bKash-1, bKash-2, bKash-3 to different agents; user deposit page will still show one bKash option and rotate the number automatically.</p>
+          <h2>Agent Payment Channel Access</h2>
+          <p>
+            Assign separate method channels to agents. Example: bKash - Channel 1 and bKash - Channel 2 can be assigned separately.
+            Inside Agent Admin Panel, each channel has separate Deposit Request and Withdraw Request toggles.
+          </p>
         </div>
         <ShieldCheck size={34} />
       </div>
@@ -302,6 +365,7 @@ function AgentMethodAccessManager({ methods }) {
           <div className="agent-access-method-grid">
             {accessMethods.map((method) => {
               const checked = selectedSet.has(method.key);
+              const payment = method.agentPayment || {};
               return (
                 <label
                   key={method.key}
@@ -314,10 +378,13 @@ function AgentMethodAccessManager({ methods }) {
                   />
                   <MethodBadge method={method} />
                   <span className="agent-access-method-info">
-                    <strong>{method.title}</strong>
+                    <strong>{getDisplayTitle(method)}</strong>
                     <small>Key: {method.key}</small>
                     <small>{method.category || 'e-wallets'} • {method.isActive === false ? 'Global disabled' : 'Global active'}</small>
-                    {method.agentPayment?.number && <small>Agent number: {method.agentPayment.number}</small>}
+                    {payment.number && <small>Agent number: {payment.number}</small>}
+                    <small className="agent-channel-flags">
+                      Deposit: {payment.depositEnabled === false ? 'Off' : 'On'} • Withdraw: {payment.withdrawEnabled === false ? 'Off' : 'On'}
+                    </small>
                   </span>
                   <span className="agent-access-status">
                     {checked ? <><CheckCircle2 size={16} /> Assigned</> : 'Hidden'}
@@ -336,6 +403,8 @@ export default function AdminAgentPaymentMethodsPage() {
   const [methods, setMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+
+  const decoratedMethods = useMemo(() => decorateMethods(methods), [methods]);
 
   const loadMethods = async () => {
     setLoading(true);
@@ -363,7 +432,7 @@ export default function AdminAgentPaymentMethodsPage() {
 
     try {
       await DepositMethodAPI.create(formData);
-      toast.success('Deposit method created');
+      toast.success('Payment channel created');
       form.reset();
       await loadMethods();
     } catch (error) {
@@ -379,7 +448,7 @@ export default function AdminAgentPaymentMethodsPage() {
 
     try {
       await DepositMethodAPI.update(method.key, formData);
-      toast.success('Deposit method updated');
+      toast.success('Payment channel updated');
       await loadMethods();
     } catch (error) {
       toast.error(getApiError(error, 'Update failed'));
@@ -389,7 +458,7 @@ export default function AdminAgentPaymentMethodsPage() {
   const disableMethod = async (methodKey) => {
     try {
       await DepositMethodAPI.disable(methodKey);
-      toast.success('Deposit method disabled');
+      toast.success('Payment channel disabled');
       await loadMethods();
     } catch (error) {
       toast.error(getApiError(error, 'Disable failed'));
@@ -401,8 +470,11 @@ export default function AdminAgentPaymentMethodsPage() {
       <div className="agent-payment-header admin-method-header">
         <div>
           <span className="page-eyebrow">Main Admin Panel</span>
-          <h1>Website Deposit Options</h1>
-          <p>Upload bKash, Nagad, Upay, Rocket etc. logo/image here. You can create bKash-1, bKash-2, bKash-3 for agent-side numbers; users will see one combined bKash card.</p>
+          <h1>Website Payment Channels</h1>
+          <p>
+            Create separate channels under the same payment method. Example: bKash - Channel 1, bKash - Channel 2.
+            Users can still see one bKash option, while agents manage each channel separately.
+          </p>
         </div>
 
         <button className="btn btn-soft" type="button" onClick={loadMethods} disabled={loading}>
@@ -412,19 +484,19 @@ export default function AdminAgentPaymentMethodsPage() {
 
       {message && <div className="agent-payment-message">{message}</div>}
 
-      <AgentMethodAccessManager methods={methods} />
+      <AgentMethodAccessManager methods={decoratedMethods} />
 
       <div className="agent-payment-grid admin-method-grid">
         <MethodForm method={emptyNewMethod} mode="create" onSubmit={createMethod} />
 
         {loading ? (
-          <div className="agent-payment-message">Loading deposit methods...</div>
-        ) : methods.length ? (
-          methods.map((method) => (
+          <div className="agent-payment-message">Loading payment channels...</div>
+        ) : decoratedMethods.length ? (
+          decoratedMethods.map((method) => (
             <MethodForm key={method.key} method={method} onSubmit={updateMethod} onDisable={disableMethod} />
           ))
         ) : (
-          <div className="agent-payment-message">No deposit method found.</div>
+          <div className="agent-payment-message">No payment channel found.</div>
         )}
       </div>
     </div>
