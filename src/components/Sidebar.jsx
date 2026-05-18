@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Bell,
   ChevronDown,
   ChevronUp,
   Cherry,
@@ -52,6 +53,7 @@ const mainNavItems = [
 const guestNavItems = [
   { to: '/login', label: 'Login', icon: LogIn },
   { to: '/register', label: 'Register', icon: UserPlus },
+  { to: '/agent/login', label: 'Agent Login', icon: Shield },
 ];
 
 const userOnlyNavItems = [
@@ -59,6 +61,8 @@ const userOnlyNavItems = [
   { to: '/wallet', label: 'Wallet', icon: Wallet },
   { to: '/profile', label: 'Profile', icon: User },
   { to: '/profile/invite', label: 'My Invite', icon: Share2 },
+  { to: '/support', label: 'Live Support', icon: MessageCircle },
+  { to: '/notifications', label: 'Notifications', icon: Bell },
   { to: '/affiliate/dashboard', label: 'Affiliate', icon: Handshake },
 ];
 
@@ -71,6 +75,7 @@ const adminNavItems = [
   { to: '/admin/agent-payments', label: 'Deposit Methods', icon: Wallet },
   { to: '/admin/agent-requests', label: 'Agent Requests', icon: Ticket },
   { to: '/admin/affiliates', label: 'Affiliates', icon: Handshake },
+  { to: '/admin/support', label: 'Support Inbox', icon: MessageCircle },
 ];
 
 const bonusChildren = [
