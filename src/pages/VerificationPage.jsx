@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FileCheck2, Save, ShieldCheck } from 'lucide-react';
+import { FileCheck2, Save } from 'lucide-react';
 import { VerificationAPI } from '../api/verification.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -23,8 +23,14 @@ export default function VerificationPage() {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [verification, setVerification] = useState(null);
 
-  const status = useMemo(() => 'Not required', []);
+  const status = useMemo(() => {
+    const userStatus = String(user?.verificationStatus || user?.verification?.status || '').toLowerCase();
+    const apiStatus = String(verification?.status || '').toLowerCase();
+    return userStatus === 'approved' || apiStatus === 'approved' ? 'Verified' : 'Not required';
+  }, [user?.verificationStatus, user?.verification?.status, verification?.status]);
+
   const userId = user?._id || user?.id || '';
 
   useEffect(() => {
@@ -50,6 +56,7 @@ export default function VerificationPage() {
 
         if (!active) return;
 
+        setVerification(data || null);
         setForm({
           ...profileValues,
           fullName: data.fullName || profileValues.fullName,
@@ -62,7 +69,10 @@ export default function VerificationPage() {
           postCode: data.postCode || data.postalCode || profileValues.postCode,
         });
       } catch (_) {
-        if (active) setForm(profileValues);
+        if (active) {
+          setVerification(null);
+          setForm(profileValues);
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -108,20 +118,9 @@ export default function VerificationPage() {
         description="Document verification is not required for deposit, bonus, or withdrawal. You may keep your basic profile information updated here."
       />
 
-      <section className="card verification-status-card">
+      <section className={`card verification-status-card ${status === 'Verified' ? 'verified' : ''}`}>
         <FileCheck2 size={26} />
         <div><span>Verification status</span><strong>{status}</strong></div>
-      </section>
-
-      <section className="card verification-status-card">
-        <ShieldCheck size={26} />
-        <div>
-          <span>Withdrawal rule</span>
-          <strong>No document verification required</strong>
-          <p style={{ margin: '6px 0 0', color: 'var(--muted)' }}>
-            Bonus withdrawal is controlled by wagering/turnover requirement, not by document upload.
-          </p>
-        </div>
       </section>
 
       <form className="card verification-form" onSubmit={submit}>

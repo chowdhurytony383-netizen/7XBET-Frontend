@@ -13,3 +13,7 @@
 .verification-submit { justify-self: end; min-width: 220px; }
 .center-card { min-height: 300px; display: grid; place-items: center; }
 @media (max-width: 760px) { .verification-grid { grid-template-columns: 1fr; } .verification-submit { width: 100%; } }
+
+.verification-status-card.verified { border-color: rgba(124,255,158,.36); background: linear-gradient(135deg, rgba(21,128,61,.2), rgba(15,23,42,.92)); }
+.verification-status-card.verified strong { color: #86efac; }
+.verification-status-card.verified svg { color: #86efac; }
