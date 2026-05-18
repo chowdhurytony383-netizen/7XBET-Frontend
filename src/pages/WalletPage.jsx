@@ -91,7 +91,7 @@ export default function WalletPage() {
       <PageHeader
         eyebrow="Wallet"
         title="Wallet"
-        description="Balance and transaction records.Signup bonus withdrawal depends on turnover."
+        description="Balance and transaction records are received from the backend. Signup bonus withdrawal depends on turnover, not document verification."
       />
 
       {error && <div className="auth-message">{error}</div>}
