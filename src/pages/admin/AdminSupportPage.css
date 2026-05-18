@@ -1,10 +1,10 @@
-
 .admin-support-page { display: grid; gap: 20px; padding-bottom: 36px; }
 .admin-support-filter, .admin-support-list-panel, .admin-support-chat-panel { border: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(10,16,24,.94), rgba(8,13,20,.9)); border-radius: 24px; padding: 18px; box-shadow: 0 18px 50px rgba(0,0,0,.22); }
 .admin-support-filter { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; }
 .admin-support-filter label { display: grid; gap: 7px; color: #d1d5db; font-weight: 700; min-width: 180px; }
 .admin-support-filter input, .admin-support-filter select, .admin-support-reply textarea { width: 100%; border-radius: 14px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); color: #fff; padding: 12px 14px; }
 .admin-support-filter button, .admin-support-actions button, .admin-support-reply button { border: 0; border-radius: 14px; padding: 12px 14px; background: linear-gradient(135deg,#7cff9e,#f7d15f); color: #04110a; font-weight: 900; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.admin-support-filter button:disabled, .admin-support-actions button:disabled, .admin-support-reply button:disabled, .admin-support-attach-btn:disabled { opacity: .55; cursor: not-allowed; }
 .admin-support-layout { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 20px; }
 .admin-support-panel-head { display: flex; justify-content: space-between; align-items: center; color: #fff; margin-bottom: 14px; }
 .admin-support-panel-head span { color: #94a3b8; }
@@ -26,16 +26,29 @@
 .admin-support-chat-head h2 { color: #fff; margin: 8px 0 4px; }
 .admin-support-chat-head p, .admin-support-chat-head small { color: #94a3b8; display: block; }
 .admin-support-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
-.admin-support-messages { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; }
+.admin-support-messages { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; scroll-behavior: smooth; }
 .admin-support-message { max-width: 78%; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 12px 14px; background: rgba(255,255,255,.045); }
 .admin-support-message.mine { margin-left: auto; background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.25); }
 .admin-support-message.theirs { margin-right: auto; background: rgba(59,130,246,.12); border-color: rgba(59,130,246,.25); }
-.admin-support-message div { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.admin-support-message > div:first-child { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
 .admin-support-message strong { color: #fff; }
 .admin-support-message small { color: #94a3b8; font-size: 11px; }
 .admin-support-message p { color: #e5e7eb; white-space: pre-wrap; margin: 0; line-height: 1.55; }
-.admin-support-reply { display: flex; gap: 12px; }
+.admin-support-reply { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+.admin-support-input-stack { display: grid; gap: 10px; }
 .admin-support-empty { border: 1px dashed rgba(255,255,255,.12); border-radius: 18px; padding: 20px; color: #94a3b8; display: grid; place-items: center; gap: 8px; text-align: center; }
 .admin-support-empty.large { min-height: 420px; }
+.admin-support-file-picker { display: grid; gap: 8px; }
+.admin-support-attach-btn { width: fit-content; border: 1px solid rgba(96,165,250,.24); background: rgba(96,165,250,.14); color: #dbeafe; border-radius: 12px; padding: 9px 12px; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-weight: 800; }
+.admin-support-selected-files { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-support-selected-files span { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; padding: 6px 8px; color: #dbeafe; background: rgba(255,255,255,.05); font-size: 12px; }
+.admin-support-selected-files small { color: #94a3b8; }
+.admin-support-selected-files button { min-width: 20px; height: 20px; border: 0; border-radius: 999px; background: rgba(239,68,68,.18); color: #fecaca; display: inline-grid; place-items: center; padding: 0; }
+.admin-support-attachments { display: grid; gap: 8px; margin-top: 10px; }
+.admin-support-attachment { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #dbeafe; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 9px 10px; background: rgba(255,255,255,.045); }
+.admin-support-attachment.image { display: grid; grid-template-columns: 86px minmax(0, 1fr); align-items: center; }
+.admin-support-attachment img { width: 86px; height: 64px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); }
+.admin-support-attachment span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-support-attachment small { display: block; margin-top: 3px; color: #94a3b8; }
 @media (max-width: 1180px) { .admin-support-layout { grid-template-columns: 1fr; } .admin-support-ticket-list { grid-template-columns: repeat(2, minmax(0,1fr)); max-height: none; } }
-@media (max-width: 720px) { .admin-support-filter, .admin-support-list-panel, .admin-support-chat-panel { padding: 16px; border-radius: 18px; } .admin-support-filter label, .admin-support-filter button { width: 100%; } .admin-support-ticket-list { grid-template-columns: 1fr; } .admin-support-chat-head { flex-direction: column; } .admin-support-actions, .admin-support-actions button { width: 100%; } .admin-support-message { max-width: 94%; } .admin-support-reply { flex-direction: column; } .admin-support-reply button { width: 100%; } }
+@media (max-width: 720px) { .admin-support-filter, .admin-support-list-panel, .admin-support-chat-panel { padding: 16px; border-radius: 18px; } .admin-support-filter label, .admin-support-filter button { width: 100%; } .admin-support-ticket-list { grid-template-columns: 1fr; } .admin-support-chat-head { flex-direction: column; } .admin-support-actions, .admin-support-actions button { width: 100%; } .admin-support-message { max-width: 94%; } .admin-support-reply { grid-template-columns: 1fr; } .admin-support-reply button { width: 100%; } .admin-support-attachment.image { grid-template-columns: 76px minmax(0, 1fr); } .admin-support-attachment img { width: 76px; height: 56px; } }
