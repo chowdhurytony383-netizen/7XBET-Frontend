@@ -1,7 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, ArrowUpFromLine, BadgeDollarSign, CreditCard, Globe2, LogOut, Shield, Wallet } from 'lucide-react';
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  BadgeDollarSign,
+  ChevronRight,
+  CreditCard,
+  Globe2,
+  LogOut,
+  Shield,
+  Wallet,
+} from 'lucide-react';
 import { AgentAPI } from '../api/agent.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -11,12 +21,84 @@ import useAutoRefresh from '../hooks/useAutoRefresh.js';
 import StatCard from '../components/StatCard.jsx';
 import './AgentDashboardPage.css';
 
+function cleanTitle(value) {
+  return String(value || '')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function canonicalTitle(value) {
+  return cleanTitle(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9\u0980-\u09FF]+/g, ' ')
+    .replace(/\s*(?:channel|ch|no|number|num)?\s*[#:_-]*\s*\d+$/i, '')
+    .replace(/\d+$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractChannelNumber(method, fallbackIndex) {
+  const combined = `${method?.channel || ''} ${method?.title || ''} ${method?.key || ''}`;
+  const explicit = String(combined).match(/(?:channel|ch|no|number|num)?\s*[#:_-]*\s*(\d+)\s*$/i);
+  if (explicit?.[1]) return Number(explicit[1]);
+  const keyNumber = String(method?.key || '').match(/(\d+)$/);
+  if (keyNumber?.[1]) return Number(keyNumber[1]);
+  return fallbackIndex;
+}
+
+function buildChannelList(methods = []) {
+  const normalized = (methods || [])
+    .filter(Boolean)
+    .map((method, originalIndex) => ({
+      ...method,
+      key: String(method.key || '').toLowerCase(),
+      title: cleanTitle(method.title || method.key || 'Payment Method'),
+      originalIndex,
+      displayOrder: Number.isFinite(Number(method.displayOrder)) ? Number(method.displayOrder) : 100,
+    }))
+    .filter((method) => method.key);
+
+  const groups = new Map();
+  for (const method of normalized) {
+    const groupKey = canonicalTitle(method.title) || canonicalTitle(method.key) || method.key;
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push(method);
+  }
+
+  const output = [];
+  for (const [, group] of groups) {
+    group.sort((a, b) => (a.displayOrder - b.displayOrder) || a.key.localeCompare(b.key));
+    group.forEach((method, index) => {
+      const channelNumber = extractChannelNumber(method, index + 1);
+      const titleWithoutSuffix = method.title.replace(/\s*(?:channel|ch|no|number|num)?\s*[#:_-]*\s*\d+$/i, '').trim() || method.title;
+      output.push({
+        ...method,
+        channelNumber,
+        channelLabel: `${titleWithoutSuffix} - Channel ${channelNumber}`,
+      });
+    });
+  }
+
+  return output.sort((a, b) => (a.displayOrder - b.displayOrder) || String(a.channelLabel).localeCompare(String(b.channelLabel)));
+}
+
+function countByMethod(requests = []) {
+  return requests.reduce((map, request) => {
+    const key = String(request.methodKey || '').toLowerCase();
+    if (!key) return map;
+    map[key] = (map[key] || 0) + 1;
+    return map;
+  }, {});
+}
+
 export default function AgentDashboardPage() {
   const navigate = useNavigate();
   const [agent, setAgent] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [depositRequests, setDepositRequests] = useState([]);
   const [withdrawRequests, setWithdrawRequests] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedMethodKey, setSelectedMethodKey] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -27,16 +109,22 @@ export default function AgentDashboardPage() {
     }
 
     try {
-      const [meResponse, txResponse, depositResponse, withdrawResponse] = await Promise.all([
+      const [meResponse, txResponse, depositResponse, withdrawResponse, paymentResponse] = await Promise.all([
         AgentAPI.me(),
         AgentAPI.transactions(),
         AgentAPI.requests({ type: 'DEPOSIT', status: 'PENDING' }),
         AgentAPI.requests({ type: 'WITHDRAW', status: 'PENDING' }),
+        AgentAPI.paymentMethods().catch(() => null),
       ]);
-      setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
+      const nextAgent = meResponse.data?.data?.agent || meResponse.data?.agent || null;
+      const paymentData = paymentResponse?.data?.data || paymentResponse?.data || null;
+      const methods = paymentData?.paymentMethods || nextAgent?.paymentMethods || [];
+
+      setAgent(nextAgent);
       setTransactions(txResponse.data?.data || txResponse.data?.transactions || []);
       setDepositRequests(depositResponse.data?.data || depositResponse.data?.requests || []);
       setWithdrawRequests(withdrawResponse.data?.data || withdrawResponse.data?.requests || []);
+      setPaymentMethods(methods);
       setError('');
     } catch (err) {
       if (!silent) setError(getApiError(err, 'Agent session expired'));
@@ -47,6 +135,30 @@ export default function AgentDashboardPage() {
 
   useEffect(() => { load(); }, [load]);
   useAutoRefresh(load, { intervalMs: 1000 });
+
+  const channels = useMemo(() => buildChannelList(paymentMethods), [paymentMethods]);
+  const activeChannels = useMemo(() => channels.filter((method) => method.isGlobalActive !== false && method.isAssigned !== false), [channels]);
+  const depositCounts = useMemo(() => countByMethod(depositRequests), [depositRequests]);
+  const withdrawCounts = useMemo(() => countByMethod(withdrawRequests), [withdrawRequests]);
+
+  const selectedChannel = useMemo(() => {
+    if (!activeChannels.length) return null;
+    return activeChannels.find((method) => method.key === selectedMethodKey) || activeChannels[0];
+  }, [activeChannels, selectedMethodKey]);
+
+  useEffect(() => {
+    if (!selectedMethodKey && activeChannels.length) {
+      setSelectedMethodKey(activeChannels[0].key);
+    }
+  }, [activeChannels, selectedMethodKey]);
+
+  const channelRequestUrl = (type, channel) => {
+    const params = new URLSearchParams({
+      methodKey: channel.key,
+      channelTitle: channel.channelLabel,
+    });
+    return `/agent/requests/${type}?${params.toString()}`;
+  };
 
   const logout = async () => {
     await AgentAPI.logout().catch(() => null);
@@ -59,7 +171,7 @@ export default function AgentDashboardPage() {
       <PageHeader
         eyebrow="Agent admin panel"
         title={agent?.agentId || 'Agent dashboard'}
-        description="Manage payment methods and confirm/reject user deposit and withdrawal requests."
+        description="Manage each payment channel separately. Select a channel, then open its deposit or withdrawal requests."
         actions={<><LiveAutoRefreshStatus /><button className="btn btn-danger" onClick={logout}><LogOut size={18} /> Logout</button></>}
       />
 
@@ -74,19 +186,80 @@ export default function AgentDashboardPage() {
         <StatCard icon={ArrowUpFromLine} label="Pending withdrawals" value={withdrawRequests.length} />
       </div>
 
-      <section className="card agent-dashboard-action-card">
-        <h3>Agent actions</h3>
-        <div className="agent-dashboard-actions">
+      <section className="card agent-dashboard-action-card agent-channel-workspace">
+        <div className="agent-channel-header-row">
+          <div>
+            <h3>Agent payment channels</h3>
+            <p>Each updated payment method works as a separate channel. Your co-workers can handle different channels independently.</p>
+          </div>
           <Link className="btn btn-primary" to="/agent/payment-methods"><CreditCard size={18} /> Payment Settings</Link>
-          <Link className="btn btn-soft" to="/agent/requests/deposits"><ArrowDownToLine size={18} /> Deposit Requests</Link>
-          <Link className="btn btn-soft" to="/agent/requests/withdrawals"><ArrowUpFromLine size={18} /> Withdraw Requests</Link>
         </div>
+
+        {loading ? (
+          <div className="agent-channel-empty">Loading channels...</div>
+        ) : activeChannels.length ? (
+          <>
+            <div className="agent-channel-grid">
+              {activeChannels.map((channel) => {
+                const isSelected = selectedChannel?.key === channel.key;
+                const deposits = depositCounts[channel.key] || 0;
+                const withdrawals = withdrawCounts[channel.key] || 0;
+
+                return (
+                  <button
+                    key={channel.key}
+                    type="button"
+                    className={`agent-channel-card ${isSelected ? 'active' : ''} ${channel.isActive === false ? 'inactive' : ''}`}
+                    onClick={() => setSelectedMethodKey(channel.key)}
+                  >
+                    <span className="agent-channel-icon">
+                      {channel.image ? <img src={channel.image} alt={channel.channelLabel} /> : <CreditCard size={20} />}
+                    </span>
+                    <span className="agent-channel-copy">
+                      <strong>{channel.channelLabel}</strong>
+                      <small>Key: {channel.key}{channel.isActive === false ? ' · Inactive' : ''}</small>
+                    </span>
+                    <span className="agent-channel-counts">
+                      <span><ArrowDownToLine size={14} /> {deposits}</span>
+                      <span><ArrowUpFromLine size={14} /> {withdrawals}</span>
+                    </span>
+                    <ChevronRight size={18} />
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedChannel && (
+              <div className="agent-channel-selected-panel">
+                <div>
+                  <span className="page-eyebrow">Selected channel</span>
+                  <h4>{selectedChannel.channelLabel}</h4>
+                  <p>
+                    Pending deposit: {depositCounts[selectedChannel.key] || 0} · Pending withdraw: {withdrawCounts[selectedChannel.key] || 0}
+                  </p>
+                </div>
+                <div className="agent-channel-request-actions">
+                  <Link className="btn btn-soft" to={channelRequestUrl('deposits', selectedChannel)}>
+                    <ArrowDownToLine size={18} /> Deposit Requests
+                  </Link>
+                  <Link className="btn btn-soft" to={channelRequestUrl('withdrawals', selectedChannel)}>
+                    <ArrowUpFromLine size={18} /> Withdraw Requests
+                  </Link>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="agent-channel-empty">
+            No payment channel is assigned yet. Ask Main Admin to assign methods, then update them from Payment Settings.
+          </div>
+        )}
       </section>
 
       <section className="card admin-table-card">
         <h3>Agent balance history</h3>
         <p className="agent-dashboard-commission-note">
-          Deposit commission: 6%. Withdraw commission: 2%. It is calculated in this agent's own currency
+          Deposit commission: 6%. Withdraw commission: 2%. It is calculated in this agent&apos;s own currency
           (for example BDT 100 → BDT 6, USD 1 → USD 0.06). Commission Balance moves to main Balance automatically on the 3rd day of every month.
         </p>
         <div className="table-scroll">

@@ -22,3 +22,194 @@
   font-size: 0.92rem;
   line-height: 1.5;
 }
+
+.agent-channel-workspace {
+  gap: 18px;
+}
+
+.agent-channel-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.agent-channel-header-row p {
+  margin: 6px 0 0;
+  color: var(--text-muted, #a8b3c7);
+  line-height: 1.5;
+}
+
+.agent-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.agent-channel-card {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(16, 29, 48, .92), rgba(7, 17, 28, .92));
+  color: var(--text-main, #ffffff);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.18);
+}
+
+.agent-channel-card.active {
+  border-color: rgba(124, 255, 158, .65);
+  background: linear-gradient(145deg, rgba(12, 59, 45, .96), rgba(12, 30, 48, .92));
+  box-shadow: 0 0 0 1px rgba(124,255,158,.16), 0 18px 46px rgba(0,0,0,.28);
+}
+
+.agent-channel-card.inactive {
+  opacity: .72;
+}
+
+.agent-channel-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(124, 255, 158, .12);
+  color: #7cff9e;
+  overflow: hidden;
+}
+
+.agent-channel-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.agent-channel-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.agent-channel-copy strong {
+  color: #fff;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-channel-copy small {
+  color: var(--text-muted, #a8b3c7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-channel-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 52px;
+}
+
+.agent-channel-counts span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #dbeafe;
+  background: rgba(96, 165, 250, .16);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.agent-channel-selected-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid rgba(124, 255, 158, .22);
+  background: linear-gradient(135deg, rgba(8, 53, 41, .82), rgba(13, 23, 43, .88));
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.agent-channel-selected-panel h4 {
+  margin: 4px 0 6px;
+  color: #fff;
+  font-size: 1.15rem;
+}
+
+.agent-channel-selected-panel p {
+  margin: 0;
+  color: var(--text-muted, #a8b3c7);
+}
+
+.agent-channel-request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.agent-channel-empty {
+  border: 1px dashed rgba(255,255,255,.14);
+  color: var(--text-muted, #a8b3c7);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(255,255,255,.03);
+}
+
+@media (max-width: 1120px) {
+  .agent-channel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .agent-channel-header-row,
+  .agent-channel-selected-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .agent-channel-header-row .btn,
+  .agent-channel-request-actions .btn {
+    width: 100%;
+  }
+
+  .agent-channel-request-actions {
+    justify-content: stretch;
+  }
+
+  .agent-channel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .agent-dashboard-action-card {
+    padding: 16px;
+  }
+
+  .agent-channel-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .agent-channel-card > svg:last-child {
+    display: none;
+  }
+
+  .agent-channel-counts {
+    min-width: 44px;
+  }
+}
