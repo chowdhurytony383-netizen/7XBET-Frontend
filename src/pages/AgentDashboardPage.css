@@ -6,9 +6,7 @@
   gap: 14px;
 }
 
-.agent-dashboard-action-card h3 {
-  margin: 0;
-}
+.agent-dashboard-action-card h3 { margin: 0; }
 
 .agent-dashboard-actions {
   display: flex;
@@ -23,9 +21,7 @@
   line-height: 1.5;
 }
 
-.agent-channel-workspace {
-  gap: 18px;
-}
+.agent-channel-workspace { gap: 18px; }
 
 .agent-channel-header-row {
   display: flex;
@@ -59,18 +55,18 @@
   gap: 12px;
   text-align: left;
   cursor: pointer;
+  text-decoration: none;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.18);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
 
-.agent-channel-card.active {
-  border-color: rgba(124, 255, 158, .65);
+.agent-channel-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 255, 158, .55);
   background: linear-gradient(145deg, rgba(12, 59, 45, .96), rgba(12, 30, 48, .92));
-  box-shadow: 0 0 0 1px rgba(124,255,158,.16), 0 18px 46px rgba(0,0,0,.28);
 }
 
-.agent-channel-card.inactive {
-  opacity: .72;
-}
+.agent-channel-card.inactive { opacity: .72; }
 
 .agent-channel-icon {
   width: 42px;
@@ -131,35 +127,6 @@
   font-weight: 800;
 }
 
-.agent-channel-selected-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border: 1px solid rgba(124, 255, 158, .22);
-  background: linear-gradient(135deg, rgba(8, 53, 41, .82), rgba(13, 23, 43, .88));
-  border-radius: 20px;
-  padding: 16px;
-}
-
-.agent-channel-selected-panel h4 {
-  margin: 4px 0 6px;
-  color: #fff;
-  font-size: 1.15rem;
-}
-
-.agent-channel-selected-panel p {
-  margin: 0;
-  color: var(--text-muted, #a8b3c7);
-}
-
-.agent-channel-request-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
 .agent-channel-empty {
   border: 1px dashed rgba(255,255,255,.14);
   color: var(--text-muted, #a8b3c7);
@@ -170,46 +137,18 @@
 }
 
 @media (max-width: 1120px) {
-  .agent-channel-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .agent-channel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 780px) {
-  .agent-channel-header-row,
-  .agent-channel-selected-panel {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .agent-channel-header-row .btn,
-  .agent-channel-request-actions .btn {
-    width: 100%;
-  }
-
-  .agent-channel-request-actions {
-    justify-content: stretch;
-  }
-
-  .agent-channel-grid {
-    grid-template-columns: 1fr;
-  }
+  .agent-channel-header-row { flex-direction: column; align-items: stretch; }
+  .agent-channel-header-row .btn { width: 100%; }
+  .agent-channel-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
-  .agent-dashboard-action-card {
-    padding: 16px;
-  }
-
-  .agent-channel-card {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .agent-channel-card > svg:last-child {
-    display: none;
-  }
-
-  .agent-channel-counts {
-    min-width: 44px;
-  }
+  .agent-dashboard-action-card { padding: 16px; }
+  .agent-channel-card { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .agent-channel-card > svg:last-child { display: none; }
+  .agent-channel-counts { min-width: 44px; }
 }
