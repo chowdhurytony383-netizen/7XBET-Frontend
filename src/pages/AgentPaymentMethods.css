@@ -582,3 +582,102 @@
     text-align: left;
   }
 }
+
+.agent-method-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, .28);
+  background: rgba(15, 23, 42, .7);
+}
+
+.agent-method-subtitle {
+  color: #94a3b8;
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.agent-payment-hint {
+  border: 1px solid rgba(34, 197, 94, .22);
+  background: rgba(34, 197, 94, .08);
+  color: #bbf7d0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  line-height: 1.55;
+  font-size: .9rem;
+}
+
+.agent-channel-control-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(96, 165, 250, .18);
+  background: rgba(15, 23, 42, .58);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.agent-channel-control-panel .master-toggle {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, .14);
+}
+
+.agent-channel-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.agent-channel-toggle {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, .18);
+  background: rgba(30, 41, 59, .72);
+  cursor: pointer;
+}
+
+.agent-channel-toggle.deposit {
+  border-color: rgba(34, 197, 94, .28);
+}
+
+.agent-channel-toggle.withdraw {
+  border-color: rgba(96, 165, 250, .28);
+}
+
+.agent-channel-toggle input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.agent-channel-toggle strong {
+  display: block;
+  color: #fff;
+  font-size: .92rem;
+}
+
+.agent-channel-toggle small {
+  display: block;
+  color: #94a3b8;
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.agent-channel-flags {
+  color: #bbf7d0 !important;
+}
+
+@media (max-width: 720px) {
+  .agent-channel-toggle-grid,
+  .admin-method-two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-method-top {
+    align-items: flex-start;
+  }
+}
