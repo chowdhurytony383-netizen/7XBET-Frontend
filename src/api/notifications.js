@@ -8,10 +8,14 @@ export const NotificationAPI = {
     return api.get('/notifications/unread-count');
   },
   markRead(notificationId) {
-    return api.patch(`/notifications/${notificationId}/read`);
+    return api.patch(`/notifications/${notificationId}/read`, {});
   },
   markAllRead(params = {}) {
-    return api.patch('/notifications/read-all', null, { params });
+    // IMPORTANT:
+    // Do not send `null` as PATCH body. Express JSON parser can reject JSON primitives
+    // like `null` with: Unexpected token 'n', "null" is not valid JSON.
+    // Always send an object body so backend receives valid JSON.
+    return api.patch('/notifications/read-all', {}, { params });
   },
 };
 
