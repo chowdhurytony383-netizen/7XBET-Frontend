@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react';
 import { AgentAPI } from '../../api/agent.js';
 import { getApiError } from '../../api/client.js';
@@ -19,6 +19,7 @@ function RequestCard({ request, onAction, agentCurrency }) {
           <span>User ID: {request.userId || request.user?.userId || '—'}</span>
           <span>Amount: {formatCurrency(request.amount, agentCurrency)}</span>
           <span>Method: {request.methodTitle || request.methodKey || 'Manual'}</span>
+          <span>Channel key: {request.methodKey || '—'}</span>
           <span>Date: {formatDate(request.createdAt)}</span>
         </div>
         <div className="agent-request-note-box">
@@ -45,8 +46,14 @@ function RequestCard({ request, onAction, agentCurrency }) {
 
 export default function AgentRequestsPage() {
   const { type = 'deposits' } = useParams();
+  const [searchParams] = useSearchParams();
   const requestType = type === 'withdrawals' ? 'WITHDRAW' : 'DEPOSIT';
-  const title = requestType === 'DEPOSIT' ? 'Deposit Requests' : 'Withdraw Requests';
+  const methodKey = String(searchParams.get('methodKey') || '').trim().toLowerCase();
+  const channelTitle = searchParams.get('channelTitle') || '';
+  const title = useMemo(() => {
+    const base = requestType === 'DEPOSIT' ? 'Deposit Requests' : 'Withdraw Requests';
+    return channelTitle ? `${channelTitle} · ${base}` : base;
+  }, [channelTitle, requestType]);
 
   const [agent, setAgent] = useState(null);
   const [requests, setRequests] = useState([]);
@@ -60,9 +67,12 @@ export default function AgentRequestsPage() {
     }
 
     try {
+      const params = { type: requestType, status: 'PENDING' };
+      if (methodKey) params.methodKey = methodKey;
+
       const [meResponse, requestResponse] = await Promise.all([
         AgentAPI.me(),
-        AgentAPI.requests({ type: requestType, status: 'PENDING' }),
+        AgentAPI.requests(params),
       ]);
       setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
       setRequests(requestResponse.data?.data || requestResponse.data?.requests || []);
@@ -72,7 +82,7 @@ export default function AgentRequestsPage() {
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [requestType]);
+  }, [requestType, methodKey]);
 
   useEffect(() => { loadData(); }, [loadData]);
   useAutoRefresh(loadData, { intervalMs: 1000 });
@@ -99,6 +109,7 @@ export default function AgentRequestsPage() {
           <span className="page-eyebrow">Agent Admin Panel</span>
           <h1>{title}</h1>
           <p>
+            {methodKey ? `Showing only requests for channel key: ${methodKey}. ` : ''}
             {requestType === 'DEPOSIT'
               ? 'Confirming a deposit credits the user wallet and deducts the amount from agent balance.'
               : 'Confirming a withdrawal marks the held user balance as paid and adds the amount to agent balance. Rejecting refunds the held balance.'}
@@ -139,7 +150,7 @@ export default function AgentRequestsPage() {
             />
           ))
         ) : (
-          <div className="agent-payment-message">No pending {requestType.toLowerCase()} requests.</div>
+          <div className="agent-payment-message">No pending {requestType.toLowerCase()} requests{channelTitle ? ` for ${channelTitle}` : ''}.</div>
         )}
       </div>
     </div>
