@@ -19,6 +19,7 @@ import {
   MessageCircle,
   Rocket,
   Settings,
+  Shield,
   Ticket,
   Trophy,
   User,
