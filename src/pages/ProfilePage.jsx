@@ -202,7 +202,7 @@ export default function ProfilePage() {
       <PageHeader
         eyebrow="Account"
         title="Profile"
-        description="Profile, wallet, bet and transaction details are loaded from backend routes."
+        description="Profile, wallet, bet and transaction details."
       />
 
       <div className="profile-grid">
