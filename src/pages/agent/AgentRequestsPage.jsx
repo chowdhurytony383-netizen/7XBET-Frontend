@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowUpFromLine, CheckCircle2, XCircle } from 'lucide-react';
 import { AgentAPI } from '../../api/agent.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
@@ -46,16 +46,22 @@ function RequestCard({ request, onAction, agentCurrency }) {
 
 export default function AgentRequestsPage() {
   const { type = 'deposits' } = useParams();
-  const [searchParams] = useSearchParams();
-  const requestType = type === 'withdrawals' ? 'WITHDRAW' : 'DEPOSIT';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isChannelMode = type === 'channel';
   const methodKey = String(searchParams.get('methodKey') || '').trim().toLowerCase();
   const channelTitle = searchParams.get('channelTitle') || '';
+  const [activeType, setActiveType] = useState(searchParams.get('tab') === 'withdrawals' ? 'WITHDRAW' : 'DEPOSIT');
+
+  const requestType = isChannelMode ? activeType : (type === 'withdrawals' ? 'WITHDRAW' : 'DEPOSIT');
   const title = useMemo(() => {
+    if (isChannelMode) return channelTitle || 'Channel Requests';
     const base = requestType === 'DEPOSIT' ? 'Deposit Requests' : 'Withdraw Requests';
     return channelTitle ? `${channelTitle} · ${base}` : base;
-  }, [channelTitle, requestType]);
+  }, [channelTitle, isChannelMode, requestType]);
 
   const [agent, setAgent] = useState(null);
+  const [depositRequests, setDepositRequests] = useState([]);
+  const [withdrawRequests, setWithdrawRequests] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -67,25 +73,51 @@ export default function AgentRequestsPage() {
     }
 
     try {
-      const params = { type: requestType, status: 'PENDING' };
-      if (methodKey) params.methodKey = methodKey;
+      const baseParams = { status: 'PENDING' };
+      if (methodKey) baseParams.methodKey = methodKey;
 
-      const [meResponse, requestResponse] = await Promise.all([
-        AgentAPI.me(),
-        AgentAPI.requests(params),
-      ]);
-      setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
-      setRequests(requestResponse.data?.data || requestResponse.data?.requests || []);
+      if (isChannelMode) {
+        const [meResponse, depositResponse, withdrawResponse] = await Promise.all([
+          AgentAPI.me(),
+          AgentAPI.requests({ ...baseParams, type: 'DEPOSIT' }),
+          AgentAPI.requests({ ...baseParams, type: 'WITHDRAW' }),
+        ]);
+        setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
+        setDepositRequests(depositResponse.data?.data || depositResponse.data?.requests || []);
+        setWithdrawRequests(withdrawResponse.data?.data || withdrawResponse.data?.requests || []);
+        setRequests([]);
+      } else {
+        const [meResponse, requestResponse] = await Promise.all([
+          AgentAPI.me(),
+          AgentAPI.requests({ ...baseParams, type: requestType }),
+        ]);
+        setAgent(meResponse.data?.data?.agent || meResponse.data?.agent || null);
+        setRequests(requestResponse.data?.data || requestResponse.data?.requests || []);
+      }
+
       setMessage('');
     } catch (error) {
       if (!silent) setMessage(getApiError(error, 'Unable to load requests'));
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [requestType, methodKey]);
+  }, [isChannelMode, methodKey, requestType]);
 
   useEffect(() => { loadData(); }, [loadData]);
   useAutoRefresh(loadData, { intervalMs: 1000 });
+
+  const visibleRequests = isChannelMode
+    ? (activeType === 'DEPOSIT' ? depositRequests : withdrawRequests)
+    : requests;
+
+  const handleTabChange = (nextType) => {
+    setActiveType(nextType);
+    if (isChannelMode) {
+      const next = new URLSearchParams(searchParams);
+      next.set('tab', nextType === 'WITHDRAW' ? 'withdrawals' : 'deposits');
+      setSearchParams(next, { replace: true });
+    }
+  };
 
   const handleAction = async (requestId, action) => {
     try {
@@ -109,10 +141,11 @@ export default function AgentRequestsPage() {
           <span className="page-eyebrow">Agent Admin Panel</span>
           <h1>{title}</h1>
           <p>
-            {methodKey ? `Showing only requests for channel key: ${methodKey}. ` : ''}
-            {requestType === 'DEPOSIT'
-              ? 'Confirming a deposit credits the user wallet and deducts the amount from agent balance.'
-              : 'Confirming a withdrawal marks the held user balance as paid and adds the amount to agent balance. Rejecting refunds the held balance.'}
+            {isChannelMode
+              ? 'This channel has two request options: Deposit Request and Withdraw Request. Each option shows only this channel’s pending requests.'
+              : (requestType === 'DEPOSIT'
+                ? 'Confirming a deposit credits the user wallet and deducts the amount from agent balance.'
+                : 'Confirming a withdrawal marks the held user balance as paid and adds the amount to agent balance. Rejecting refunds the held balance.')}
           </p>
         </div>
 
@@ -135,22 +168,46 @@ export default function AgentRequestsPage() {
         </div>
       )}
 
+      {isChannelMode && (
+        <section className="agent-channel-request-switcher">
+          <button
+            type="button"
+            className={`agent-channel-request-tab ${activeType === 'DEPOSIT' ? 'active' : ''}`}
+            onClick={() => handleTabChange('DEPOSIT')}
+          >
+            <ArrowDownToLine size={20} />
+            <span>
+              <strong>Deposit Request</strong>
+              <small>{depositRequests.length} pending in this channel</small>
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`agent-channel-request-tab ${activeType === 'WITHDRAW' ? 'active' : ''}`}
+            onClick={() => handleTabChange('WITHDRAW')}
+          >
+            <ArrowUpFromLine size={20} />
+            <span>
+              <strong>Withdraw Request</strong>
+              <small>{withdrawRequests.length} pending in this channel</small>
+            </span>
+          </button>
+        </section>
+      )}
+
       {message && <div className="agent-payment-message">{message}</div>}
 
       <div className="agent-request-list">
         {loading ? (
           <div className="agent-payment-message">Loading requests...</div>
-        ) : requests.length ? (
-          requests.map((request) => (
-            <RequestCard
-              key={request._id}
-              request={request}
-              onAction={handleAction}
-              agentCurrency={agent}
-            />
+        ) : visibleRequests.length ? (
+          visibleRequests.map((request) => (
+            <RequestCard key={request._id} request={request} onAction={handleAction} agentCurrency={agent} />
           ))
         ) : (
-          <div className="agent-payment-message">No pending {requestType.toLowerCase()} requests{channelTitle ? ` for ${channelTitle}` : ''}.</div>
+          <div className="agent-payment-message">
+            No pending {requestType.toLowerCase()} requests{channelTitle ? ` for ${channelTitle}` : ''}.
+          </div>
         )}
       </div>
     </div>

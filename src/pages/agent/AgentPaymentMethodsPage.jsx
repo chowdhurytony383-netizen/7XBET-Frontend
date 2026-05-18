@@ -9,14 +9,16 @@ import '../AgentPaymentMethods.css';
 
 function MethodBadge({ method }) {
   if (method.image) {
-    return <img className="agent-method-logo" src={method.image} alt={method.displayTitle || method.title} />;
+    return <img className="agent-method-logo" src={method.image} alt={method.title} />;
   }
 
   return <span className={`method-badge ${method.key || 'custom'}`}>{String(method.title || method.key || '?').slice(0, 2)}</span>;
 }
 
 function methodTitle(method) {
-  return method.displayTitle || (method.channelLabel ? `${method.title} - ${method.channelLabel}` : method.title);
+  const title = method.displayTitle || method.title || method.key || 'Payment Method';
+  const channel = method.channelLabel || (method.channelNumber ? `Channel ${method.channelNumber}` : '');
+  return title.includes('Channel') || !channel ? title : `${title} - ${channel}`;
 }
 
 export default function AgentPaymentMethodsPage() {
@@ -41,17 +43,18 @@ export default function AgentPaymentMethodsPage() {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const updateMethod = async (methodKey, event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    formData.set('isActive', form.querySelector('[name="isActive"]')?.checked ? 'true' : 'false');
-    formData.set('depositEnabled', form.querySelector('[name="depositEnabled"]')?.checked ? 'true' : 'false');
-    formData.set('withdrawEnabled', form.querySelector('[name="withdrawEnabled"]')?.checked ? 'true' : 'false');
+    const active = form.querySelector('[name="depositEnabled"]')?.checked ? 'true' : 'false';
+
+    // One switch controls both deposit and withdraw availability for this channel.
+    formData.set('isActive', active);
+    formData.set('depositEnabled', active);
+    formData.delete('withdrawEnabled');
 
     try {
       await AgentAPI.updatePaymentMethod(methodKey, formData);
@@ -69,8 +72,8 @@ export default function AgentPaymentMethodsPage() {
           <span className="page-eyebrow">Agent Admin Panel</span>
           <h1>Payment Channel Settings</h1>
           <p>
-            Main Admin assigns method channels to your account. Update each channel separately,
-            for example bKash - Channel 1 and bKash - Channel 2. Each channel can be enabled for Deposit Request and Withdraw Request separately.
+            Update each assigned channel separately. Only one Active/Inactive switch is needed:
+            when Deposit Request is active, Withdraw Request is automatically active for the same channel.
           </p>
         </div>
 
@@ -97,49 +100,36 @@ export default function AgentPaymentMethodsPage() {
           <div className="agent-payment-message">Loading payment channels...</div>
         ) : methods.length ? methods.map((method) => {
           const title = methodTitle(method);
+          const enabled = method.depositEnabled !== false && method.isActive !== false;
+
           return (
-            <form
-              key={method.key}
-              className="agent-method-card"
-              onSubmit={(event) => updateMethod(method.key, event)}
-            >
+            <form key={method.key} className="agent-method-card" onSubmit={(event) => updateMethod(method.key, event)}>
               <div className="agent-method-top">
                 <div>
                   <span className="page-eyebrow">Assigned Payment Channel</span>
                   <h2>{title}</h2>
                   <p className="agent-method-subtitle">
-                    Key: {method.key} • {method.channelLabel || 'Channel 1'} • Min {formatCurrency(method.minAmount || 0, agent)} / Max {formatCurrency(method.maxAmount || 0, agent)}
+                    Key: {method.key} • Min {formatCurrency(method.minAmount || 0, agent)} / Max {formatCurrency(method.maxAmount || 0, agent)}
                   </p>
                 </div>
                 <MethodBadge method={method} />
               </div>
 
-              <div className="agent-channel-control-panel">
-                <label className="agent-check-row master-toggle">
-                  <input type="checkbox" name="isActive" defaultChecked={method.isActive !== false} />
-                  Channel active
+              <div className="agent-channel-control-panel single-switch">
+                <label className="agent-channel-toggle deposit unified">
+                  <input type="checkbox" name="depositEnabled" defaultChecked={enabled} />
+                  <span>
+                    <strong>Deposit Request Active</strong>
+                    <small>
+                      Withdraw Request will automatically follow this status. Active = Deposit + Withdraw active. Inactive = both inactive.
+                    </small>
+                  </span>
                 </label>
-                <div className="agent-channel-toggle-grid">
-                  <label className="agent-channel-toggle deposit">
-                    <input type="checkbox" name="depositEnabled" defaultChecked={method.depositEnabled !== false} />
-                    <span>
-                      <strong>Deposit Request</strong>
-                      <small>Users can send deposit requests to this channel.</small>
-                    </span>
-                  </label>
-                  <label className="agent-channel-toggle withdraw">
-                    <input type="checkbox" name="withdrawEnabled" defaultChecked={method.withdrawEnabled !== false} />
-                    <span>
-                      <strong>Withdraw Request</strong>
-                      <small>Users can send withdrawal requests to this channel.</small>
-                    </span>
-                  </label>
-                </div>
               </div>
 
               <label className="agent-field">
                 <span>{title} Wallet / Agent Number</span>
-                <input name="number" defaultValue={method.number || ''} placeholder={`Enter ${method.title} receiving number`} />
+                <input name="number" defaultValue={method.number || ''} placeholder={`Enter ${method.title || 'payment'} receiving number`} />
               </label>
 
               <label className="agent-field">
