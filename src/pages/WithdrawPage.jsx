@@ -40,6 +40,67 @@ function buildReceivingPlaceholder(option) {
   return `Your ${option?.methodTitle || 'payment'} account number`;
 }
 
+function isWithdrawTurnoverError(error, fallbackMessage = '') {
+  const details = error?.response?.data?.details || {};
+  const code = String(details.code || error?.response?.data?.code || '').toUpperCase();
+  const message = String(error?.response?.data?.message || fallbackMessage || error?.message || '').toLowerCase();
+
+  return code === 'WITHDRAW_TURNOVER_REQUIRED'
+    || message.includes('withdraw_turnover_required')
+    || message.includes('withdrawal locked')
+    || message.includes('withdrawals locked')
+    || message.includes('must place bets')
+    || message.includes('complete turnover')
+    || message.includes('available to withdraw');
+}
+
+function normalizeWithdrawAmount(value, fallbackMessage = '') {
+  if (Number.isFinite(Number(value))) {
+    return Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+
+  const match = String(fallbackMessage || '').match(/Available\s+(?:to\s+withdraw|for\s+withdrawal)\s*:\s*([0-9,.]+)/i);
+  const cleaned = String(match?.[1] || '0').replace(/[.,]+$/g, '');
+
+  return cleaned || '0';
+}
+
+function showWithdrawTurnoverToast(error, fallbackMessage = '') {
+  const available = normalizeWithdrawAmount(
+    error?.response?.data?.details?.availableForWithdraw,
+    fallbackMessage
+  );
+
+  const message = `Withdrawals closed. You must complete turnover to withdraw this balance. Available for withdrawal: ${available}.`;
+
+  toast.custom(
+    (toastItem) => (
+      <div className={`withdraw-turnover-lock-toast ${toastItem.visible ? 'is-visible' : ''}`}>
+        <div className="withdraw-turnover-lock-toast__icon">
+          <AlertTriangle size={22} />
+        </div>
+        <div className="withdraw-turnover-lock-toast__body">
+          <strong>Withdrawal unavailable</strong>
+          <p>{message}</p>
+        </div>
+        <button
+          type="button"
+          className="withdraw-turnover-lock-toast__close"
+          onClick={() => toast.dismiss(toastItem.id)}
+          aria-label="Close message"
+        >
+          <X size={18} />
+        </button>
+      </div>
+    ),
+    {
+      id: 'withdraw-turnover-required',
+      duration: 6500,
+      position: 'top-center',
+    }
+  );
+}
+
 export default function WithdrawPage() {
   const { user, refreshUser } = useAuth();
   const [agentOptions, setAgentOptions] = useState([]);
@@ -212,7 +273,13 @@ export default function WithdrawPage() {
       resetForm();
       await refreshUser().catch(() => null);
     } catch (error) {
-      toast.error(getApiError(error, 'Withdraw request failed'));
+      const errorMessage = getApiError(error, 'Withdraw request failed');
+
+      if (isWithdrawTurnoverError(error, errorMessage)) {
+        showWithdrawTurnoverToast(error, errorMessage);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setSubmitting(false);
     }
