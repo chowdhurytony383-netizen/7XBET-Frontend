@@ -15,10 +15,9 @@ import {
 } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
-import { formatCurrency, formatDate } from '../../utils/format.js';
+import { formatCurrency, formatDate, formatDateTime, gameName } from '../../utils/format.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import StatCard from '../../components/StatCard.jsx';
-import BetTable from '../../components/BetTable.jsx';
 import TransactionTable from '../../components/TransactionTable.jsx';
 import './AdminUserDetailsPage.css';
 
@@ -42,6 +41,141 @@ function PermissionRow({ title, description, enabled, disabled, onChange }) {
         {enabled ? <CheckCircle2 size={17} /> : <Ban size={17} />}
         {enabled ? 'Enabled' : 'Disabled'}
       </button>
+    </div>
+  );
+}
+
+
+function numberValue(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function buildFallbackGameplaySummary(records = []) {
+  return records.reduce((summary, record) => {
+    const betAmount = numberValue(record.betAmount ?? record.stake ?? record.amount);
+    const winAmount = numberValue(record.winAmount ?? record.payoutAmount);
+    const netAmount = numberValue(record.netAmount ?? record.netResult ?? (winAmount - betAmount));
+    const result = String(record.result || record.status || '').toUpperCase();
+
+    summary.totalRecords += 1;
+    summary.totalBetAmount += betAmount;
+    summary.totalWinAmount += winAmount;
+    summary.netResult += netAmount;
+    if (result.includes('WIN') || result.includes('WON') || netAmount > 0) summary.totalWins += 1;
+    if (result.includes('LOSE') || result.includes('LOST') || netAmount < 0) summary.totalLosses += 1;
+    return summary;
+  }, {
+    totalRecords: 0,
+    totalBetAmount: 0,
+    totalWinAmount: 0,
+    netResult: 0,
+    totalWins: 0,
+    totalLosses: 0,
+    winRate: 0,
+    ggr: 0,
+  });
+}
+
+function resolveGameplayRecords(record, userBets = []) {
+  const records = record?.gameplayRecords || record?.gameplay?.records || [];
+  if (records.length) return records;
+
+  return userBets.map((bet) => {
+    const betAmount = numberValue(bet.betAmount);
+    const winAmount = numberValue(bet.winAmount);
+    return {
+      id: bet._id || bet.id,
+      source: 'Internal Game',
+      gameType: 'Casino/Internal',
+      gameTitle: gameName(bet.game) || bet.gameName || 'Game',
+      betAmount,
+      winAmount,
+      netAmount: winAmount - betAmount,
+      result: bet.isWin ? 'WIN' : 'LOSS',
+      status: bet.status || (bet.isWin ? 'WIN' : 'LOSE'),
+      createdAt: bet.createdAt,
+    };
+  });
+}
+
+function resultClass(result, netAmount = 0) {
+  const normalized = String(result || '').toUpperCase();
+  const net = numberValue(netAmount);
+  if (normalized.includes('WIN') || normalized.includes('WON') || net > 0) return 'pill-success';
+  if (normalized.includes('LOSS') || normalized.includes('LOSE') || normalized.includes('LOST') || net < 0) return 'pill-danger';
+  if (normalized.includes('PENDING') || normalized.includes('OPEN') || normalized.includes('ACTIVE')) return 'pill-warning';
+  return '';
+}
+
+function compactDetail(record) {
+  const parts = [];
+  if (record.market) parts.push(record.market);
+  if (record.selection) parts.push(`Selection: ${record.selection}`);
+  if (record.odds) parts.push(`Odds: ${record.odds}`);
+  if (record.multiplier) parts.push(`Multiplier: ${record.multiplier}x`);
+  if (record.action) parts.push(`Action: ${record.action}`);
+  if (record.roundId) parts.push(`Round: ${record.roundId}`);
+  if (record.sessionId) parts.push(`Session: ${record.sessionId}`);
+  if (record.betId) parts.push(`Bet/Tx: ${record.betId}`);
+  return parts.join(' • ');
+}
+
+function GameplayRecordsTable({ records = [], user }) {
+  if (!records.length) {
+    return (
+      <div className="card admin-empty-gameplay">
+        <strong>No gameplay records found</strong>
+        <span>Casino, sports, crash, JILI and provider-wallet activity will appear here after backend records are available.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="table-card admin-gameplay-table">
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Game / Event</th>
+              <th>Bet</th>
+              <th>Win / Payout</th>
+              <th>Net</th>
+              <th>Result</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {records.map((record, index) => {
+              const betAmount = numberValue(record.betAmount ?? record.stake ?? record.amount);
+              const winAmount = numberValue(record.winAmount ?? record.payoutAmount);
+              const netAmount = numberValue(record.netAmount ?? record.netResult ?? (winAmount - betAmount));
+              const result = record.result || (netAmount > 0 ? 'WIN' : netAmount < 0 ? 'LOSS' : 'DRAW');
+              const detail = compactDetail(record);
+              return (
+                <tr key={record.id || record._id || record.betId || `${record.source || 'game'}-${index}`}>
+                  <td>
+                    <strong>{record.source || record.gameType || 'Game'}</strong>
+                    {record.gameType && <span>{record.gameType}</span>}
+                  </td>
+                  <td>
+                    <strong>{record.gameTitle || record.gameName || gameName(record.game)}</strong>
+                    {detail && <span>{detail}</span>}
+                  </td>
+                  <td>{formatCurrency(betAmount, record.currency || user)}</td>
+                  <td>{formatCurrency(winAmount, record.currency || user)}</td>
+                  <td className={netAmount >= 0 ? 'net-positive' : 'net-negative'}>{formatCurrency(netAmount, record.currency || user)}</td>
+                  <td><span className={`pill ${resultClass(result, netAmount)}`}>{result}</span></td>
+                  <td>{record.status || '—'}</td>
+                  <td>{formatDateTime(record.createdAt || record.settledAt)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -96,6 +230,13 @@ export default function AdminUserDetailsPage() {
   const verification = user?.verification || user?.kyc || user?.identityVerification || record?.verification || {};
   const bets = record?.bets || user?.bets || [];
   const transactions = record?.transactions || user?.transactions || [];
+  const gameplayRecords = resolveGameplayRecords(record, bets);
+  const fallbackSummary = buildFallbackGameplaySummary(gameplayRecords);
+  const gameplaySummary = record?.gameplaySummary || record?.gameplay?.summary || {
+    ...fallbackSummary,
+    winRate: fallbackSummary.totalRecords ? Math.round((fallbackSummary.totalWins / fallbackSummary.totalRecords) * 100) : 0,
+    ggr: fallbackSummary.totalBetAmount - fallbackSummary.totalWinAmount,
+  };
   const verificationStatus = user?.verificationStatus || verification?.status || (user?.isVerified ? 'approved' : 'pending');
 
   const updateVerification = async (status) => {
@@ -331,7 +472,21 @@ export default function AdminUserDetailsPage() {
           <div className="admin-detail-actions"><button className="btn btn-soft" disabled={saving} onClick={() => updateAccountStatus('active')}>Activate account</button><button className="btn btn-warning" disabled={saving} onClick={() => updateAccountStatus('suspended')}>Suspend account</button></div>
         </section>
       </div>
-      <section className="page-stack"><PageHeader eyebrow="Records" title="User bets" /><BetTable bets={bets} loading={false} /></section>
+      <section className="page-stack admin-gameplay-section">
+        <PageHeader
+          eyebrow="Records"
+          title="User game play, betting win/loss details"
+          description="Casino, crash, sports, JILI and provider-wallet gameplay records returned by backend."
+        />
+        <div className="grid-4 admin-gameplay-summary">
+          <StatCard icon={Wallet} label="Total bet" value={formatCurrency(gameplaySummary.totalBetAmount, user)} />
+          <StatCard icon={BadgeCheck} label="Total win / payout" value={formatCurrency(gameplaySummary.totalWinAmount, user)} />
+          <StatCard icon={ShieldAlert} label="Net win/loss" value={formatCurrency(gameplaySummary.netResult, user)} />
+          <StatCard icon={FileCheck2} label="Win / Loss count" value={`${gameplaySummary.totalWins || 0} / ${gameplaySummary.totalLosses || 0}`} />
+        </div>
+        <GameplayRecordsTable records={gameplayRecords} user={user} />
+      </section>
+
       <section className="page-stack"><PageHeader eyebrow="Records" title="User transactions" /><TransactionTable transactions={transactions} loading={false} /></section>
     </div>
   );
