@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, Gift, Wallet } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { ArrowDownToLine, ArrowUpFromLine, Gift, XCircle, Wallet } from 'lucide-react';
 import { AccountAPI } from '../api/account.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -16,8 +17,7 @@ function numberValue(value) {
 }
 
 function bonusStatusText(summary) {
-  if (summary?.rejected) return 'Bonus rejected by user. Bonus turnover cancelled.';
-  if (!summary?.awarded) return 'Bonus has not been awarded yet.';
+  if (!summary?.awarded) return 'New account signup bonus has not been awarded yet.';
   if (numberValue(summary.remainingTurnover) <= 0) return 'Signup bonus turnover completed. Bonus balance is now withdrawable.';
 
   const required = numberValue(summary.totalRequiredTurnover);
@@ -31,9 +31,8 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState([]);
   const [bonusSummary, setBonusSummary] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [rejectingBonus, setRejectingBonus] = useState(false);
+  const [error, setError] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -52,39 +51,29 @@ export default function WalletPage() {
 
   useEffect(() => { load(); }, []);
 
+  const handleRejectSignupBonus = async () => {
+    const confirmed = window.confirm('Reject your sign up bonus? The bonus amount will be removed from your wallet and the signup bonus turnover will be cancelled. You cannot claim this signup bonus again.');
+    if (!confirmed) return;
+
+    setRejectingBonus(true);
+    try {
+      const response = await AccountAPI.rejectSignupBonus();
+      toast.success(response.data?.message || 'Signup bonus rejected');
+      if (response.data?.user) await refreshUser().catch(() => null);
+      await load();
+    } catch (err) {
+      toast.error(getApiError(err, 'Unable to reject signup bonus'));
+    } finally {
+      setRejectingBonus(false);
+    }
+  };
+
   const deposits = transactions.filter((item) => item.type === 'DEPOSIT');
   const withdrawals = transactions.filter((item) => item.type === 'WITHDRAW');
   const bonuses = transactions.filter((item) => item.type === 'BONUS');
   const bonusAwardedAmount = numberValue(bonusSummary?.amount || user?.signupBonusAmount);
   const bonusRemainingTurnover = numberValue(bonusSummary?.remainingTurnover);
-  const showBonusCard = bonusAwardedAmount > 0 || bonusSummary?.awarded || bonusSummary?.rejected;
-  const canRejectBonus = Boolean(bonusSummary?.canReject && bonusSummary?.awarded);
-
-  const handleRejectBonus = async () => {
-    if (!canRejectBonus || rejectingBonus) return;
-
-    const confirmed = window.confirm(
-      'Are you sure you want to reject this bonus? The bonus amount will be removed from your wallet and the bonus turnover requirement will be cancelled.'
-    );
-    if (!confirmed) return;
-
-    setRejectingBonus(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const response = await AccountAPI.rejectFirstDepositBonus();
-      const nextSummary = response.data?.bonusSummary || response.data?.data?.summary || null;
-      if (nextSummary) setBonusSummary(nextSummary);
-      setSuccess(response.data?.message || 'Bonus rejected successfully. Bonus turnover cancelled.');
-      await refreshUser().catch(() => null);
-      await load();
-    } catch (err) {
-      setError(getApiError(err, 'Unable to reject bonus'));
-    } finally {
-      setRejectingBonus(false);
-    }
-  };
+  const showBonusCard = bonusAwardedAmount > 0 || bonusSummary?.awarded;
 
   return (
     <div className="page-stack">
@@ -95,7 +84,6 @@ export default function WalletPage() {
       />
 
       {error && <div className="auth-message">{error}</div>}
-      {success && <div className="auth-message">{success}</div>}
 
       <section className="card wallet-balance-card">
         <span>Available balance</span>
@@ -119,13 +107,14 @@ export default function WalletPage() {
             <small>Remaining bonus turnover</small>
             <b>{formatCurrency(bonusRemainingTurnover, user)}</b>
           </div>
-          {canRejectBonus && (
+          {bonusSummary?.canReject && (
             <button
               type="button"
               className="wallet-bonus-reject-btn"
-              onClick={handleRejectBonus}
+              onClick={handleRejectSignupBonus}
               disabled={rejectingBonus}
             >
+              <XCircle size={18} />
               {rejectingBonus ? 'Rejecting...' : 'Reject Bonus'}
             </button>
           )}
