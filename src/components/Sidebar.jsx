@@ -47,6 +47,7 @@ const mainNavItems = [
   { to: '/jili-games', label: 'JILI Games', icon: Cherry },
   { to: '/tournaments', label: 'Tournaments', icon: Medal },
   { to: '/customer-support', label: 'Customer Support', icon: MessageCircle },
+  { to: '/support', label: 'Live Support', icon: MessageCircle },
 ];
 
 const guestNavItems = [
@@ -71,6 +72,7 @@ const adminNavItems = [
   { to: '/admin/agent-payments', label: 'Deposit Methods', icon: Wallet },
   { to: '/admin/agent-requests', label: 'Agent Requests', icon: Ticket },
   { to: '/admin/affiliates', label: 'Affiliates', icon: Handshake },
+  { to: '/admin/support', label: 'Live Support', icon: MessageCircle },
 ];
 
 const bonusChildren = [
