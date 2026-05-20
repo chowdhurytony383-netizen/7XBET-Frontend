@@ -71,13 +71,18 @@ const FooterSection = () => {
           <div className="footer-column app-column">
             <h4>Apps</h4>
 
-            <button className="app-btn" type="button">
+            <a
+              className="app-btn"
+              href="/downloads/7xbet-android.apk"
+              download="7xbet-android.apk"
+              aria-label="Download 7XBET Android App"
+            >
               <FaAndroid className="app-icon" />
               <div>
                 <span>Download for</span>
                 <strong>Android</strong>
               </div>
-            </button>
+            </a>
 
             <button className="app-btn" type="button">
               <FaApple className="app-icon" />
