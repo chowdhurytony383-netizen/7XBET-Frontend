@@ -12,6 +12,17 @@ import {
 } from 'lucide-react';
 import './StaticInfoPage.css';
 
+const COMPANY_LEGAL_INFO = [
+  '7XBET ASIA is operated by CrownGate Digital SARL.',
+  'Licence / Authorisation No: 009932/A/MINAT/SG/DAP/SDLP/SJ.',
+  'Licensing Authority: Agence de Regulation des Jeux, under the Ministry of Territorial Administration, Republic of Cameroon.',
+  'Registered Address: 2MWV+62R, Rue des Écoles, Douala, Cameroon.',
+  'Licensed Domain: https://7xbet.asia.',
+  'Licensed Activity: Online betting, online games, and lottery.',
+  'Licence Validity: From 27 April 2026 to 26 April 2031.',
+  'Licence Conditions: AML, data protection, online payment compliance, and related regulatory requirements.',
+];
+
 const LEGAL_PAGES = {
   about: {
     eyebrow: 'Company',
@@ -26,6 +37,10 @@ const LEGAL_PAGES = {
       'Account, wallet, deposit, withdrawal, and verification flows built with user safety in mind.',
     ],
     sections: [
+      {
+        heading: 'Company and licence information',
+        body: COMPANY_LEGAL_INFO,
+      },
       {
         heading: 'Who we are',
         body: [
@@ -49,6 +64,7 @@ const LEGAL_PAGES = {
       },
     ],
   },
+
   terms: {
     eyebrow: 'Legal',
     title: 'Terms and Conditions',
@@ -62,6 +78,19 @@ const LEGAL_PAGES = {
       '7XBET may restrict, suspend, or close accounts that violate these terms or create security risk.',
     ],
     sections: [
+      {
+        heading: 'Company, operator, and licence',
+        body: [
+          'This website is operated under the brand name 7XBET ASIA by CrownGate Digital SARL.',
+          'Licence / Authorisation No: 009932/A/MINAT/SG/DAP/SDLP/SJ.',
+          'Licensing Authority: Agence de Regulation des Jeux, under the Ministry of Territorial Administration, Republic of Cameroon.',
+          'Registered Address: 2MWV+62R, Rue des Écoles, Douala, Cameroon.',
+          'Website / Domain: https://7xbet.asia.',
+          'Authorised Activity: Online betting, online games, and lottery.',
+          'Validity Period: From 27 April 2026 to 26 April 2031.',
+          'The operator is required to follow applicable AML, data protection, online payment compliance, and other regulatory conditions.',
+        ],
+      },
       {
         heading: '1. Acceptance of terms',
         body: [
@@ -120,6 +149,7 @@ const LEGAL_PAGES = {
       },
     ],
   },
+
   contacts: {
     eyebrow: 'Support',
     title: 'Contacts',
@@ -133,6 +163,16 @@ const LEGAL_PAGES = {
       'Never share your password, OTP, private key, seed phrase, or full card details with anyone.',
     ],
     sections: [
+      {
+        heading: 'Operator information',
+        body: [
+          'Operator / Company: CrownGate Digital SARL.',
+          'Licence / Authorisation No: 009932/A/MINAT/SG/DAP/SDLP/SJ.',
+          'Registered Address: 2MWV+62R, Rue des Écoles, Douala, Cameroon.',
+          'Official Website: https://7xbet.asia.',
+          'Support Email: support-en@7xbet.asia.',
+        ],
+      },
       {
         heading: 'Official customer support',
         body: [
@@ -163,6 +203,7 @@ const LEGAL_PAGES = {
       },
     ],
   },
+
   affiliate: {
     eyebrow: 'Partners',
     title: 'Affiliate Program',
@@ -206,6 +247,7 @@ const LEGAL_PAGES = {
       },
     ],
   },
+
   privacy: {
     eyebrow: 'Privacy',
     title: 'Privacy Policy',
@@ -263,6 +305,7 @@ const LEGAL_PAGES = {
       },
     ],
   },
+
   responsible: {
     eyebrow: 'Player Safety',
     title: 'Responsible Gambling',
@@ -293,108 +336,98 @@ const LEGAL_PAGES = {
       {
         heading: 'Account limits and self-exclusion',
         body: [
-          'Users may contact support to request responsible gambling assistance such as cooling-off periods, account limitations, or self-exclusion. 7XBET may require identity verification before applying certain account restrictions.',
-          'If you request self-exclusion, you should not attempt to create a new account, use another person account, or bypass platform controls. Attempts to bypass responsible gambling measures may lead to account closure and balance review.',
+          'Users may contact support to request responsible gambling assistance such as account limits, cooling-off periods, time-outs, or self-exclusion. 7XBET may apply reasonable controls to help protect users from harmful activity.',
+          'If you request a restriction, do not attempt to bypass it by opening another account, using another person account, changing devices, or using another payment method.',
         ],
       },
       {
-        heading: 'Underage gambling prevention',
+        heading: 'Underage gambling is prohibited',
         body: [
-          '7XBET does not allow underage gambling. Users must be at least 18 years old, or older where a higher minimum age applies. We may request documents to verify age and identity.',
-          'Parents and guardians should use device-level controls, browser restrictions, app controls, and safe password practices to help prevent minors from accessing gambling content.',
-        ],
-      },
-      {
-        heading: 'Warning signs',
-        body: [
-          'Warning signs may include hiding gambling activity, chasing losses, borrowing money to play, missing responsibilities, feeling unable to stop, gambling to escape stress, arguing about gambling, or spending more time and money than planned.',
-          'If any warning sign applies to you, take a break from the platform and contact a trusted person or professional support service in your location.',
+          'Users must be at least 18 years old, or older if a higher minimum age applies in their location. 7XBET may request verification and may restrict accounts where underage access is suspected.',
+          'Parents and guardians should use device controls, browser controls, and payment controls to prevent minors from accessing betting or gaming websites.',
         ],
       },
     ],
   },
+
   kyc: {
-    eyebrow: 'Compliance',
+    eyebrow: 'Verification',
     title: 'KYC Policies',
     subtitle:
-      'KYC means Know Your Customer. 7XBET may require identity, age, payment ownership, and account verification checks before allowing certain account actions.',
+      'KYC policies help protect accounts, payments, withdrawals, bonuses, and the platform from identity misuse, fraud, duplicate accounts, and unauthorized activity.',
     icon: UserCheck,
     updated: 'Last updated: May 2026',
     highlights: [
-      'Verification may be required for withdrawals, payment changes, suspicious activity, or compliance checks.',
-      'Documents must be clear, valid, authentic, and match the account holder details.',
-      'Incorrect, edited, fake, expired, or mismatched documents may lead to rejection or account restriction.',
+      'Users must provide accurate profile and payment information.',
+      'Withdrawal and payment checks may require full name, address, document number, or additional verification.',
+      'False, incomplete, or mismatched information may delay or block account actions.',
     ],
     sections: [
       {
         heading: 'Why verification may be required',
         body: [
-          '7XBET may verify users to confirm age, identity, account ownership, payment ownership, location eligibility, and transaction legitimacy. These checks help protect users and the platform from fraud, underage use, account theft, money laundering, payment abuse, and duplicate accounts.',
-          'Verification may be requested during registration, before withdrawals, after unusual account activity, after payment disputes, when account details change, when limits are reached, or when required by internal risk controls.',
+          '7XBET may request verification to confirm user identity, payment ownership, account security, age eligibility, account ownership, and compliance with platform rules.',
+          'Verification may be required before withdrawals, during account review, after suspicious activity, after payment mismatch, after duplicate account detection, or where platform risk controls require more information.',
         ],
       },
       {
-        heading: 'Documents that may be requested',
+        heading: 'Information that may be requested',
         body: [
-          'Depending on the situation, 7XBET may ask for a government-issued ID, passport, national ID card, driving license, selfie or liveness check, proof of address, payment proof, wallet ownership proof, bank statement, mobile wallet statement, crypto transaction proof, or other documents needed to verify the account.',
-          'Documents must be readable, unedited, complete, and valid. The name, date of birth, document number, photo, address, and payment information must match the account information where applicable.',
-        ],
-      },
-      {
-        heading: 'Verification review process',
-        body: [
-          'After documents are submitted, 7XBET may review the information manually or through verification tools. We may ask for additional documents if the first submission is unclear, incomplete, expired, inconsistent, or does not match the account activity.',
-          'During verification review, deposits, withdrawals, bonuses, gameplay, or account access may be limited. This is done to protect the account and complete the review safely.',
+          'Depending on account status and risk review, 7XBET may request full name, address, email verification, phone verification, document type, document number, payment proof, transaction screenshot, wallet information, or other reasonable information needed to review the account.',
+          'Users must provide accurate and current information. Documents or details that are fake, edited, stolen, expired, mismatched, or unreadable may be rejected.',
         ],
       },
       {
         heading: 'Payment ownership checks',
         body: [
-          'Users should deposit and withdraw using payment methods that belong to them. 7XBET may reject payments or request additional proof if the sender name, wallet number, bank account, crypto wallet, or transaction source does not match the registered account holder.',
-          'Third-party payments, borrowed payment accounts, shared wallets, stolen payment details, chargeback abuse, or suspicious transaction patterns may lead to withdrawal delays, account investigation, or account closure.',
+          'Deposits and withdrawals should normally be made using payment methods owned or controlled by the account holder. 7XBET may reject transactions where payment ownership cannot be verified or where third-party payment use creates risk.',
+          'Users should not sell, rent, transfer, or share accounts. Account sharing or payment sharing may result in account restriction, balance review, or withdrawal delay.',
         ],
       },
       {
-        heading: 'Failed or refused verification',
+        heading: 'Verification review and account action',
         body: [
-          'If a user refuses verification, provides false information, submits fake documents, edits documents, uses another person identity, or cannot prove payment ownership, 7XBET may restrict account features, cancel withdrawals, void bonuses, review balances, or close the account.',
-          'Users should contact support if they believe verification was rejected by mistake and provide clear supporting information for review.',
+          '7XBET may approve, reject, or request additional information during verification review. Review time can vary depending on data quality, payment provider response, gameplay review, bonus review, and security checks.',
+          'If verification is not completed, 7XBET may limit withdrawals, bonuses, payment methods, gameplay access, or account functionality where necessary to protect users and the platform.',
         ],
       },
     ],
   },
 };
 
-const pageLinks = [
-  { key: 'about', to: '/about-us', label: 'About us' },
-  { key: 'terms', to: '/terms-and-conditions', label: 'Terms and Conditions' },
-  { key: 'contacts', to: '/contacts', label: 'Contacts' },
-  { key: 'affiliate', to: '/affiliate-program', label: 'Affiliate Program' },
-  { key: 'privacy', to: '/privacy-policy', label: 'Privacy Policy' },
-  { key: 'responsible', to: '/responsible-gambling', label: 'Responsible Gambling' },
-  { key: 'kyc', to: '/kyc-policies', label: 'KYC Policies' },
+const PAGE_LINKS = [
+  { key: 'about', label: 'About us', path: '/about-us' },
+  { key: 'terms', label: 'Terms and Conditions', path: '/terms-and-conditions' },
+  { key: 'contacts', label: 'Contacts', path: '/contacts' },
+  { key: 'affiliate', label: 'Affiliate Program', path: '/affiliate-program' },
+  { key: 'privacy', label: 'Privacy Policy', path: '/privacy-policy' },
+  { key: 'responsible', label: 'Responsible Gambling', path: '/responsible-gambling' },
+  { key: 'kyc', label: 'KYC Policies', path: '/kyc-policies' },
 ];
 
-export default function StaticInfoPage({ pageKey }) {
+export default function StaticInfoPage({ pageKey = 'about' }) {
   const page = LEGAL_PAGES[pageKey] || LEGAL_PAGES.about;
-  const Icon = page.icon || BadgeCheck;
+  const PageIcon = page.icon || Info;
 
   return (
-    <div className="page-stack static-info-page">
+    <div className="static-info-page page-stack">
       <section className="static-info-hero">
         <div className="static-info-hero-copy">
-          <span className="page-eyebrow">{page.eyebrow}</span>
+          <span className="section-kicker">{page.eyebrow}</span>
+
           <div className="static-info-title-row">
-            <span className="static-info-icon">
-              <Icon size={28} />
+            <span className="static-info-icon" aria-hidden="true">
+              <PageIcon size={28} />
             </span>
             <h1>{page.title}</h1>
           </div>
+
           <p>{page.subtitle}</p>
-          <div className="static-info-updated">{page.updated}</div>
+
+          <span className="static-info-updated">{page.updated}</span>
         </div>
 
-        <div className="static-info-summary-card">
+        <aside className="static-info-summary-card">
           <h2>Key points</h2>
           <ul>
             {page.highlights.map((item) => (
@@ -404,20 +437,26 @@ export default function StaticInfoPage({ pageKey }) {
               </li>
             ))}
           </ul>
-        </div>
+        </aside>
       </section>
 
       <section className="static-info-layout">
         <aside className="static-info-nav-card">
-          <Link to="/" className="static-back-link">
-            <ArrowLeft size={16} />
+          <Link className="static-back-link" to="/">
+            <ArrowLeft size={17} />
             Main page
           </Link>
+
           <h3>7XBET pages</h3>
-          <nav>
-            {pageLinks.map((link) => (
-              <Link key={link.to} to={link.to} className={link.key === pageKey ? 'active' : ''}>
-                {link.label}
+
+          <nav aria-label="7XBET information pages">
+            {PAGE_LINKS.map((item) => (
+              <Link
+                key={item.key}
+                to={item.path}
+                className={item.key === pageKey ? 'active' : ''}
+              >
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -425,23 +464,19 @@ export default function StaticInfoPage({ pageKey }) {
 
         <div className="static-info-content">
           {page.sections.map((section) => (
-            <article className="static-info-section" key={section.heading}>
+            <article
+              className={`static-info-section ${
+                section.notice ? 'static-info-notice' : ''
+              }`}
+              key={section.heading}
+            >
               <h2>{section.heading}</h2>
+
               {section.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </article>
           ))}
-
-          <article className="static-info-section static-info-notice">
-            <h2>Important notice</h2>
-            <p>
-              This page is provided for general platform information. It should be reviewed and adjusted by
-              the website owner or a qualified legal/compliance adviser before publication in any regulated
-              market. 7XBET may update this page when platform features, operational rules, payment methods,
-              or compliance requirements change.
-            </p>
-          </article>
         </div>
       </section>
     </div>
