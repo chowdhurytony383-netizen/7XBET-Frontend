@@ -69,6 +69,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
 import SeoManager from './components/SeoManager.jsx';
 import { initGA, trackPageView } from './utils/analytics.js';
+import AppInstallBanner from './components/AppInstallBanner.jsx';
 
 function GoogleAnalyticsTracker() {
   const location = useLocation();
@@ -172,6 +173,7 @@ export default function App() {
       </Routes>
 
       <OneClickCredentialModal />
+      <AppInstallBanner />
     </>
   );
 }
