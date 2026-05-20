@@ -12,7 +12,6 @@ import {
   Home,
   LayoutDashboard,
   Handshake,
-  Layers3,
   LogIn,
   LogOut,
   Medal,
@@ -28,12 +27,83 @@ import {
   Wallet,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { applySiteLanguage, initGoogleTranslate, reapplySavedSiteLanguage } from '../utils/googleTranslate.js';
 import { DEFAULT_SITE_LANGUAGE, SITE_LANGUAGES, getSavedSiteLanguage } from '../utils/languages.js';
 import Logo from './Logo.jsx';
 import './Sidebar.css';
+
+const TIMEZONE_STORAGE_KEY = '7xbet_selected_timezone';
+
+const DEFAULT_TIMEZONE = 'UTC';
+
+const TIMEZONE_OPTIONS = [
+  { value: 'UTC', label: 'UTC / GMT +00:00' },
+  { value: 'Asia/Dhaka', label: 'Bangladesh — GMT +06:00' },
+  { value: 'Asia/Kolkata', label: 'India — GMT +05:30' },
+  { value: 'Asia/Karachi', label: 'Pakistan — GMT +05:00' },
+  { value: 'Asia/Kathmandu', label: 'Nepal — GMT +05:45' },
+  { value: 'Asia/Colombo', label: 'Sri Lanka — GMT +05:30' },
+  { value: 'Asia/Manila', label: 'Philippines — GMT +08:00' },
+  { value: 'Asia/Bangkok', label: 'Thailand — GMT +07:00' },
+  { value: 'Asia/Kuala_Lumpur', label: 'Malaysia — GMT +08:00' },
+  { value: 'Asia/Jakarta', label: 'Indonesia — GMT +07:00' },
+  { value: 'Asia/Dubai', label: 'UAE — GMT +04:00' },
+  { value: 'Europe/London', label: 'United Kingdom — GMT/BST' },
+  { value: 'Europe/Paris', label: 'Europe Central — GMT +01:00/+02:00' },
+  { value: 'America/New_York', label: 'New York — GMT -05:00/-04:00' },
+  { value: 'America/Los_Angeles', label: 'Los Angeles — GMT -08:00/-07:00' },
+];
+
+const getSavedTimezone = () => {
+  try {
+    return localStorage.getItem(TIMEZONE_STORAGE_KEY) || DEFAULT_TIMEZONE;
+  } catch {
+    return DEFAULT_TIMEZONE;
+  }
+};
+
+const getTimezoneLabel = (timezone) => {
+  const found = TIMEZONE_OPTIONS.find((item) => item.value === timezone);
+  return found?.label || 'UTC / GMT +00:00';
+};
+
+const formatTimeInTimezone = (date, timezone) => {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date);
+  } catch {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: DEFAULT_TIMEZONE,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date);
+  }
+};
+
+const formatDateInTimezone = (date, timezone) => {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: timezone,
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  } catch {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: DEFAULT_TIMEZONE,
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  }
+};
 
 const mainNavItems = [
   { to: '/', label: 'Main page', icon: Home, end: true },
@@ -47,7 +117,7 @@ const mainNavItems = [
   { to: '/jili-games', label: 'JILI Games', icon: Cherry },
   { to: '/tournaments', label: 'Tournaments', icon: Medal },
   { to: '/customer-support', label: 'Customer Support', icon: MessageCircle },
-  { to: '/support', label: 'Live Support', icon: MessageCircle },
+  { to: '/live-support', label: 'Live Support', icon: MessageCircle },
 ];
 
 const guestNavItems = [
@@ -72,7 +142,7 @@ const adminNavItems = [
   { to: '/admin/agent-payments', label: 'Deposit Methods', icon: Wallet },
   { to: '/admin/agent-requests', label: 'Agent Requests', icon: Ticket },
   { to: '/admin/affiliates', label: 'Affiliates', icon: Handshake },
-  { to: '/admin/support', label: 'Live Support', icon: MessageCircle },
+  { to: '/live-support', label: 'Live Support', icon: MessageCircle },
 ];
 
 const bonusChildren = [
@@ -118,15 +188,22 @@ function SidebarLink({ item, onClose }) {
 export default function Sidebar({ open, onClose, onLogout }) {
   const { user } = useAuth();
   const location = useLocation();
-  const canAccessAdmin = Boolean(user?.role === 'admin' || user?.isAdmin || user?.permissions?.includes?.('admin'));
+
+  const canAccessAdmin = Boolean(
+    user?.role === 'admin' ||
+      user?.isAdmin ||
+      user?.permissions?.includes?.('admin')
+  );
+
   const [openMenus, setOpenMenus] = useState({
     bonuses: false,
     other: false,
     settings: true,
-    language: false,
   });
+
   const [now, setNow] = useState(() => new Date());
   const [selectedLanguage, setSelectedLanguage] = useState(() => getSavedSiteLanguage());
+  const [selectedTimezone, setSelectedTimezone] = useState(() => getSavedTimezone());
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 30000);
@@ -151,8 +228,28 @@ export default function Sidebar({ open, onClose, onLogout }) {
     await applySiteLanguage(nextLanguage, { reloadIfNeeded: true });
   };
 
-  const timeText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dateText = now.toLocaleDateString('en-GB');
+  const handleTimezoneChange = (event) => {
+    const nextTimezone = event.target.value || DEFAULT_TIMEZONE;
+    setSelectedTimezone(nextTimezone);
+
+    try {
+      localStorage.setItem(TIMEZONE_STORAGE_KEY, nextTimezone);
+    } catch {
+      // Ignore localStorage write errors.
+    }
+  };
+
+  const timeText = useMemo(
+    () => formatTimeInTimezone(now, selectedTimezone),
+    [now, selectedTimezone]
+  );
+
+  const dateText = useMemo(
+    () => formatDateInTimezone(now, selectedTimezone),
+    [now, selectedTimezone]
+  );
+
+  const timezoneLabel = getTimezoneLabel(selectedTimezone);
 
   return (
     <>
@@ -165,23 +262,47 @@ export default function Sidebar({ open, onClose, onLogout }) {
           {canAccessAdmin ? (
             <>
               <div className="sidebar-section-label">Main Admin Panel</div>
+
               {adminNavItems.map((item) => (
                 <SidebarLink key={item.to} item={item} onClose={onClose} />
               ))}
 
-              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('language')}>
+              <button
+                type="button"
+                className="sidebar-link sidebar-toggle"
+                onClick={() => toggleMenu('settings')}
+              >
                 <span className="sidebar-link-left">
-                  <Globe size={20} />
-                  <span>Language</span>
+                  <Settings size={20} />
+                  <span>Settings</span>
                 </span>
-                {openMenus.language ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                {openMenus.settings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </button>
 
-              {openMenus.language && (
-                <div className="sidebar-submenu language-block">
-                  <label className="language-select-label" htmlFor="site-language-select-admin">
-                    Select website language
+              {openMenus.settings && (
+                <div className="sidebar-submenu settings-block">
+                  <label className="sidebar-setting-control">
+                    <span className="sidebar-setting-control-label">Time zone</span>
+                    <select
+                      className="language-select"
+                      value={selectedTimezone}
+                      onChange={handleTimezoneChange}
+                    >
+                      {TIMEZONE_OPTIONS.map((timezone) => (
+                        <option key={timezone.value} value={timezone.value}>
+                          {timezone.label}
+                        </option>
+                      ))}
+                    </select>
                   </label>
+
+                  <label
+                    className="language-select-label"
+                    htmlFor="site-language-select-admin"
+                  >
+                    Language
+                  </label>
+
                   <select
                     id="site-language-select-admin"
                     className="language-select"
@@ -194,9 +315,6 @@ export default function Sidebar({ open, onClose, onLogout }) {
                       </option>
                     ))}
                   </select>
-                  <p className="language-help-text">
-                    All visible website text will be translated automatically. Game iframe/image text may stay unchanged.
-                  </p>
                 </div>
               )}
             </>
@@ -206,7 +324,11 @@ export default function Sidebar({ open, onClose, onLogout }) {
                 <SidebarLink key={item.to} item={item} onClose={onClose} />
               ))}
 
-              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('bonuses')}>
+              <button
+                type="button"
+                className="sidebar-link sidebar-toggle"
+                onClick={() => toggleMenu('bonuses')}
+              >
                 <span className="sidebar-link-left">
                   <Crown size={20} />
                   <span>Bonuses</span>
@@ -217,14 +339,23 @@ export default function Sidebar({ open, onClose, onLogout }) {
               {openMenus.bonuses && (
                 <div className="sidebar-submenu">
                   {bonusChildren.map((item) => (
-                    <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className="sidebar-sublink"
+                      onClick={onClose}
+                    >
                       {item.label}
                     </NavLink>
                   ))}
                 </div>
               )}
 
-              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('other')}>
+              <button
+                type="button"
+                className="sidebar-link sidebar-toggle"
+                onClick={() => toggleMenu('other')}
+              >
                 <span className="sidebar-link-left">
                   <Grid2X2 size={20} />
                   <span>Other</span>
@@ -235,7 +366,12 @@ export default function Sidebar({ open, onClose, onLogout }) {
               {openMenus.other && (
                 <div className="sidebar-submenu">
                   {otherChildren.map((item) => (
-                    <NavLink key={item.to} to={item.to} className="sidebar-sublink" onClick={onClose}>
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className="sidebar-sublink"
+                      onClick={onClose}
+                    >
                       {item.label}
                     </NavLink>
                   ))}
@@ -245,11 +381,9 @@ export default function Sidebar({ open, onClose, onLogout }) {
               {!user && (
                 <>
                   <div className="sidebar-section-label">Account</div>
-                  {guestNavItems
-                    .filter((item) => item.to !== '/agent/login')
-                    .map((item) => (
-                      <SidebarLink key={item.to} item={item} onClose={onClose} />
-                    ))}
+                  {guestNavItems.map((item) => (
+                    <SidebarLink key={item.to} item={item} onClose={onClose} />
+                  ))}
                 </>
               )}
 
@@ -262,7 +396,11 @@ export default function Sidebar({ open, onClose, onLogout }) {
                 </>
               )}
 
-              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('settings')}>
+              <button
+                type="button"
+                className="sidebar-link sidebar-toggle"
+                onClick={() => toggleMenu('settings')}
+              >
                 <span className="sidebar-link-left">
                   <Settings size={20} />
                   <span>Settings</span>
@@ -272,54 +410,25 @@ export default function Sidebar({ open, onClose, onLogout }) {
 
               {openMenus.settings && (
                 <div className="sidebar-submenu settings-block">
-                  <div className="sidebar-setting-row">
-                    <span>Time zone</span>
-                    <span>GMT +06:00</span>
-                  </div>
-                  <label className="sidebar-setting-row">
-                    <span>Show bet slip at the bottom</span>
-                    <input type="checkbox" />
+                  <label className="sidebar-setting-control">
+                    <span className="sidebar-setting-control-label">Time zone</span>
+                    <select
+                      className="language-select"
+                      value={selectedTimezone}
+                      onChange={handleTimezoneChange}
+                    >
+                      {TIMEZONE_OPTIONS.map((timezone) => (
+                        <option key={timezone.value} value={timezone.value}>
+                          {timezone.label}
+                        </option>
+                      ))}
+                    </select>
                   </label>
-                  <div className="sidebar-setting-row">
-                    <span>Select odds format</span>
-                    <span>Decimal</span>
-                  </div>
-                  <label className="sidebar-setting-row">
-                    <span>Light version</span>
-                    <input type="checkbox" />
-                  </label>
-                  <label className="sidebar-setting-row">
-                    <span>Quick bet slip</span>
-                    <input type="checkbox" />
-                  </label>
-                  <label className="sidebar-setting-row">
-                    <span>Dark theme</span>
-                    <input type="checkbox" defaultChecked />
-                  </label>
-                  <label className="sidebar-setting-row">
-                    <span>European view</span>
-                    <input type="checkbox" defaultChecked />
-                  </label>
-                  <label className="sidebar-setting-row">
-                    <span>Asian view</span>
-                    <input type="checkbox" />
-                  </label>
-                </div>
-              )}
 
-              <button type="button" className="sidebar-link sidebar-toggle" onClick={() => toggleMenu('language')}>
-                <span className="sidebar-link-left">
-                  <Globe size={20} />
-                  <span>Language</span>
-                </span>
-                {openMenus.language ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </button>
-
-              {openMenus.language && (
-                <div className="sidebar-submenu language-block">
                   <label className="language-select-label" htmlFor="site-language-select">
-                    Select website language
+                    Language
                   </label>
+
                   <select
                     id="site-language-select"
                     className="language-select"
@@ -332,9 +441,6 @@ export default function Sidebar({ open, onClose, onLogout }) {
                       </option>
                     ))}
                   </select>
-                  <p className="language-help-text">
-                    All visible website text will be translated automatically. Game iframe/image text may stay unchanged.
-                  </p>
                 </div>
               )}
             </>
@@ -344,7 +450,9 @@ export default function Sidebar({ open, onClose, onLogout }) {
         <div className="sidebar-footer-info">
           <div className="sidebar-time-row">
             <Clock3 size={18} />
-            <span>{timeText} (GMT +06:00)</span>
+            <span>
+              {timeText} ({timezoneLabel})
+            </span>
           </div>
           <div className="sidebar-date-text">{dateText}</div>
         </div>
@@ -357,7 +465,13 @@ export default function Sidebar({ open, onClose, onLogout }) {
         )}
       </aside>
 
-      {open && <button className="sidebar-scrim" aria-label="Close navigation" onClick={onClose} />}
+      {open && (
+        <button
+          className="sidebar-scrim"
+          aria-label="Close navigation"
+          onClick={onClose}
+        />
+      )}
     </>
   );
 }
