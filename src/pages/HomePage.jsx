@@ -459,7 +459,7 @@ export default function HomePage() {
     }
   };
 
-  const featuredGames = useMemo(() => games.slice(0, 2), [games]);
+  const featuredGames = useMemo(() => games.slice(0, 4), [games]);
   const hotJiliGames = useMemo(() => pickHotJiliGames(jiliGames), [jiliGames]);
 
   return (
@@ -627,7 +627,7 @@ export default function HomePage() {
           />
 
           {featuredGames.length ? (
-            <div className="grid-2">
+            <div className="home-featured-games-grid">
               {featuredGames.map((game) => (
                 <GameCard key={game._id || game.name} game={game} />
               ))}

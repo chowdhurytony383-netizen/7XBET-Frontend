@@ -1254,3 +1254,83 @@
     gap: 0 !important;
   }
 }
+
+
+/* Home available games: show 2 games per row on mobile and desktop */
+.home-featured-games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 768px) {
+  .home-featured-games-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .home-featured-games-grid .game-card {
+    min-width: 0 !important;
+    border-radius: 14px !important;
+  }
+
+  .home-featured-games-grid .game-card-image {
+    height: 92px !important;
+  }
+
+  .home-featured-games-grid .game-card-icon {
+    top: 8px !important;
+    right: 8px !important;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 11px !important;
+  }
+
+  .home-featured-games-grid .game-card-content {
+    min-height: 118px;
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+
+  .home-featured-games-grid .game-card-content h3 {
+    margin-bottom: 5px !important;
+    font-size: 0.94rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .home-featured-games-grid .game-card-content p {
+    font-size: 0.72rem !important;
+    line-height: 1.3 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .home-featured-games-grid .game-card-action {
+    font-size: 0.88rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .home-featured-games-grid {
+    gap: 8px !important;
+  }
+
+  .home-featured-games-grid .game-card-image {
+    height: 84px !important;
+  }
+
+  .home-featured-games-grid .game-card-content {
+    min-height: 108px;
+    padding: 9px !important;
+  }
+
+  .home-featured-games-grid .game-card-content h3 {
+    font-size: 0.86rem !important;
+  }
+
+  .home-featured-games-grid .game-card-content p {
+    font-size: 0.68rem !important;
+  }
+}
