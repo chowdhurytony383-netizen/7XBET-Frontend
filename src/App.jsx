@@ -112,6 +112,7 @@ export default function App() {
         <Route path="other/faq" element={<FaqPage />} />
         <Route path="other/rules" element={<RulesPage />} />
         <Route path="customer-support" element={<CustomerSupportPage />} />
+       <Route path="live-support" element={<SupportPage />} />
         <Route path="about-us" element={<StaticInfoPage pageKey="about" />} />
         <Route path="terms-and-conditions" element={<StaticInfoPage pageKey="terms" />} />
         <Route path="contacts" element={<StaticInfoPage pageKey="contacts" />} />
