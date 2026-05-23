@@ -11,6 +11,7 @@ import {
   getScore,
   getTeamName,
   normalizeMatchOdds,
+  sportMetaFrom,
   sportMetaFromMatch,
   statusClass,
   teamLogoClass,
@@ -384,6 +385,7 @@ export default function SportsPage() {
   const { user, refreshUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [matches, setMatches] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [status, setStatus] = useState(null);
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -398,12 +400,14 @@ export default function SportsPage() {
     if (!silent) setLoading(true);
 
     try {
-      const [matchesResponse, statusResponse, betResponse] = await Promise.all([
+      const [categoriesResponse, matchesResponse, statusResponse, betResponse] = await Promise.all([
+        SportsAPI.categories().catch(() => null),
         SportsAPI.liveMatches(),
         SportsAPI.syncStatus().catch(() => null),
         user ? SportsAPI.myBets().catch(() => null) : Promise.resolve(null),
       ]);
 
+      setCategories(categoriesResponse?.data?.data || categoriesResponse?.data?.categories || []);
       setMatches(matchesResponse.data?.data || matchesResponse.data?.matches || []);
       setStatus(statusResponse?.data?.data || null);
       setBets(user ? (betResponse?.data?.data || betResponse?.data?.bets || []) : []);
@@ -439,12 +443,21 @@ export default function SportsPage() {
 
   const sports = useMemo(() => {
     const unique = new Map();
+    categories.forEach((category) => {
+      const meta = category?.key
+        ? sportMetaFrom(`${category.key} ${category.name || category.title || category.slug || ''}`)
+        : sportMetaFrom(category?.name || category?.title || category?.slug || '');
+      unique.set(meta.key, {
+        ...meta,
+        name: category?.name || category?.title || meta.name,
+      });
+    });
     matches.forEach((match) => {
       const meta = sportMetaFromMatch(match);
       unique.set(meta.key, meta);
     });
     return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [matches]);
+  }, [categories, matches]);
 
   const visibleMatches = useMemo(() => {
     if (selectedSport === 'all') return matches;
