@@ -256,11 +256,8 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
 
-    /* Allow vertical page scroll when the user swipes up/down on a live match card,
-       while still keeping the horizontal match slider swipeable on mobile. */
-    touch-action: pan-x pan-y;
+    touch-action: pan-x;
   }
 
   .live-match-list::-webkit-scrollbar {
@@ -282,14 +279,6 @@
     overflow: hidden;
     background: #20232f;
     border: 1px solid rgba(255,255,255,.06);
-    touch-action: pan-x pan-y;
-  }
-
-  .live-match-content,
-  .live-match-header,
-  .live-odds-grid,
-  .odd-cell {
-    touch-action: pan-x pan-y;
   }
 
   .live-match-header {
@@ -598,4 +587,255 @@
 
 .live-pill.finished {
   background: #64748b;
+}
+
+/* 7XBET mobile sportsbook polish: priority order + clickable header + team logos */
+.live-match-header-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.live-match-header-link:hover .live-competition-name,
+.live-match-header-link:focus-visible .live-competition-name {
+  color: #ffffff;
+}
+
+.home-team-logo img,
+.sport-ball img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+  display: block;
+}
+
+.home-team-logo:has(img) {
+  background: rgba(15, 23, 42, .68) !important;
+  padding: 3px;
+}
+
+@media (max-width: 768px) {
+  .live-match-row {
+    flex-basis: min(88vw, 420px) !important;
+    width: min(88vw, 420px) !important;
+    max-width: min(88vw, 420px) !important;
+  }
+
+  .live-match-header-link {
+    min-height: 50px !important;
+    padding: 10px 12px !important;
+  }
+
+  .live-match-content {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    row-gap: 10px !important;
+    padding: 12px 11px 13px !important;
+  }
+
+  .live-mobile-details {
+    grid-template-columns: 36px minmax(0, 1fr) !important;
+  }
+
+  .home-team-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: .66rem;
+  }
+
+  .live-match-title {
+    font-size: .9rem !important;
+    line-height: 1.18 !important;
+  }
+
+  .live-match-meta {
+    font-size: .74rem !important;
+  }
+
+  .live-score-box {
+    align-self: start;
+    gap: 6px !important;
+  }
+
+  .live-pill {
+    height: 28px !important;
+    padding: 0 8px !important;
+    font-size: .75rem !important;
+  }
+
+  .live-score-values {
+    font-size: .86rem !important;
+  }
+
+  .live-odds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .live-odds-grid .odd-cell:nth-child(n + 5) {
+    display: grid;
+  }
+
+  .odd-cell {
+    min-height: 54px !important;
+    padding: 6px 4px !important;
+    border-radius: 10px !important;
+  }
+
+  .odd-cell small {
+    max-width: 100%;
+    white-space: normal !important;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.05 !important;
+    font-size: .74rem !important;
+    text-align: center;
+  }
+
+  .odd-cell strong {
+    font-size: .92rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .live-odds-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .home-team-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Reference-style compact mobile live sports card */
+.live-mobile-scorecard,
+.live-market-label {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .live-match-row {
+    background: linear-gradient(180deg, rgba(17, 24, 39, .98), rgba(10, 16, 32, .98)) !important;
+    border: 1px solid rgba(203, 213, 225, .10) !important;
+    box-shadow: 0 12px 26px rgba(0,0,0,.28) !important;
+  }
+
+  .live-match-header-link {
+    background: rgba(255,255,255,.10) !important;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .live-match-content {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 12px 12px 14px !important;
+  }
+
+  .live-mobile-details,
+  .live-score-box {
+    display: none !important;
+  }
+
+  .live-mobile-scorecard {
+    display: grid;
+    gap: 7px;
+    grid-column: 1 / -1;
+  }
+
+  .live-mobile-team-row {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+  }
+
+  .live-mobile-team-row .home-team-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .live-mobile-team-row span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #eef3ff;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .live-mobile-team-row strong {
+    color: #eef3ff;
+    font-size: 1.04rem;
+    font-weight: 900;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .live-market-label {
+    display: block;
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    color: #dbeafe;
+    font-size: .95rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+  }
+
+  .live-odds-grid {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .live-odds-grid .odd-cell:nth-child(n + 5) {
+    display: none !important;
+  }
+
+  .live-odds-grid .odd-cell {
+    min-height: 48px !important;
+    padding: 7px 8px !important;
+    border-radius: 12px !important;
+    background: #e7eeee !important;
+    color: #0f2a27 !important;
+    border: 1px solid rgba(255,255,255,.2) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
+  }
+
+  .live-odds-grid .odd-cell small {
+    color: rgba(15, 42, 39, .64) !important;
+    font-size: .76rem !important;
+    font-weight: 900 !important;
+  }
+
+  .live-odds-grid .odd-cell strong {
+    color: #0f2a27 !important;
+    font-size: .98rem !important;
+    font-weight: 1000 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .live-mobile-team-row {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .live-mobile-team-row span {
+    font-size: .92rem;
+  }
+
+  .live-mobile-team-row strong {
+    font-size: .94rem;
+  }
+
+  .live-odds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }

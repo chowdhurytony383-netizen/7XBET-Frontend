@@ -41,6 +41,16 @@ function TeamLogo({ team, sportKey }) {
   );
 }
 
+function MobileTeamScoreRow({ team, sportKey, score }) {
+  return (
+    <div className="live-mobile-team-row">
+      <TeamLogo team={team} sportKey={sportKey} />
+      <span>{getTeamName(team)}</span>
+      <strong>{score}</strong>
+    </div>
+  );
+}
+
 function matchDetailsLink(match) {
   const meta = sportMetaFromMatch(match);
   const params = new URLSearchParams();
@@ -90,6 +100,11 @@ function LiveMatchRow({ match, onSelectBet }) {
             </div>
           </div>
 
+          <div className="live-mobile-scorecard" aria-label={`${home} vs ${away} score`}>
+            <MobileTeamScoreRow team={homeTeam} sportKey={match.sportKey} score={homeScore} />
+            <MobileTeamScoreRow team={awayTeam} sportKey={match.sportKey} score={awayScore} />
+          </div>
+
           <div className="live-teams">
             <span><TeamLogo team={homeTeam} sportKey={match.sportKey} /> {home}</span>
             <span><TeamLogo team={awayTeam} sportKey={match.sportKey} /> {away}</span>
@@ -100,6 +115,8 @@ function LiveMatchRow({ match, onSelectBet }) {
           <span className={`live-pill ${statusClass(status)}`}>{status}</span>
           <div className="live-score-values"><span>{homeScore}</span><span>{awayScore}</span></div>
         </div>
+
+        <div className="live-market-label">1X2</div>
 
         <div className="live-odds-grid">
           {odds.length ? odds.map((odd) => (
