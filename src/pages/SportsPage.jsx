@@ -9,8 +9,11 @@ import {
   buildSportsSlipItem,
   getMatchId,
   getScore,
+  getTeamLogoUrl,
   getTeamName,
   normalizeMatchOdds,
+  sortMatchesBySportPriority,
+  sortSportMetas,
   sportMetaFrom,
   sportMetaFromMatch,
   statusClass,
@@ -54,9 +57,10 @@ function DetailsSection({ icon, title, children }) {
 }
 
 function MiniTeam({ team }) {
+  const logo = getTeamLogoUrl(team);
   return (
     <div className="sports-detail-team">
-      {team?.logo ? <img src={team.logo} alt={team.name || 'Team'} /> : <span>{teamLogoText(team?.name || team?.raw?.name || 'TM')}</span>}
+      {logo ? <img src={logo} alt={team?.name || team?.raw?.name || 'Team'} /> : <span>{teamLogoText(team?.name || team?.raw?.name || 'TM')}</span>}
       <strong>{team?.name || team?.raw?.name || 'Team'}</strong>
     </div>
   );
@@ -314,9 +318,12 @@ function MatchDetailsModal({ data, loading, onClose }) {
 }
 
 function MatchTeam({ team, sportKey, score }) {
+  const logo = getTeamLogoUrl(team);
   return (
     <div className="sports-team-row">
-      <span className={`sports-team-logo ${teamLogoClass(team, sportKey)}`}>{teamLogoText(team)}</span>
+      <span className={`sports-team-logo ${teamLogoClass(team, sportKey)}`}>
+        {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
+      </span>
       <strong>{getTeamName(team)}</strong>
       <b>{score}</b>
     </div>
@@ -334,7 +341,18 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
 
   return (
     <article className="sports-live-card">
-      <div className="sports-live-card-top">
+      <div
+        className="sports-live-card-top sports-live-card-top-clickable"
+        role="button"
+        tabIndex={0}
+        onClick={() => onDetails(match)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onDetails(match);
+          }
+        }}
+      >
         <div className="sports-card-title-block">
           <span className={`sports-competition ${sportMeta.className}`}><span>{sportMeta.icon}</span>{match.sport || match.sportTitle || sportMeta.name}</span>
           <h3>{getTeamName(homeTeam)} <span>vs</span> {getTeamName(awayTeam)}</h3>
@@ -342,7 +360,7 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
         </div>
         <div className="sports-card-actions">
           <span className={`sports-status-pill ${statusClass(status)}`}>{status}</span>
-          <button type="button" className="sports-details-button" onClick={() => onDetails(match)}>
+          <button type="button" className="sports-details-button" onClick={(event) => { event.stopPropagation(); onDetails(match); }}>
             <Info size={15} /> Details
           </button>
         </div>
@@ -476,12 +494,13 @@ export default function SportsPage() {
       const meta = sportMetaFromMatch(match);
       unique.set(meta.key, meta);
     });
-    return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return sortSportMetas(Array.from(unique.values()));
   }, [categories, matches]);
 
   const visibleMatches = useMemo(() => {
-    if (selectedSport === 'all') return matches;
-    return matches.filter((match) => sportMetaFromMatch(match).key === selectedSport);
+    const sorted = sortMatchesBySportPriority(matches);
+    if (selectedSport === 'all') return sorted;
+    return sorted.filter((match) => sportMetaFromMatch(match).key === selectedSport);
   }, [matches, selectedSport]);
 
   const groupedMatches = useMemo(() => {
@@ -491,7 +510,7 @@ export default function SportsPage() {
       if (!groups.has(meta.key)) groups.set(meta.key, { meta, items: [] });
       groups.get(meta.key).items.push(match);
     });
-    return Array.from(groups.values());
+    return Array.from(groups.values()).sort((a, b) => sortSportMetas([a.meta, b.meta])[0]?.key === a.meta.key ? -1 : 1);
   }, [visibleMatches]);
 
   const selectedIds = useMemo(() => new Set(betSlipItems.map((item) => item.id)), [betSlipItems]);
@@ -549,6 +568,15 @@ export default function SportsPage() {
       setDetailsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const matchIdFromUrl = searchParams.get('match');
+    if (!matchIdFromUrl || detailsOpen || !matches.length) return;
+
+    const match = matches.find((item) => String(getMatchId(item)) === String(matchIdFromUrl));
+    if (match) openDetails(match);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, matches, detailsOpen]);
 
   const submitBets = async () => {
     if (!user) {
@@ -670,6 +698,11 @@ export default function SportsPage() {
           onClose={() => {
             setDetailsOpen(false);
             setMatchDetails(null);
+            if (searchParams.has('match')) {
+              const nextParams = new URLSearchParams(searchParams);
+              nextParams.delete('match');
+              setSearchParams(nextParams, { replace: true });
+            }
           }}
         />
       ) : null}
