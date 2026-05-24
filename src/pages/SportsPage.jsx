@@ -371,6 +371,8 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
         <MatchTeam team={awayTeam} sportKey={match.sportKey} score={getScore(match, 'away')} />
       </div>
 
+      <div className="sports-market-label">1X2</div>
+
       <div className="sports-odds-grid">
         {odds.length ? odds.map((odd) => {
           const selected = selectedIds.has(`${matchId}:${odd.selectionId}`);
