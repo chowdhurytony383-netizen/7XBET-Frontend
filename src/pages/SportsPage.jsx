@@ -246,7 +246,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
         <div className="sports-detail-header">
           <span className="page-eyebrow">Full Match Details</span>
           <h3>{event ? `${getTeamName(event.homeTeam)} vs ${getTeamName(event.awayTeam)}` : 'Loading match details...'}</h3>
-          <p>{details?.provider ? `Provider: ${details.provider}` : 'Fetching provider data...'}</p>
+          
         </div>
 
         {loading ? <div className="sports-empty-panel">Loading full details...</div> : null}
