@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, Handshake, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Crown, Handshake, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency } from '../../utils/format.js';
@@ -54,6 +54,7 @@ export default function AdminDashboardPage() {
         <Link className="card admin-quick-card" to="/admin/withdrawals"><ArrowUpFromLine size={28} /><h3>Control withdrawals</h3><p>Approve, reject or mark withdrawal requests after checking user information.</p></Link>
         <Link className="card admin-quick-card" to="/admin/agents"><Shield size={28} /><h3>Agent Admin</h3><p>Create agent accounts, send balance by Agent ID and control agent access.</p></Link>
         <Link className="card admin-quick-card" to="/admin/affiliates"><Handshake size={28} /><h3>Affiliate Partners</h3><p>Approve affiliates, set 30%–40% GGR revenue share, calculate periods and manage carryover.</p></Link>
+        <Link className="card admin-quick-card" to="/admin/vip-rewards"><Crown size={28} /><h3>VIP Rewards</h3><p>Calculate monthly VIP cashback, approve rewards and track user claims.</p></Link>
         <div className="card admin-quick-card"><ShieldCheck size={28} /><h3>Verification review</h3><p>User verification data is available from the user details screen.</p></div>
       </section>
       {loading && <div className="card admin-loading"><div className="loader" /></div>}

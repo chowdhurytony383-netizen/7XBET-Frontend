@@ -1,0 +1,139 @@
+.admin-vip-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+}
+
+.admin-vip-controls label {
+  display: block;
+  color: var(--muted, #9ba9bd);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.admin-vip-controls input,
+.admin-vip-controls select {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  background: rgba(4,12,28,.72);
+  color: #fff;
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.admin-vip-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-vip-stats .card {
+  padding: 16px;
+}
+
+.admin-vip-stats span,
+.admin-vip-level-grid span,
+.admin-vip-reward-row span,
+.admin-vip-reward-row small {
+  color: var(--muted, #9ba9bd);
+}
+
+.admin-vip-stats strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.admin-vip-levels,
+.admin-vip-table-card {
+  padding: 18px;
+}
+
+.admin-vip-level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-vip-level-grid article {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.05);
+}
+
+.admin-vip-level-grid strong,
+.admin-vip-level-grid b {
+  display: block;
+}
+
+.admin-vip-level-grid b {
+  color: #caff8d;
+  margin-top: 6px;
+}
+
+.admin-vip-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-vip-reward-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.admin-vip-reward-row strong,
+.admin-vip-reward-row span,
+.admin-vip-reward-row small {
+  display: block;
+}
+
+.admin-vip-user small.ok { color: #9effbb; }
+.admin-vip-user small.warn { color: #ffd18a; }
+
+.admin-vip-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-vip-actions .btn {
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.admin-vip-empty {
+  color: var(--muted, #9ba9bd);
+}
+
+@media (max-width: 860px) {
+  .admin-vip-controls,
+  .admin-vip-stats,
+  .admin-vip-level-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-vip-reward-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-vip-actions {
+    justify-content: stretch;
+  }
+
+  .admin-vip-actions .btn {
+    flex: 1;
+  }
+}
