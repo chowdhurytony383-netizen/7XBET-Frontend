@@ -23,5 +23,11 @@ export const AdminAPI = {
   topUpAgent: (payload) => api.post('/admin/agents/top-up', payload),
   agentTransactions: (agentId) => api.get(`/admin/agents/${agentId}/transactions`),
   agentPaymentRequests: (params = {}) => api.get('/admin/agent-payment-requests', { params }),
+  vipLevels: () => api.get('/admin/vip/levels'),
+  saveVipLevel: (payload) => api.post('/admin/vip/levels', payload),
+  vipRewards: (params = {}) => api.get('/admin/vip/rewards', { params }),
+  calculateVipRewards: (payload = {}) => api.post('/admin/vip/calculate', payload),
+  approveVipReward: (rewardId, payload = {}) => api.post(`/admin/vip/rewards/${rewardId}/approve`, payload),
+  rejectVipReward: (rewardId, payload = {}) => api.post(`/admin/vip/rewards/${rewardId}/reject`, payload),
 };
 
