@@ -147,7 +147,6 @@ const adminNavItems = [
 
 const bonusChildren = [
   { to: '/bonuses', label: 'All bonuses' },
-  { to: '/bonuses/welcome-bonus', label: 'Welcome bonus' },
   { to: '/bonuses/cashback', label: 'Cashback' },
   { to: '/bonuses/vip', label: 'VIP rewards' },
 ];
