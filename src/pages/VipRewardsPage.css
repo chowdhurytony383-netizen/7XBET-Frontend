@@ -1,1 +1,268 @@
-/* Styles for VIP rewards page. Shared layout classes are defined in ContentPageTemplate.css. */
+.vip-page {
+  padding-bottom: 34px;
+}
+
+.vip-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: clamp(22px, 5vw, 42px);
+  background: radial-gradient(circle at top right, rgba(106, 255, 140, 0.18), transparent 34%), linear-gradient(135deg, rgba(11, 28, 48, 0.96), rgba(16, 24, 48, 0.96));
+}
+
+.vip-hero h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(34px, 8vw, 58px);
+}
+
+.vip-hero p {
+  max-width: 760px;
+  color: var(--muted, #a9b6ca);
+  font-size: clamp(15px, 4vw, 19px);
+  line-height: 1.45;
+}
+
+.vip-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.vip-hero-medal {
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  border-radius: 32px;
+  background: linear-gradient(135deg, rgba(195, 255, 126, 0.2), rgba(78, 89, 255, 0.22));
+  color: #caff8d;
+  flex: 0 0 auto;
+}
+
+.vip-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.vip-status-card,
+.vip-progress-card,
+.vip-rules-card,
+.vip-levels-card,
+.vip-rewards-card {
+  padding: 18px;
+}
+
+.vip-status-card strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 25px;
+}
+
+.vip-status-card p,
+.vip-progress-card p,
+.vip-empty {
+  color: var(--muted, #9ba9bd);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.vip-card-label {
+  color: #8cffaa;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.vip-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.vip-progress-head h2,
+.vip-rules-card h2,
+.vip-levels-card h2,
+.vip-rewards-card h2 {
+  margin: 4px 0 12px;
+}
+
+.vip-progress-head strong {
+  color: #caff8d;
+  font-size: 28px;
+}
+
+.vip-progress-track {
+  height: 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.vip-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7eff68, #22d36c);
+}
+
+.vip-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vip-rules-grid div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #d7e4f2;
+}
+
+.vip-rules-grid svg {
+  color: #8cffaa;
+  flex: 0 0 auto;
+}
+
+.vip-levels-list,
+.vip-rewards-list {
+  display: grid;
+  gap: 10px;
+}
+
+.vip-level-row,
+.vip-reward-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 12, 28, 0.44);
+}
+
+.vip-level-row.active {
+  border-color: rgba(126, 255, 104, 0.55);
+  box-shadow: 0 0 0 1px rgba(126, 255, 104, 0.12) inset;
+}
+
+.vip-level-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  color: #caff8d;
+  flex: 0 0 auto;
+}
+
+.vip-level-row > div:nth-child(2),
+.vip-reward-row > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.vip-level-row strong,
+.vip-reward-row strong {
+  display: block;
+  font-size: 16px;
+}
+
+.vip-level-row span,
+.vip-reward-row span,
+.vip-reward-row small {
+  display: block;
+  color: var(--muted, #9ba9bd);
+  line-height: 1.35;
+}
+
+.vip-level-row b {
+  color: #caff8d;
+  white-space: nowrap;
+}
+
+.vip-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbe7f4;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.vip-status-pill.claimed {
+  background: rgba(34, 211, 108, 0.15);
+  color: #9effbb;
+}
+
+.vip-status-pill.rejected {
+  background: rgba(255, 77, 109, 0.15);
+  color: #ffb4c0;
+}
+
+@media (max-width: 780px) {
+  .vip-hero {
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 28px;
+  }
+
+  .vip-hero-medal {
+    width: 64px;
+    height: 64px;
+    border-radius: 22px;
+  }
+
+  .vip-status-grid,
+  .vip-rules-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .vip-status-card,
+  .vip-progress-card,
+  .vip-rules-card,
+  .vip-levels-card,
+  .vip-rewards-card {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .vip-status-card strong {
+    font-size: 20px;
+  }
+
+  .vip-rules-grid div {
+    font-size: 13px;
+    align-items: flex-start;
+  }
+
+  .vip-reward-row,
+  .vip-level-row {
+    padding: 11px;
+  }
+
+  .vip-reward-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .vip-reward-row .btn {
+    width: 100%;
+    min-height: 42px;
+  }
+}
