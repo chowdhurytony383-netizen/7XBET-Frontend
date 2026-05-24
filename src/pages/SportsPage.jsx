@@ -139,16 +139,35 @@ function GenericDataList({ items = [], empty = 'Not available yet' }) {
   );
 }
 
+function formatCricketScoreItem(score = {}) {
+  if (score.display) return score.display;
+  if (score.value && typeof score.value !== 'object') return score.value;
+  const rawScore = score.score ?? score.runs ?? score.total;
+  if (rawScore === undefined || rawScore === null || rawScore === '') return '';
+  const wickets = score.wickets !== undefined && score.wickets !== null && score.wickets !== '' ? `/${score.wickets}` : '';
+  const overs = score.overs ? ` (${score.overs} ov)` : '';
+  return `${rawScore}${wickets}${overs}`;
+}
+
 function ScoresPanel({ scores }) {
   if (!scores) return <p className="sports-detail-muted">Not available yet</p>;
 
   const normalized = (() => {
     if (Array.isArray(scores)) {
-      return scores.map((score, index) => ({
-        label: textValue(score.period || score.type || score.name || score.description || score.id || `Period ${index + 1}`),
-        home: score.home ?? score.localteam_score ?? score.home_score ?? score.score?.home ?? score.scores?.home,
-        away: score.away ?? score.visitorteam_score ?? score.away_score ?? score.score?.away ?? score.scores?.away,
-      }));
+      return scores.map((score, index) => {
+        const cricketValue = formatCricketScoreItem(score);
+        if (cricketValue) {
+          return {
+            label: textValue(score.label || score.team || score.name || score.description || score.id || `Innings ${index + 1}`),
+            value: cricketValue,
+          };
+        }
+        return {
+          label: textValue(score.period || score.type || score.name || score.description || score.id || `Period ${index + 1}`),
+          home: score.home ?? score.localteam_score ?? score.home_score ?? score.score?.home ?? score.scores?.home,
+          away: score.away ?? score.visitorteam_score ?? score.away_score ?? score.score?.away ?? score.scores?.away,
+        };
+      });
     }
 
     if (typeof scores === 'object') {
@@ -160,13 +179,14 @@ function ScoresPanel({ scores }) {
 
       return Object.entries(scores).map(([key, value]) => ({
         label: key,
-        home: typeof value === 'object' ? value.home ?? value.localteam_score ?? value.home_score : value,
+        value: typeof value === 'object' ? value.display || value.value : value,
+        home: typeof value === 'object' ? value.home ?? value.localteam_score ?? value.home_score : undefined,
         away: typeof value === 'object' ? value.away ?? value.visitorteam_score ?? value.away_score : undefined,
       }));
     }
 
     return [];
-  })().filter((item) => item.home !== undefined || item.away !== undefined);
+  })().filter((item) => item.value !== undefined || item.home !== undefined || item.away !== undefined);
 
   if (!normalized.length) return <p className="sports-detail-muted">Not available yet</p>;
 
@@ -175,7 +195,7 @@ function ScoresPanel({ scores }) {
       {normalized.map((item, index) => (
         <div className="sports-detail-stat" key={`${item.label}-${index}`}>
           <span>{textValue(item.label, `Score ${index + 1}`)}</span>
-          <strong>{textValue(item.home)}{item.away !== undefined ? ` - ${textValue(item.away)}` : ''}</strong>
+          <strong>{item.value !== undefined ? textValue(item.value) : `${textValue(item.home)}${item.away !== undefined ? ` - ${textValue(item.away)}` : ''}`}</strong>
         </div>
       ))}
     </div>
@@ -262,7 +282,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <OddsList market={market} />
             </DetailsSection>
 
-            <DetailsSection icon={<ListChecks size={18} />} title="Match events: goals / cards / substitutions">
+            <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
               <EventList items={details?.events} />
             </DetailsSection>
 
