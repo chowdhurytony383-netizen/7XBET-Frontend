@@ -1,10 +1,13 @@
+import { Link } from 'react-router-dom';
 import EmptyState from './EmptyState.jsx';
 import MatchOfDayCard from './MatchOfDayCard.jsx';
 import {
   getMatchId,
   getScore,
+  getTeamLogoUrl,
   getTeamName,
   normalizeMatchOdds,
+  sortMatchesBySportPriority,
   sportMetaFromMatch,
   statusClass,
   teamLogoClass,
@@ -30,7 +33,22 @@ function getMatchMeta(match) {
 }
 
 function TeamLogo({ team, sportKey }) {
-  return <span className={`home-team-logo ${teamLogoClass(team, sportKey)}`}>{teamLogoText(team)}</span>;
+  const logo = getTeamLogoUrl(team);
+  return (
+    <span className={`home-team-logo ${teamLogoClass(team, sportKey)}`}>
+      {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
+    </span>
+  );
+}
+
+function matchDetailsLink(match) {
+  const meta = sportMetaFromMatch(match);
+  const params = new URLSearchParams();
+  if (meta?.key) params.set('sport', meta.key);
+  const id = getMatchId(match);
+  if (id) params.set('match', id);
+  const query = params.toString();
+  return `/sports${query ? `?${query}` : ''}`;
 }
 
 function LiveMatchRow({ match, onSelectBet }) {
@@ -49,13 +67,13 @@ function LiveMatchRow({ match, onSelectBet }) {
 
   return (
     <article className="live-match-row">
-      <div className="live-match-header">
+      <Link className="live-match-header live-match-header-link" to={matchDetailsLink(match)} aria-label={`Open details for ${home} vs ${away}`}>
         <div className="live-competition-line">
           <span className={`sport-ball ${sportMeta.className}`} aria-hidden="true">{sportMeta.icon}</span>
           <span className="live-competition-name">{sportMeta.name}{league ? ` · ${league}` : ''}</span>
         </div>
         <span className="live-card-chevron" aria-hidden="true">»</span>
-      </div>
+      </Link>
 
       <div className="live-match-content">
         <div className="live-match-info">
@@ -101,7 +119,8 @@ function LiveMatchRow({ match, onSelectBet }) {
 }
 
 export default function LiveSportsSection({ matches = [], matchOfTheDay, onSelectBet }) {
-  const selectedMatch = matchOfTheDay || matches[0] || null;
+  const sortedMatches = sortMatchesBySportPriority(matches);
+  const selectedMatch = matchOfTheDay || sortedMatches[0] || null;
 
   return (
     <section className="live-sports-section" id="live">
@@ -116,8 +135,8 @@ export default function LiveSportsSection({ matches = [], matchOfTheDay, onSelec
 
       <div className="live-sports-grid">
         <div className="live-match-list">
-          {matches.length ? (
-            matches.slice(0, 8).map((match) => <LiveMatchRow key={getMatchKey(match)} match={match} onSelectBet={onSelectBet} />)
+          {sortedMatches.length ? (
+            sortedMatches.slice(0, 8).map((match) => <LiveMatchRow key={getMatchKey(match)} match={match} onSelectBet={onSelectBet} />)
           ) : (
             <EmptyState title="Live matches unavailable" message="Sports odds will appear here when the provider sends live/upcoming events." />
           )}
