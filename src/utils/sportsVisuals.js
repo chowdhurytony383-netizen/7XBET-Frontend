@@ -8,11 +8,27 @@ export const SPORT_META = {
   rugby: { key: 'rugby', name: 'Rugby', icon: '🏉', className: 'sport-rugby' },
   volleyball: { key: 'volleyball', name: 'Volleyball', icon: '🏐', className: 'sport-volleyball' },
   boxing: { key: 'boxing', name: 'Boxing / MMA', icon: '🥊', className: 'sport-boxing' },
+  americanfootball: { key: 'americanfootball', name: 'American Football', icon: '🏈', className: 'sport-americanfootball' },
   sports: { key: 'sports', name: 'Sports', icon: '🏆', className: 'sport-default' },
+};
+
+const SPORT_PRIORITY = {
+  cricket: 0,
+  football: 1,
+  basketball: 2,
+  tennis: 3,
+  volleyball: 4,
+  baseball: 5,
+  hockey: 6,
+  rugby: 7,
+  americanfootball: 8,
+  boxing: 9,
+  sports: 99,
 };
 
 export function categoryKeyFromText(value = '') {
   const clean = String(value || '').toLowerCase();
+  if (clean.includes('americanfootball') || clean.includes('american football') || clean.includes('nfl') || clean.includes('ncaaf')) return 'americanfootball';
   if (clean.includes('soccer') || clean.includes('football') || clean.includes('uefa') || clean.includes('epl')) return 'football';
   if (clean.includes('cricket')) return 'cricket';
   if (clean.includes('basket')) return 'basketball';
@@ -69,6 +85,61 @@ export function teamLogoText(team) {
 export function teamLogoClass(team, sportKey = '') {
   if (team && typeof team === 'object' && team.colorClass) return team.colorClass;
   return `team-logo-${colorIndexFor(`${sportKey}:${getTeamName(team)}`)}`;
+}
+
+export function getTeamLogoUrl(team) {
+  if (!team || typeof team !== 'object') return '';
+  return team.logo
+    || team.logoUrl
+    || team.image
+    || team.imageUrl
+    || team.image_path
+    || team.flag
+    || team.flagUrl
+    || team.badge
+    || team.raw?.logo
+    || team.raw?.logoUrl
+    || team.raw?.image
+    || team.raw?.imageUrl
+    || team.raw?.image_path
+    || '';
+}
+
+function sportPriorityFor(metaOrMatch = {}) {
+  const meta = metaOrMatch?.key ? metaOrMatch : sportMetaFromMatch(metaOrMatch);
+  return SPORT_PRIORITY[meta.key] ?? SPORT_PRIORITY.sports;
+}
+
+function statusPriority(match = {}) {
+  const clean = String(match.status || match.matchStatus || '').toLowerCase();
+  if (clean.includes('live') || clean.includes('innings') || clean.includes('quarter') || clean.includes('half')) return 0;
+  if (clean.includes('upcoming') || clean.includes('not started') || clean.includes('scheduled')) return 1;
+  if (clean.includes('finish') || clean.includes('complete')) return 3;
+  return 2;
+}
+
+function startTimeValue(match = {}) {
+  const value = match.startTime || match.dateTime || match.kickoffTime || match.commenceTime || match.startingAt || '';
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+export function sortSportMetas(items = []) {
+  return [...items].sort((a, b) => {
+    const priority = sportPriorityFor(a) - sportPriorityFor(b);
+    if (priority !== 0) return priority;
+    return String(a.name || '').localeCompare(String(b.name || ''));
+  });
+}
+
+export function sortMatchesBySportPriority(items = []) {
+  return [...items].sort((a, b) => {
+    const priority = sportPriorityFor(a) - sportPriorityFor(b);
+    if (priority !== 0) return priority;
+    const status = statusPriority(a) - statusPriority(b);
+    if (status !== 0) return status;
+    return startTimeValue(a) - startTimeValue(b);
+  });
 }
 
 export function getMatchId(match = {}) {
