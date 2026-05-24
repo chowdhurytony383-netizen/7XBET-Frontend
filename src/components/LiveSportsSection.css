@@ -839,3 +839,190 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
+
+/* 7XBET compact mobile sportsbook card: logos, scores, odds inside, vertical scroll friendly */
+.live-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.live-header-status {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .live-match-list {
+    touch-action: pan-x pan-y !important;
+    overscroll-behavior: auto !important;
+    padding: 0 12px 8px !important;
+    gap: 10px !important;
+  }
+
+  .live-match-row {
+    flex: 0 0 min(82vw, 370px) !important;
+    width: min(82vw, 370px) !important;
+    max-width: min(82vw, 370px) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .live-match-header-link {
+    min-height: 38px !important;
+    padding: 7px 10px !important;
+  }
+
+  .live-competition-line {
+    gap: 7px !important;
+  }
+
+  .live-match-header-link .sport-ball {
+    width: 27px !important;
+    height: 27px !important;
+    border-radius: 9px !important;
+    font-size: .98rem !important;
+  }
+
+  .live-competition-name {
+    font-size: .88rem !important;
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+  }
+
+  .live-header-actions {
+    gap: 6px !important;
+  }
+
+  .live-header-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    min-width: 44px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, .22);
+    color: #bbf7d0;
+    font-size: .66rem;
+    font-weight: 1000;
+    text-transform: capitalize;
+    line-height: 1;
+  }
+
+  .live-header-status.upcoming {
+    background: rgba(37, 99, 235, .24);
+    color: #bfdbfe;
+  }
+
+  .live-header-status.finished {
+    background: rgba(100, 116, 139, .26);
+    color: #e2e8f0;
+  }
+
+  .live-card-chevron {
+    font-size: 1.38rem !important;
+  }
+
+  .live-match-content {
+    padding: 8px 9px 10px !important;
+    gap: 7px !important;
+  }
+
+  .live-mobile-scorecard {
+    gap: 4px !important;
+  }
+
+  .live-mobile-team-row {
+    grid-template-columns: 26px minmax(0, 1fr) auto !important;
+    gap: 7px !important;
+    min-height: 29px !important;
+  }
+
+  .live-mobile-team-row .home-team-logo,
+  .home-team-logo {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 8px !important;
+    font-size: .58rem !important;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+
+  .home-team-logo:has(img) {
+    padding: 2px !important;
+    background: rgba(255,255,255,.08) !important;
+  }
+
+  .live-mobile-team-row .home-team-logo img,
+  .home-team-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    border-radius: 6px !important;
+  }
+
+  .live-mobile-team-row span {
+    font-size: .83rem !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+  }
+
+  .live-mobile-team-row strong {
+    font-size: .79rem !important;
+    line-height: 1 !important;
+    font-weight: 900 !important;
+    max-width: 118px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .live-market-label {
+    margin-top: 1px !important;
+    font-size: .76rem !important;
+    line-height: 1 !important;
+  }
+
+  .live-odds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 0 !important;
+  }
+
+  .live-odds-grid .odd-cell:nth-child(n + 3) {
+    display: none !important;
+  }
+
+  .live-odds-grid .odd-cell {
+    min-height: 35px !important;
+    padding: 4px 6px !important;
+    border-radius: 8px !important;
+  }
+
+  .live-odds-grid .odd-cell small {
+    font-size: .62rem !important;
+    line-height: .95 !important;
+    -webkit-line-clamp: 1 !important;
+  }
+
+  .live-odds-grid .odd-cell strong {
+    font-size: .8rem !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .live-match-row {
+    flex-basis: 84vw !important;
+    width: 84vw !important;
+    max-width: 84vw !important;
+  }
+
+  .live-mobile-team-row strong {
+    max-width: 105px;
+    font-size: .74rem !important;
+  }
+
+  .live-mobile-team-row span {
+    font-size: .78rem !important;
+  }
+}

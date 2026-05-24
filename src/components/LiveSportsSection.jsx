@@ -82,7 +82,10 @@ function LiveMatchRow({ match, onSelectBet }) {
           <span className={`sport-ball ${sportMeta.className}`} aria-hidden="true">{sportMeta.icon}</span>
           <span className="live-competition-name">{sportMeta.name}{league ? ` · ${league}` : ''}</span>
         </div>
-        <span className="live-card-chevron" aria-hidden="true">»</span>
+        <span className="live-header-actions">
+          <span className={`live-header-status ${statusClass(status)}`}>{status}</span>
+          <span className="live-card-chevron" aria-hidden="true">»</span>
+        </span>
       </Link>
 
       <div className="live-match-content">
