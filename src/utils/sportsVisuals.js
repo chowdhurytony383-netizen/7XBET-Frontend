@@ -76,8 +76,19 @@ export function getMatchId(match = {}) {
 }
 
 export function getScore(match, side) {
-  const score = match?.score || match?.scores || {};
-  return score?.[side] ?? score?.[side === 'home' ? 'homeScore' : 'awayScore'] ?? 0;
+  const score = match?.score || {};
+  const value = score?.[side] ?? score?.[side === 'home' ? 'homeScore' : 'awayScore'];
+  if (value !== undefined && value !== null && value !== '') {
+    if (typeof value === 'object') return value.display || value.value || value.score || 0;
+    return value;
+  }
+
+  const teamName = side === 'home' ? getTeamName(match?.homeTeam || match?.home) : getTeamName(match?.awayTeam || match?.away);
+  const found = Array.isArray(match?.scores)
+    ? match.scores.find((item) => String(item?.name || '').toLowerCase() === String(teamName || '').toLowerCase())
+    : null;
+  if (found) return found.display || found.value || found.score || 0;
+  return 0;
 }
 
 export function normalizeMatchOdds(match) {
