@@ -38,7 +38,18 @@ function textValue(value, fallback = '—') {
   return String(value);
 }
 
+function isEmptyDetailValue(value) {
+  if (value === undefined || value === null || value === '') return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === 'object') {
+    if (value.name || value.description || value.short_code || value.value || value.display) return false;
+    return Object.keys(value).length === 0;
+  }
+  return false;
+}
+
 function DetailsItem({ label, value }) {
+  if (isEmptyDetailValue(value)) return null;
   return (
     <div className="sports-detail-item">
       <span>{label}</span>
@@ -67,7 +78,7 @@ function MiniTeam({ team }) {
 }
 
 function EventList({ items = [] }) {
-  const limited = asArray(items).slice(0, 40);
+  const limited = asArray(items).slice(0, 14);
   if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
 
   return (
@@ -84,7 +95,7 @@ function EventList({ items = [] }) {
 }
 
 function StatisticsList({ items = [] }) {
-  const limited = asArray(items).slice(0, 60);
+  const limited = asArray(items).slice(0, 18);
   if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
 
   return (
@@ -100,7 +111,7 @@ function StatisticsList({ items = [] }) {
 }
 
 function LineupsList({ items = [] }) {
-  const limited = asArray(items).slice(0, 60);
+  const limited = asArray(items).slice(0, 16);
   if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
 
   return (
@@ -127,7 +138,7 @@ function compactJson(value) {
 }
 
 function GenericDataList({ items = [], empty = 'Not available yet' }) {
-  const limited = asArray(items).slice(0, 80);
+  const limited = asArray(items).slice(0, 18);
   if (!limited.length) return <p className="sports-detail-muted">{empty}</p>;
 
   return (
