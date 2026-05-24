@@ -17,13 +17,16 @@ function numberValue(value) {
 }
 
 function bonusStatusText(summary) {
-  if (!summary?.awarded) return 'New account signup bonus has not been awarded yet.';
-  if (numberValue(summary.remainingTurnover) <= 0) return 'Signup bonus turnover completed. Bonus balance is now withdrawable.';
+  if (!summary?.awarded) {
+    return 'Submit your account information first. Your first successful deposit after that will receive a 100% bonus.';
+  }
+  if (summary.rejected) return 'First deposit bonus was rejected and removed.';
+  if (numberValue(summary.remainingTurnover) <= 0) return 'First deposit bonus turnover completed. Bonus balance is now withdrawable.';
 
   const required = numberValue(summary.totalRequiredTurnover);
   return required > 0
-    ? `Signup bonus is locked until required turnover is completed. Total required turnover: ${required}.`
-    : 'Signup bonus is locked until the required bonus turnover is completed.';
+    ? `First deposit bonus is locked until double bonus turnover is completed. Total required turnover: ${required}.`
+    : 'First deposit bonus is locked until the required bonus turnover is completed.';
 }
 
 export default function WalletPage() {
@@ -40,7 +43,7 @@ export default function WalletPage() {
     try {
       const response = await AccountAPI.transactions();
       setTransactions(response.data?.data || []);
-      setBonusSummary(response.data?.signupBonusSummary || response.data?.bonusSummary || null);
+      setBonusSummary(response.data?.firstDepositBonusSummary || response.data?.bonusSummary || null);
       await refreshUser().catch(() => null);
     } catch (err) {
       setError(getApiError(err, 'Unable to load transactions'));
@@ -51,18 +54,18 @@ export default function WalletPage() {
 
   useEffect(() => { load(); }, []);
 
-  const handleRejectSignupBonus = async () => {
-    const confirmed = window.confirm('Reject your sign up bonus? The bonus amount will be removed from your wallet and the signup bonus turnover will be cancelled. You cannot claim this signup bonus again.');
+  const handleRejectFirstDepositBonus = async () => {
+    const confirmed = window.confirm('Reject your first deposit bonus? The bonus amount will be removed from your wallet and the bonus turnover requirement will be cancelled. You cannot claim this first deposit bonus again.');
     if (!confirmed) return;
 
     setRejectingBonus(true);
     try {
-      const response = await AccountAPI.rejectSignupBonus();
-      toast.success(response.data?.message || 'Signup bonus rejected');
+      const response = await AccountAPI.rejectFirstDepositBonus();
+      toast.success(response.data?.message || 'First deposit bonus rejected');
       if (response.data?.user) await refreshUser().catch(() => null);
       await load();
     } catch (err) {
-      toast.error(getApiError(err, 'Unable to reject signup bonus'));
+      toast.error(getApiError(err, 'Unable to reject first deposit bonus'));
     } finally {
       setRejectingBonus(false);
     }
@@ -71,7 +74,7 @@ export default function WalletPage() {
   const deposits = transactions.filter((item) => item.type === 'DEPOSIT');
   const withdrawals = transactions.filter((item) => item.type === 'WITHDRAW');
   const bonuses = transactions.filter((item) => item.type === 'BONUS');
-  const bonusAwardedAmount = numberValue(bonusSummary?.amount || user?.signupBonusAmount);
+  const bonusAwardedAmount = numberValue(bonusSummary?.amount || user?.firstDepositBonusAmount);
   const bonusRemainingTurnover = numberValue(bonusSummary?.remainingTurnover);
   const showBonusCard = bonusAwardedAmount > 0 || bonusSummary?.awarded;
 
@@ -80,7 +83,7 @@ export default function WalletPage() {
       <PageHeader
         eyebrow="Wallet"
         title="Wallet"
-        description="Balance and transaction records are received from the backend. Signup bonus withdrawal depends on turnover, not document verification."
+        description="Balance and transaction records are received from the backend. First deposit bonus is awarded only after profile information is submitted and then the first eligible deposit is made."
       />
 
       {error && <div className="auth-message">{error}</div>}
@@ -99,7 +102,7 @@ export default function WalletPage() {
         <section className="card wallet-bonus-card">
           <div className="wallet-bonus-icon"><Gift size={22} /></div>
           <div>
-            <span>New account signup bonus</span>
+            <span>First deposit bonus</span>
             <strong>{formatCurrency(bonusAwardedAmount, user)}</strong>
             <p>{bonusStatusText(bonusSummary)}</p>
           </div>
@@ -111,7 +114,7 @@ export default function WalletPage() {
             <button
               type="button"
               className="wallet-bonus-reject-btn"
-              onClick={handleRejectSignupBonus}
+              onClick={handleRejectFirstDepositBonus}
               disabled={rejectingBonus}
             >
               <XCircle size={18} />

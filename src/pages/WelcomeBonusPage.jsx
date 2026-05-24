@@ -5,11 +5,11 @@ export default function WelcomeBonusPage() {
   return (
     <ContentPageTemplate
       eyebrow="Promotions"
-      title="Welcome bonus"
-      description="Welcome bonus details."
+      title="Welcome bonus closed"
+      description="Welcome bonus is closed. The active promotion is the first-deposit bonus after account information is submitted."
       endpoint="/bonuses/welcome"
-      emptyTitle="No welcome bonus available"
-      emptyMessage=""
+      emptyTitle="Welcome bonus closed"
+      emptyMessage="Submit your account information first. Your first successful deposit after that can receive a 100% first-deposit bonus."
       actions={[{ to: '/', label: 'Main page' }]}
     />
   );
