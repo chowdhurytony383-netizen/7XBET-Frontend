@@ -64,6 +64,7 @@ import AdminAgentPaymentMethodsPage from './pages/admin/AdminAgentPaymentMethods
 import AdminAgentRequestsPage from './pages/admin/AdminAgentRequestsPage.jsx';
 import AdminAffiliatesPage from './pages/admin/AdminAffiliatesPage.jsx';
 import AdminSupportPage from './pages/admin/AdminSupportPage.jsx';
+import AdminVipRewardsPage from './pages/admin/AdminVipRewardsPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
@@ -165,6 +166,7 @@ export default function App() {
             <Route path="admin/agent-requests" element={<AdminAgentRequestsPage />} />
             <Route path="admin/affiliates" element={<AdminAffiliatesPage />} />
             <Route path="admin/support" element={<AdminSupportPage />} />
+            <Route path="admin/vip-rewards" element={<AdminVipRewardsPage />} />
           </Route>
         </Route>
       </Route>
