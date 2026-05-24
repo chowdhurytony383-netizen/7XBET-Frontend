@@ -256,8 +256,11 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
 
-    touch-action: pan-x;
+    /* Allow vertical page scroll when the user swipes up/down on a live match card,
+       while still keeping the horizontal match slider swipeable on mobile. */
+    touch-action: pan-x pan-y;
   }
 
   .live-match-list::-webkit-scrollbar {
@@ -279,6 +282,14 @@
     overflow: hidden;
     background: #20232f;
     border: 1px solid rgba(255,255,255,.06);
+    touch-action: pan-x pan-y;
+  }
+
+  .live-match-content,
+  .live-match-header,
+  .live-odds-grid,
+  .odd-cell {
+    touch-action: pan-x pan-y;
   }
 
   .live-match-header {
