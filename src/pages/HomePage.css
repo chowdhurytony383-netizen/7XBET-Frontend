@@ -1339,24 +1339,44 @@
 .home-crush-banner-section {
   position: relative;
   width: 100%;
-  margin: 10px 0 16px;
+  margin: 8px 0 14px;
   padding: 0;
+  color: #ffffff;
   isolation: isolate;
+}
+
+.home-crush-banner-heading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0 0 6px;
+  padding: 0 4px;
+}
+
+.home-crush-banner-heading h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.24rem;
+  font-weight: 1000;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 8px 20px rgba(0, 0, 0, .35);
 }
 
 .home-crush-banner-link {
   position: relative;
   display: block;
   width: 100%;
+  height: 130px;
   overflow: hidden;
-  border-radius: 22px;
+  border-radius: 18px;
   border: 1px solid rgba(245, 158, 11, .34);
   background:
-    radial-gradient(circle at 18% 20%, rgba(245, 158, 11, .20), transparent 16rem),
-    linear-gradient(135deg, rgba(2, 6, 23, .98), rgba(18, 24, 38, .96));
+    radial-gradient(circle at 20% 20%, rgba(245, 158, 11, .16), transparent 14rem),
+    linear-gradient(135deg, #050505, #101827);
   box-shadow:
-    0 18px 44px rgba(0, 0, 0, .34),
-    0 0 28px rgba(245, 158, 11, .16),
+    0 14px 34px rgba(0, 0, 0, .32),
+    0 0 22px rgba(245, 158, 11, .14),
     inset 0 0 0 1px rgba(255, 255, 255, .04);
   text-decoration: none;
   transform: translateZ(0);
@@ -1365,18 +1385,18 @@
 .home-crush-banner-link::before {
   content: '';
   position: absolute;
-  inset: -45% -55%;
+  inset: -48% -55%;
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(
     115deg,
     transparent 38%,
     rgba(255, 255, 255, .07) 44%,
-    rgba(255, 255, 255, .58) 50%,
+    rgba(255, 255, 255, .55) 50%,
     rgba(255, 255, 255, .10) 57%,
     transparent 64%
   );
-  transform: translateX(-70%) rotate(8deg);
+  transform: translateX(-72%) rotate(8deg);
   mix-blend-mode: screen;
   animation: home-crush-banner-shine 4.8s ease-in-out infinite;
 }
@@ -1388,8 +1408,8 @@
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, .13), transparent 26%),
-    linear-gradient(180deg, rgba(255,255,255,.04), rgba(2,6,23,.10));
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, .12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(2, 6, 23, .08));
 }
 
 .home-crush-banner-image {
@@ -1397,18 +1417,16 @@
   z-index: 0;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 5.2;
-  height: auto;
-  min-height: 118px;
-  object-fit: cover;
-  object-position: center;
-  transform: scale(1.01);
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  background: #050505;
   transition: transform .28s ease, filter .28s ease;
 }
 
 .home-crush-banner-link:hover .home-crush-banner-image {
-  transform: scale(1.035);
-  filter: saturate(1.10) brightness(1.04);
+  transform: scale(1.018);
+  filter: saturate(1.08) brightness(1.04);
 }
 
 .home-crush-banner-link:active {
@@ -1417,45 +1435,51 @@
 
 @keyframes home-crush-banner-shine {
   0% { transform: translateX(-72%) rotate(8deg); opacity: 0; }
-  18% { opacity: .65; }
-  48% { opacity: .88; }
+  18% { opacity: .62; }
+  48% { opacity: .84; }
   76% { opacity: 0; }
   100% { transform: translateX(72%) rotate(8deg); opacity: 0; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .home-crush-banner-section {
-    margin: 8px 0 12px !important;
-    padding: 0 0 !important;
+    margin: 7px 0 11px !important;
+    padding: 0 !important;
+  }
+
+  .home-crush-banner-heading {
+    margin: 0 0 5px !important;
+    padding: 0 2px !important;
+  }
+
+  .home-crush-banner-heading h3 {
+    font-size: 1.02rem !important;
   }
 
   .home-crush-banner-link {
-    border-radius: 16px !important;
+    height: 86px !important;
+    border-radius: 12px !important;
     box-shadow:
-      0 12px 30px rgba(0, 0, 0, .30),
-      0 0 18px rgba(245, 158, 11, .13),
+      0 10px 24px rgba(0, 0, 0, .30),
+      0 0 16px rgba(245, 158, 11, .12),
       inset 0 0 0 1px rgba(255, 255, 255, .04) !important;
-  }
-
-  .home-crush-banner-image {
-    aspect-ratio: 16 / 5.8 !important;
-    min-height: 106px !important;
-    object-position: center center !important;
   }
 }
 
 @media (max-width: 420px) {
   .home-crush-banner-section {
-    margin: 7px 0 10px !important;
+    margin: 6px 0 10px !important;
   }
 
   .home-crush-banner-link {
-    border-radius: 14px !important;
+    height: 78px !important;
+    border-radius: 10px !important;
   }
+}
 
-  .home-crush-banner-image {
-    aspect-ratio: 16 / 6.2 !important;
-    min-height: 96px !important;
+@media (max-width: 360px) {
+  .home-crush-banner-link {
+    height: 72px !important;
   }
 }
 
@@ -1467,57 +1491,6 @@
 
   .home-crush-banner-image {
     transition: none;
-  }
-}
-
-/* Crush Game banner: thin mobile banner + full image visible */
-.home-crush-banner-section {
-  width: 100% !important;
-  margin: 8px 0 12px !important;
-  padding: 0 !important;
-}
-
-.home-crush-banner-link {
-  display: block !important;
-  width: 100% !important;
-  height: clamp(82px, 10vw, 130px) !important;
-  overflow: hidden !important;
-  border-radius: 14px !important;
-  background: #050505 !important;
-  border: 1px solid rgba(255, 176, 46, 0.28) !important;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28) !important;
-}
-
-.home-crush-banner-img {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: center center !important;
-  background: #050505 !important;
-}
-
-@media (max-width: 768px) {
-  .home-crush-banner-section {
-    margin: 7px 0 10px !important;
-    padding: 0 !important;
-  }
-
-  .home-crush-banner-link {
-    height: 86px !important;
-    border-radius: 10px !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .home-crush-banner-link {
-    height: 78px !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .home-crush-banner-link {
-    height: 72px !important;
   }
 }
 

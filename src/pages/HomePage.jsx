@@ -531,6 +531,10 @@ export default function HomePage() {
 
         {/* Crush Game Banner */}
         <section className="home-crush-banner-section" aria-label="7XBET Crush Game">
+          <div className="home-crush-banner-heading">
+            <h3>Crush Game</h3>
+          </div>
+
           <Link
             className="home-crush-banner-link"
             to="/crash"
