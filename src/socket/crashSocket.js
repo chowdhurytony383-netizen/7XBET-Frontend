@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import { API_ORIGIN } from '../api/client.js';
+import { API_ORIGIN, getStoredAccessToken } from '../api/client.js';
 
 let socket;
 
@@ -14,8 +14,14 @@ export function getCrashSocket() {
       reconnectionAttempts: Infinity,
       reconnectionDelay: 500,
       reconnectionDelayMax: 3000,
+      auth: () => ({ token: getStoredAccessToken() || '' }),
+      extraHeaders: getStoredAccessToken()
+        ? { Authorization: `Bearer ${getStoredAccessToken()}` }
+        : undefined,
     });
   }
+
+  socket.auth = { token: getStoredAccessToken() || '' };
   return socket;
 }
 
