@@ -529,6 +529,22 @@ export default function HomePage() {
           onSelectBet={addHomeSelection}
         />
 
+        {/* Crush Game Banner */}
+        <section className="home-crush-banner-section" aria-label="7XBET Crush Game">
+          <Link
+            className="home-crush-banner-link"
+            to="/crash"
+            aria-label="Open 7XBET Crush Game"
+          >
+            <img
+              src="/images/crush-game-banner.png"
+              alt="7XBET Crush Game"
+              className="home-crush-banner-image"
+              loading="lazy"
+              decoding="async"
+            />
+          </Link>
+        </section>
 
         <section className="casino-lobby-section casino-lobby-section-hot-only">
           <div className="casino-hot-panel">
