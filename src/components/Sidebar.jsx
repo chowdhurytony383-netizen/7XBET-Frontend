@@ -112,6 +112,7 @@ const mainNavItems = [
   { to: '/esports', label: 'Esports', icon: Gamepad2 },
   { to: '/bet-slip', label: 'Bet slip', icon: Ticket },
   { to: '/crash', label: 'Crash', icon: Rocket },
+  { to: '/crash-native', label: 'Crush Rock', icon: Rocket },
   { to: '/jili-games?category=casino', label: 'Live Casino', icon: Dice5 },
   { to: '/jili-games?category=slots', label: 'Slots', icon: Cherry },
   { to: '/jili-games', label: 'JILI Games', icon: Cherry },
