@@ -19,7 +19,7 @@ import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency } from '../utils/format.js';
-import { buildSportsSlipItem } from '../utils/sportsVisuals.js';
+import { buildSportsSlipItem, sortMatchesBySportPriority } from '../utils/sportsVisuals.js';
 
 import PageHeader from '../components/PageHeader.jsx';
 import StatCard from '../components/StatCard.jsx';
@@ -360,8 +360,9 @@ export default function HomePage() {
           'liveMatches',
           'events',
         ]);
-        setLiveMatches(matches);
-        setMatchOfTheDay(matches[0] || null);
+        const sortedMatches = sortMatchesBySportPriority(matches);
+        setLiveMatches(sortedMatches);
+        setMatchOfTheDay(sortedMatches[0] || null);
       }
     }
 
