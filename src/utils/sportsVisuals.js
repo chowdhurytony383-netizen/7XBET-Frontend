@@ -187,22 +187,21 @@ function scoreHasProgressFromText(value) {
 function liveStatus(match = {}) {
   if (finishedStatus(match)) return false;
 
-  if ([
-    match.live,
-    match.isLive,
-    match.inPlay,
-    match.in_play,
-    match.isInPlay,
-    match.started,
-  ].some(truthyFlag)) {
-    return true;
+  const hasRealScoreProgress = scoreIndicatesLive(match);
+  const clean = statusTextFor(match);
+  const explicitProviderLive = /\b(live|in[-\s]?play|in progress|1h|2h|ht|half time|quarter|q1|q2|q3|q4|inning|innings|over|overs|batting|bowling|lunch|tea|dinner|stumps|break)\b/.test(clean);
+
+  // Strict UI rule for every sport, including Tennis:
+  // Do not show LIVE from start time, started flag, or a 0-0 score shell.
+  // Show LIVE only when backend/provider gives explicit live status OR score has real progress.
+  if (hasRealScoreProgress) return true;
+  if (explicitProviderLive && !/\b(upcoming|scheduled|not started|fixture|pre[-\s]?match|ns)\b/.test(clean)) return true;
+
+  if ([match.live, match.isLive, match.inPlay, match.in_play, match.isInPlay].some(truthyFlag)) {
+    return explicitProviderLive || hasRealScoreProgress;
   }
 
-  if (scoreIndicatesLive(match)) return true;
-
-  const clean = statusTextFor(match);
-
-  return /\b(live|in[-\s]?play|in progress|started|1h|2h|ht|half time|quarter|q1|q2|q3|q4|inning|innings|over|overs|batting|bowling|lunch|tea|dinner|stumps|break)\b/.test(clean);
+  return false;
 }
 
 function upcomingStatus(match = {}) {
