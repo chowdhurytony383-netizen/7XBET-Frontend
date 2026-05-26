@@ -13,6 +13,7 @@ import SportsPage from './pages/SportsPage.jsx';
 import EsportsPage from './pages/EsportsPage.jsx';
 import BetSlipPage from './pages/BetSlipPage.jsx';
 import CrashPage from './pages/CrashPage.jsx';
+import CrashNativePage from './pages/CrashNativePage.jsx';
 import BonusesPage from './pages/BonusesPage.jsx';
 import WelcomeBonusPage from './pages/WelcomeBonusPage.jsx';
 import CashbackPage from './pages/CashbackPage.jsx';
@@ -100,6 +101,7 @@ export default function App() {
         <Route path="esports" element={<EsportsPage />} />
         <Route path="bet-slip" element={<BetSlipPage />} />
         <Route path="crash" element={<CrashPage />} />
+        <Route path="crash-native" element={<CrashNativePage />} />
         <Route path="live-casino" element={<Navigate to="/jili-games?category=casino" replace />} />
         <Route path="slots" element={<Navigate to="/jili-games?category=slots" replace />} />
         <Route path="jili-games" element={<JiliGamesPage />} />
