@@ -110,73 +110,10 @@ function sportPriorityFor(metaOrMatch = {}) {
   return SPORT_PRIORITY[meta.key] ?? SPORT_PRIORITY.sports;
 }
 
-function statusTextFor(match = {}) {
-  return [
-    match.status,
-    match.matchStatus,
-    match.statusText,
-    match.statusShort,
-    match.state,
-    match.fixtureStatus,
-    match.eventStatus,
-    match.raw?.status,
-    match.raw?.statusText,
-    match.raw?.statusShort,
-    match.raw?.state,
-  ]
-    .filter((value) => value !== undefined && value !== null && value !== '')
-    .map((value) => String(value).toLowerCase())
-    .join(' ');
-}
 
-function truthyFlag(value) {
-  if (value === true) return true;
-  const clean = String(value || '').toLowerCase();
-  return clean === 'true' || clean === '1' || clean === 'yes' || clean === 'live';
-}
-
-function finishedStatus(match = {}) {
-  if (match.completed || match.finished || match.isFinished || match.isCompleted) return true;
-  const clean = statusTextFor(match);
-  return /\b(finished|finish|complete|completed|closed|ended|final|ft|full time|abandoned|cancelled|canceled|postponed)\b/.test(clean);
-}
-
-function scoreIndicatesLive(match = {}) {
-  const score = match.score || {};
-  const scoreValues = [
-    score.home,
-    score.away,
-    score.homeScore,
-    score.awayScore,
-    match.homeScore,
-    match.awayScore,
-  ];
-
-  const scoreHasProgress = scoreValues.some((value) => {
-    if (value === undefined || value === null || value === '') return false;
-    if (typeof value === 'object') {
-      return scoreHasProgressFromText(value.display || value.value || value.score || '');
-    }
-    return scoreHasProgressFromText(value);
-  });
-
-  if (scoreHasProgress) return true;
-
-  if (Array.isArray(match.scores)) {
-    return match.scores.some((item) => {
-      const overs = Number.parseFloat(String(item?.overs || '0'));
-      const scoreNumber = Number(item?.score || 0);
-      const display = item?.display || item?.value || '';
-      return overs > 0 || scoreNumber > 0 || scoreHasProgressFromText(display);
-    });
-  }
-
-  return false;
-}
-
-function scoreHasProgressFromText(value) {
-  const text = String(value || '').toLowerCase();
-  if (!text || text === '0' || text === '0-0' || text === '0:0') return false;
+function scoreTextHasRealProgress(value) {
+  const text = String(value || '').trim().toLowerCase();
+  if (!text || text === '0' || text === '0-0' || text === '0:0' || text === '0/0') return false;
 
   const cricketOver = text.match(/\((\d+(?:\.\d+)?)\s*ov\)/);
   if (cricketOver) return Number.parseFloat(cricketOver[1]) > 0;
@@ -184,37 +121,41 @@ function scoreHasProgressFromText(value) {
   return /[1-9]/.test(text);
 }
 
-function liveStatus(match = {}) {
-  if (finishedStatus(match)) return false;
+function scoreItemHasRealProgress(item = {}) {
+  if (!item || typeof item !== 'object') return false;
 
-  const hasRealScoreProgress = scoreIndicatesLive(match);
-  const clean = statusTextFor(match);
-  const explicitProviderLive = /\b(live|in[-\s]?play|in progress|1h|2h|ht|half time|quarter|q1|q2|q3|q4|inning|innings|over|overs|batting|bowling|lunch|tea|dinner|stumps|break)\b/.test(clean);
+  const numericValues = [item.score, item.value, item.runs, item.total, item.points, item.goals];
+  if (numericValues.some((value) => Number(value || 0) > 0)) return true;
 
-  // Strict UI rule for every sport, including Tennis:
-  // Do not show LIVE from start time, started flag, or a 0-0 score shell.
-  // Show LIVE only when backend/provider gives explicit live status OR score has real progress.
-  if (hasRealScoreProgress) return true;
-  if (explicitProviderLive && !/\b(upcoming|scheduled|not started|fixture|pre[-\s]?match|ns)\b/.test(clean)) return true;
+  const overs = Number.parseFloat(String(item.overs || '0'));
+  if (Number.isFinite(overs) && overs > 0) return true;
 
-  if ([match.live, match.isLive, match.inPlay, match.in_play, match.isInPlay].some(truthyFlag)) {
-    return explicitProviderLive || hasRealScoreProgress;
-  }
-
-  return false;
+  return [item.display, item.label, item.description].some(scoreTextHasRealProgress);
 }
 
-function upcomingStatus(match = {}) {
-  if (finishedStatus(match) || liveStatus(match)) return false;
+export function hasRealScoreProgress(match = {}) {
+  if (Array.isArray(match.scores) && match.scores.some(scoreItemHasRealProgress)) return true;
 
-  const clean = statusTextFor(match);
-  return /\b(upcoming|not started|scheduled|fixture|pre[-\s]?match|ns|toss|delayed)\b/.test(clean);
+  const score = match.score || {};
+  return [score.home, score.away, score.homeScore, score.awayScore].some(scoreTextHasRealProgress);
+}
+
+export function getStrictMatchStatus(match = {}) {
+  const raw = String(match.status || match.matchStatus || '').trim().toLowerCase();
+  if (match.completed || raw.includes('finish') || raw.includes('complete') || raw.includes('closed') || raw.includes('cancel')) return 'Finished';
+
+  // Frontend guard: even if backend/cache still sends LIVE, do not show LIVE for Tennis/Football/Cricket
+  // unless real score progress exists. 0-0 / 0 / empty score stays Upcoming.
+  if (raw.includes('live') && hasRealScoreProgress(match)) return 'Live';
+
+  return 'Upcoming';
 }
 
 function statusPriority(match = {}) {
-  if (liveStatus(match)) return 0;
-  if (upcomingStatus(match)) return 1;
-  if (finishedStatus(match)) return 3;
+  const clean = String(getStrictMatchStatus(match)).toLowerCase();
+  if (clean.includes('live') || clean.includes('innings') || clean.includes('quarter') || clean.includes('half')) return 0;
+  if (clean.includes('upcoming') || clean.includes('not started') || clean.includes('scheduled')) return 1;
+  if (clean.includes('finish') || clean.includes('complete')) return 3;
   return 2;
 }
 
@@ -234,16 +175,10 @@ export function sortSportMetas(items = []) {
 
 export function sortMatchesBySportPriority(items = []) {
   return [...items].sort((a, b) => {
-    // Home page priority:
-    // 1) real live/in-play matches first
-    // 2) inside the live group, Cricket first, then Football, then other sports
-    // 3) upcoming/unknown/finished groups keep the same sport priority after live
-    const status = statusPriority(a) - statusPriority(b);
-    if (status !== 0) return status;
-
     const priority = sportPriorityFor(a) - sportPriorityFor(b);
     if (priority !== 0) return priority;
-
+    const status = statusPriority(a) - statusPriority(b);
+    if (status !== 0) return status;
     return startTimeValue(a) - startTimeValue(b);
   });
 }
