@@ -9,6 +9,7 @@ import {
   buildSportsSlipItem,
   getMatchId,
   getScore,
+  getStrictMatchStatus,
   getTeamLogoUrl,
   getTeamName,
   normalizeMatchOdds,
@@ -267,7 +268,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <div className="sports-detail-grid">
                 <DetailsItem label="Sport" value={event.sportTitle || event.sport} />
                 <DetailsItem label="League" value={details?.league?.name || event.league} />
-                <DetailsItem label="Status" value={details?.state?.name || event.status} />
+                <DetailsItem label="Status" value={getStrictMatchStatus(event)} />
                 <DetailsItem label="Start time" value={details?.startingAt || event.startTime} />
                 <DetailsItem label="Result" value={details?.resultInfo} />
                 <DetailsItem label="Round" value={details?.round?.name || details?.round?.id} />
