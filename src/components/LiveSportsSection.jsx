@@ -4,6 +4,7 @@ import MatchOfDayCard from './MatchOfDayCard.jsx';
 import {
   getMatchId,
   getScore,
+  getStrictMatchStatus,
   getTeamLogoUrl,
   getTeamName,
   normalizeMatchOdds,
@@ -67,7 +68,7 @@ function LiveMatchRow({ match, onSelectBet }) {
   const home = getTeamName(homeTeam);
   const away = getTeamName(awayTeam);
   const odds = normalizeMatchOdds(match);
-  const status = match.status || match.matchStatus || 'Live';
+  const status = getStrictMatchStatus(match);
   const league = getLeague(match);
   const meta = getMatchMeta(match);
   const sportMeta = sportMetaFromMatch(match);
