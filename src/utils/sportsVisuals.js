@@ -144,9 +144,11 @@ export function getStrictMatchStatus(match = {}) {
   const raw = String(match.status || match.matchStatus || '').trim().toLowerCase();
   if (match.completed || raw.includes('finish') || raw.includes('complete') || raw.includes('closed') || raw.includes('cancel')) return 'Finished';
 
-  // Frontend guard: even if backend/cache still sends LIVE, do not show LIVE for Tennis/Football/Cricket
-  // unless real score progress exists. 0-0 / 0 / empty score stays Upcoming.
-  if (raw.includes('live') && hasRealScoreProgress(match)) return 'Live';
+  // Official providers can sometimes update score before the cached status field changes.
+  // If real score progress exists, the match is live even when an old response says Upcoming.
+  if (hasRealScoreProgress(match)) return 'Live';
+
+  if (raw.includes('live') || raw.includes('inning') || raw.includes('quarter') || raw.includes('half') || raw.includes('set')) return 'Live';
 
   return 'Upcoming';
 }
@@ -188,18 +190,27 @@ export function getMatchId(match = {}) {
 }
 
 export function getScore(match, side) {
+  const normalizedSide = String(side || '').toLowerCase();
   const score = match?.score || {};
-  const value = score?.[side] ?? score?.[side === 'home' ? 'homeScore' : 'awayScore'];
+  const value = score?.[normalizedSide] ?? score?.[normalizedSide === 'home' ? 'homeScore' : 'awayScore'];
+
   if (value !== undefined && value !== null && value !== '') {
     if (typeof value === 'object') return value.display || value.value || value.score || 0;
     return value;
   }
 
-  const teamName = side === 'home' ? getTeamName(match?.homeTeam || match?.home) : getTeamName(match?.awayTeam || match?.away);
-  const found = Array.isArray(match?.scores)
-    ? match.scores.find((item) => String(item?.name || '').toLowerCase() === String(teamName || '').toLowerCase())
-    : null;
-  if (found) return found.display || found.value || found.score || 0;
+  if (Array.isArray(match?.scores)) {
+    const bySide = match.scores.find((item) => String(item?.side || '').toLowerCase() === normalizedSide);
+    if (bySide) return bySide.display || bySide.value || bySide.score || 0;
+
+    const teamName = normalizedSide === 'home'
+      ? getTeamName(match?.homeTeam || match?.home)
+      : getTeamName(match?.awayTeam || match?.away);
+
+    const found = match.scores.find((item) => String(item?.name || item?.label || '').toLowerCase() === String(teamName || '').toLowerCase());
+    if (found) return found.display || found.value || found.score || 0;
+  }
+
   return 0;
 }
 
