@@ -346,7 +346,7 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
   const homeTeam = match.homeTeam || match.home;
   const awayTeam = match.awayTeam || match.away;
   const odds = normalizeMatchOdds(match);
-  const status = match.status || 'Upcoming';
+  const status = getStrictMatchStatus(match);
   const sportMeta = sportMetaFromMatch(match);
   const matchId = getMatchId(match);
   const disabled = match.completed || statusClass(status) === 'finished';

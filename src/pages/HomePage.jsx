@@ -339,6 +339,7 @@ export default function HomePage() {
 
   useEffect(() => {
     let active = true;
+    const refreshMs = Math.max(10000, Number(import.meta.env.VITE_SPORTS_REFRESH_MS || 15000));
 
     async function loadSportsContent() {
       const [categoriesResponse, liveResponse] = await Promise.allSettled([
@@ -367,9 +368,11 @@ export default function HomePage() {
     }
 
     loadSportsContent();
+    const timer = window.setInterval(loadSportsContent, refreshMs);
 
     return () => {
       active = false;
+      window.clearInterval(timer);
     };
   }, []);
 
