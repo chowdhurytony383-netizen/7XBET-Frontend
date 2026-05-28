@@ -47,9 +47,15 @@ function MobileTeamScoreRow({ team, sportKey, score }) {
     <div className="live-mobile-team-row">
       <TeamLogo team={team} sportKey={sportKey} />
       <span>{getTeamName(team)}</span>
-      <strong>{score}</strong>
+      <strong>{String(score ?? '0')}</strong>
     </div>
   );
+}
+
+function marketLabelFromOdds(odds = []) {
+  const first = odds.find((odd) => odd?.marketDisplayName || odd?.marketName || odd?.marketKey);
+  const label = first?.marketDisplayName || first?.marketName || first?.marketKey || 'Main market';
+  return String(label).replace(/_/g, ' ');
 }
 
 function matchDetailsLink(match) {
@@ -68,6 +74,7 @@ function LiveMatchRow({ match, onSelectBet }) {
   const home = getTeamName(homeTeam);
   const away = getTeamName(awayTeam);
   const odds = normalizeMatchOdds(match);
+  const marketLabel = marketLabelFromOdds(odds);
   const status = getStrictMatchStatus(match);
   const league = getLeague(match);
   const meta = getMatchMeta(match);
@@ -120,7 +127,7 @@ function LiveMatchRow({ match, onSelectBet }) {
           <div className="live-score-values"><span>{homeScore}</span><span>{awayScore}</span></div>
         </div>
 
-        <div className="live-market-label">1X2</div>
+        <div className="live-market-label">{marketLabel}</div>
 
         <div className="live-odds-grid">
           {odds.length ? odds.map((odd) => (
