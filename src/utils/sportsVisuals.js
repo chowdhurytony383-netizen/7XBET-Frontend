@@ -225,13 +225,18 @@ export function normalizeMatchOdds(match) {
       return {
         key: selectionId,
         selectionId,
+        providerOddsId: odd.providerOddsId || '',
+        sportsbook: odd.sportsbook || '',
         marketKey: odd.marketKey || 'h2h',
-        marketName: odd.marketName || 'Match Winner',
-        label: odd.label || odd.name || odd.key || 'Selection',
+        marketName: odd.marketDisplayName || odd.marketName || 'Moneyline',
+        marketDisplayName: odd.marketDisplayName || odd.marketName || 'Moneyline',
+        label: odd.displayName || odd.label || odd.name || odd.key || 'Selection',
+        status: odd.status || 'OPEN',
+        point: odd.point ?? null,
         price,
       };
     })
-    .filter((odd) => odd.selectionId && odd.price > 1);
+    .filter((odd) => odd.selectionId && odd.price > 1 && String(odd.status || 'OPEN').toUpperCase() === 'OPEN');
 }
 
 export function statusClass(status = '') {
@@ -251,7 +256,9 @@ export function buildSportsSlipItem(match, odd, defaultStake = 1) {
     eventId: getMatchId(match),
     providerEventId: match.providerEventId || '',
     marketKey: odd.marketKey || 'h2h',
-    marketName: odd.marketName || 'Match Winner',
+    marketName: odd.marketDisplayName || odd.marketName || 'Moneyline',
+    sportsbook: odd.sportsbook || match.bookmaker || '',
+    providerOddsId: odd.providerOddsId || '',
     selectionId: odd.selectionId,
     selectionName: odd.label,
     odds: Number(odd.price || 0),
