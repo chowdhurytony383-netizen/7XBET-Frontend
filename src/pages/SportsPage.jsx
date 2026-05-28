@@ -337,15 +337,22 @@ function MatchTeam({ team, sportKey, score }) {
         {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
       </span>
       <strong>{getTeamName(team)}</strong>
-      <b>{score}</b>
+      <b>{String(score ?? '0')}</b>
     </div>
   );
+}
+
+function marketLabelFromOdds(odds = []) {
+  const first = odds.find((odd) => odd?.marketDisplayName || odd?.marketName || odd?.marketKey);
+  const label = first?.marketDisplayName || first?.marketName || first?.marketKey || 'Main market';
+  return String(label).replace(/_/g, ' ');
 }
 
 function MatchCard({ match, onSelect, selectedIds, onDetails }) {
   const homeTeam = match.homeTeam || match.home;
   const awayTeam = match.awayTeam || match.away;
   const odds = normalizeMatchOdds(match);
+  const marketLabel = marketLabelFromOdds(odds);
   const status = getStrictMatchStatus(match);
   const sportMeta = sportMetaFromMatch(match);
   const matchId = getMatchId(match);
@@ -383,7 +390,7 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
         <MatchTeam team={awayTeam} sportKey={match.sportKey} score={getScore(match, 'away')} />
       </div>
 
-      <div className="sports-market-label">1X2</div>
+      <div className="sports-market-label">{marketLabel}</div>
 
       <div className="sports-odds-grid">
         {odds.length ? odds.map((odd) => {
@@ -517,15 +524,18 @@ export default function SportsPage() {
     return sorted.filter((match) => sportMetaFromMatch(match).key === selectedSport);
   }, [matches, selectedSport]);
 
+  const maxVisibleMatches = Math.max(12, Number(import.meta.env.VITE_SPORTS_PAGE_MATCH_LIMIT || 48));
+  const renderMatches = useMemo(() => visibleMatches.slice(0, maxVisibleMatches), [visibleMatches, maxVisibleMatches]);
+
   const groupedMatches = useMemo(() => {
     const groups = new Map();
-    visibleMatches.forEach((match) => {
+    renderMatches.forEach((match) => {
       const meta = sportMetaFromMatch(match);
       if (!groups.has(meta.key)) groups.set(meta.key, { meta, items: [] });
       groups.get(meta.key).items.push(match);
     });
     return Array.from(groups.values()).sort((a, b) => sortSportMetas([a.meta, b.meta])[0]?.key === a.meta.key ? -1 : 1);
-  }, [visibleMatches]);
+  }, [renderMatches]);
 
   const selectedIds = useMemo(() => new Set(betSlipItems.map((item) => item.id)), [betSlipItems]);
 
@@ -639,18 +649,8 @@ export default function SportsPage() {
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
-          <div><BarChart3 size={18} /><span>Open markets</span><strong>{status?.openMarkets ?? 0}</strong></div>
           <div><Ticket size={18} /><span>Open bets</span><strong>{status?.openBets ?? 0}</strong></div>
-          <div><ShieldCheck size={18} /><span>Provider</span><strong>{status?.provider || 'opticodds'}</strong></div>
           <div><Wallet size={18} /><span>Balance</span><strong>{formatCurrency(user?.wallet, user)}</strong></div>
-        </div>
-      </section>
-
-      <section className="sports-warning-panel">
-        <ShieldCheck size={20} />
-        <div>
-          <strong>Real odds protection is active</strong>
-          <p>Only open provider odds are accepted. Locked/suspended selections disappear automatically, and finished markets are settled by provider results.</p>
         </div>
       </section>
 
@@ -671,8 +671,11 @@ export default function SportsPage() {
         <section className="sports-live-list">
           <div className="section-row-title sports-live-title-row">
             <h2><Clock size={20} /> Live Sports </h2>
-            <span>{visibleMatches.length} matches</span>
+            <span>{renderMatches.length}{visibleMatches.length > renderMatches.length ? ` / ${visibleMatches.length}` : ''} matches</span>
           </div>
+          {visibleMatches.length > renderMatches.length ? (
+            <p className="sports-list-hint">Showing first {renderMatches.length} matches for faster mobile loading. Use a sport tab to narrow the list.</p>
+          ) : null}
 
           {loading && !visibleMatches.length ? (
             <div className="sports-empty-panel">Loading automatic sports feed...</div>
