@@ -52,10 +52,54 @@ export function sportMetaFromMatch(match = {}) {
   return sportMetaFrom(`${match.sportKey || ''} ${match.sport || ''} ${match.sportTitle || ''} ${match.categoryName || ''}`);
 }
 
+function readableText(value, fallback = '') {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) {
+    return value.map((item) => readableText(item, '')).filter(Boolean).join(', ') || fallback;
+  }
+  if (typeof value === 'object') {
+    return readableText(
+      value.display
+        ?? value.displayName
+        ?? value.name
+        ?? value.shortName
+        ?? value.label
+        ?? value.value
+        ?? value.score
+        ?? value.total
+        ?? value.runs
+        ?? value.raw?.name
+        ?? value.raw?.displayName,
+      fallback,
+    );
+  }
+  return fallback;
+}
+
+function scoreValueText(value, fallback = '0') {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (typeof value === 'object') {
+    const direct = value.display ?? value.value ?? value.score ?? value.total ?? value.runs ?? value.points ?? value.goals;
+    const base = scoreValueText(direct, '');
+    if (base) {
+      const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
+      const overs = value.overs ? ` (${value.overs} ov)` : '';
+      return `${base}${wickets}${overs}`;
+    }
+    const home = value.home ?? value.homeScore ?? value.scores?.home;
+    const away = value.away ?? value.awayScore ?? value.scores?.away;
+    if (home !== undefined || away !== undefined) {
+      return `${scoreValueText(home, '0')} - ${scoreValueText(away, '0')}`;
+    }
+  }
+  return fallback;
+}
+
 export function getTeamName(team) {
   if (!team) return 'Team';
-  if (typeof team === 'string') return team;
-  return team.name || team.displayName || team.shortName || 'Team';
+  return readableText(team, 'Team');
 }
 
 export function shortTeamCode(name = '') {
@@ -195,23 +239,22 @@ export function getScore(match, side) {
   const value = score?.[normalizedSide] ?? score?.[normalizedSide === 'home' ? 'homeScore' : 'awayScore'];
 
   if (value !== undefined && value !== null && value !== '') {
-    if (typeof value === 'object') return value.display || value.value || value.score || 0;
-    return value;
+    return scoreValueText(value, '0');
   }
 
   if (Array.isArray(match?.scores)) {
     const bySide = match.scores.find((item) => String(item?.side || '').toLowerCase() === normalizedSide);
-    if (bySide) return bySide.display || bySide.value || bySide.score || 0;
+    if (bySide) return scoreValueText(bySide.display ?? bySide.value ?? bySide.score ?? bySide, '0');
 
     const teamName = normalizedSide === 'home'
       ? getTeamName(match?.homeTeam || match?.home)
       : getTeamName(match?.awayTeam || match?.away);
 
-    const found = match.scores.find((item) => String(item?.name || item?.label || '').toLowerCase() === String(teamName || '').toLowerCase());
-    if (found) return found.display || found.value || found.score || 0;
+    const found = match.scores.find((item) => String(readableText(item?.name || item?.label || '')).toLowerCase() === String(teamName || '').toLowerCase());
+    if (found) return scoreValueText(found.display ?? found.value ?? found.score ?? found, '0');
   }
 
-  return 0;
+  return '0';
 }
 
 export function normalizeMatchOdds(match) {
@@ -222,21 +265,21 @@ export function normalizeMatchOdds(match) {
     .map((odd, index) => {
       const price = Number(odd.price || odd.odds || odd.value || odd.rate || 0);
       const selectionId = odd.selectionId || odd.key || odd.id || odd.code || `${index}`;
+      const marketName = readableText(odd.marketDisplayName || odd.marketName || odd.market || odd.marketKey, 'Market');
       return {
         key: selectionId,
         selectionId,
         providerOddsId: odd.providerOddsId || '',
-        sportsbook: odd.sportsbook || '',
-        marketKey: odd.marketKey || 'h2h',
-        marketName: odd.marketDisplayName || odd.marketName || 'Moneyline',
-        marketDisplayName: odd.marketDisplayName || odd.marketName || 'Moneyline',
-        label: odd.displayName || odd.label || odd.name || odd.key || 'Selection',
-        status: odd.status || 'OPEN',
-        point: odd.point ?? null,
+        sportsbook: odd.sportsbook || odd.bookmaker || '',
+        marketKey: odd.marketKey || odd.market_id || 'market',
+        marketName,
+        marketDisplayName: marketName,
+        label: readableText(odd.label || odd.displayName || odd.name || odd.key, 'Selection'),
         price,
       };
     })
-    .filter((odd) => odd.selectionId && odd.price > 1 && String(odd.status || 'OPEN').toUpperCase() === 'OPEN');
+    .filter((odd) => odd.selectionId && odd.price > 1)
+    .slice(0, 6);
 }
 
 export function statusClass(status = '') {
@@ -256,9 +299,7 @@ export function buildSportsSlipItem(match, odd, defaultStake = 1) {
     eventId: getMatchId(match),
     providerEventId: match.providerEventId || '',
     marketKey: odd.marketKey || 'h2h',
-    marketName: odd.marketDisplayName || odd.marketName || 'Moneyline',
-    sportsbook: odd.sportsbook || match.bookmaker || '',
-    providerOddsId: odd.providerOddsId || '',
+    marketName: odd.marketName || 'Match Winner',
     selectionId: odd.selectionId,
     selectionName: odd.label,
     odds: Number(odd.price || 0),
