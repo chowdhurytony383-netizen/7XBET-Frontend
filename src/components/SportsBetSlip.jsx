@@ -46,6 +46,7 @@ export default function SportsBetSlip({
               <div className="sports-slip-item-meta">
                 <span>{item.marketName}</span>
                 <strong>{item.selectionName} @ {Number(item.odds || 0).toFixed(2)}</strong>
+                {item.sportsbook ? <small>Book: {item.sportsbook}</small> : null}
               </div>
 
               <label className="sports-slip-stake-field">
