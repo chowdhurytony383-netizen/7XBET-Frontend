@@ -639,8 +639,18 @@ export default function SportsPage() {
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
+          <div><BarChart3 size={18} /><span>Open markets</span><strong>{status?.openMarkets ?? 0}</strong></div>
           <div><Ticket size={18} /><span>Open bets</span><strong>{status?.openBets ?? 0}</strong></div>
+          <div><ShieldCheck size={18} /><span>Provider</span><strong>{status?.provider || 'opticodds'}</strong></div>
           <div><Wallet size={18} /><span>Balance</span><strong>{formatCurrency(user?.wallet, user)}</strong></div>
+        </div>
+      </section>
+
+      <section className="sports-warning-panel">
+        <ShieldCheck size={20} />
+        <div>
+          <strong>Real odds protection is active</strong>
+          <p>Only open provider odds are accepted. Locked/suspended selections disappear automatically, and finished markets are settled by provider results.</p>
         </div>
       </section>
 
