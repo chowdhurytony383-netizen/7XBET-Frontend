@@ -207,6 +207,163 @@ function compactJson(value) {
   }
 }
 
+
+function normalizeKey(value = '') {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function valueLooksUseful(value) {
+  if (value === undefined || value === null || value === '') return false;
+  if (typeof value === 'object' && !Array.isArray(value)) return Object.keys(value).length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  const text = String(value).trim();
+  return Boolean(text && text !== '[object Object]' && text !== '{}');
+}
+
+function personValue(value, fallback = '') {
+  if (!valueLooksUseful(value)) return fallback;
+  if (typeof value === 'string' || typeof value === 'number') return textValue(value, fallback);
+  if (Array.isArray(value)) return value.map((item) => personValue(item, '')).filter(Boolean).slice(0, 3).join(', ') || fallback;
+  if (typeof value === 'object') {
+    const direct = value.display_name
+      ?? value.displayName
+      ?? value.full_name
+      ?? value.fullName
+      ?? value.player_name
+      ?? value.playerName
+      ?? value.name
+      ?? value.short_name
+      ?? value.shortName
+      ?? value.label
+      ?? value.title
+      ?? value.value
+      ?? value.player?.display_name
+      ?? value.player?.displayName
+      ?? value.player?.full_name
+      ?? value.player?.fullName
+      ?? value.player?.name
+      ?? value.team?.name
+      ?? value.competitor?.name;
+    if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
+  }
+  return textValue(value, fallback);
+}
+
+function findDeep(root, candidateKeys = [], options = {}) {
+  const wanted = new Set(candidateKeys.map(normalizeKey).filter(Boolean));
+  const maxDepth = options.maxDepth ?? 7;
+  const seen = new WeakSet();
+  const queue = [{ value: root, depth: 0 }];
+
+  while (queue.length) {
+    const { value, depth } = queue.shift();
+    if (!value || typeof value !== 'object' || depth > maxDepth) continue;
+    if (seen.has(value)) continue;
+    seen.add(value);
+
+    if (Array.isArray(value)) {
+      for (const item of value) queue.push({ value: item, depth: depth + 1 });
+      continue;
+    }
+
+    for (const [key, entry] of Object.entries(value)) {
+      if (wanted.has(normalizeKey(key)) && valueLooksUseful(entry)) return entry;
+      if (entry && typeof entry === 'object') queue.push({ value: entry, depth: depth + 1 });
+    }
+  }
+
+  return undefined;
+}
+
+function firstUseful(...values) {
+  return values.find(valueLooksUseful);
+}
+
+function normalizeLiveState(details = {}, event = {}) {
+  const raw = details?.raw || {};
+  const source = {
+    details,
+    state: details?.state,
+    inPlay: details?.state?.inPlay,
+    event,
+    rawResult: raw?.results?.payload || raw?.results?.data || raw?.rawResult || event?.rawResult,
+    fixture: raw?.fixture?.payload || raw?.fixture?.data || raw?.providerEvent || event?.raw,
+    playerResults: raw?.playerResults?.payload || raw?.playerResults?.data || details?.playerResults,
+  };
+  const sportText = `${details?.sport || event?.sport || event?.sportKey || event?.sportTitle || ''}`.toLowerCase();
+  const cricket = sportText.includes('cricket');
+  const football = /soccer|football/.test(sportText) && !/american/.test(sportText);
+
+  const rows = [];
+  const add = (label, value, formatter = textValue) => {
+    if (!valueLooksUseful(value)) return;
+    const text = formatter(value, '');
+    if (!valueLooksUseful(text)) return;
+    if (rows.some((row) => row.label === label && row.value === text)) return;
+    rows.push({ label, value: text });
+  };
+
+  add('Clock / minute', firstUseful(
+    details?.state?.timer,
+    findDeep(source, ['clock', 'game_clock', 'gameClock', 'minute', 'minutes', 'time', 'timer'])
+  ));
+  add('Period / innings', firstUseful(
+    findDeep(source, ['period', 'period_number', 'periodNumber', 'current_period', 'currentPeriod', 'inning', 'innings', 'current_inning', 'currentInning'])
+  ));
+
+  if (cricket) {
+    add('Current over', firstUseful(findDeep(source, ['overs', 'over', 'current_over', 'currentOver', 'over_number', 'overNumber'])));
+    add('Balls', firstUseful(findDeep(source, ['balls', 'ball', 'balls_bowled', 'ballsBowled'])));
+    add('Batting team', firstUseful(findDeep(source, ['batting_team', 'battingTeam', 'current_batting_team', 'currentBattingTeam'])));
+    add('Bowling team', firstUseful(findDeep(source, ['bowling_team', 'bowlingTeam', 'current_bowling_team', 'currentBowlingTeam'])));
+    add('Striker', firstUseful(findDeep(source, ['striker', 'on_strike', 'onStrike', 'current_batter', 'currentBatter', 'batter', 'batsman', 'current_batsman', 'currentBatsman'])), personValue);
+    add('Non-striker', firstUseful(findDeep(source, ['non_striker', 'nonStriker', 'non_strike_batsman', 'nonStrikeBatsman', 'runner'])), personValue);
+    add('Current bowler', firstUseful(findDeep(source, ['bowler', 'current_bowler', 'currentBowler'])), personValue);
+    add('Target', firstUseful(findDeep(source, ['target', 'target_score', 'targetScore', 'runs_to_win', 'runsToWin'])));
+    add('Run rate', firstUseful(findDeep(source, ['run_rate', 'runRate', 'current_run_rate', 'currentRunRate'])));
+    add('Required rate', firstUseful(findDeep(source, ['required_run_rate', 'requiredRunRate', 'required_rate', 'requiredRate'])));
+    add('Last ball / play', firstUseful(findDeep(source, ['last_ball', 'lastBall', 'last_play', 'lastPlay', 'last_event', 'lastEvent', 'commentary'])));
+  }
+
+  if (football) {
+    const goalEvents = asArray(details?.events).filter((item) => /goal|score/i.test(`${item.type || item.name || item.description || item.type_id || ''}`)).slice(0, 5);
+    add('Match time', firstUseful(findDeep(source, ['minute', 'clock', 'game_clock', 'period_time', 'periodTime'])));
+    if (goalEvents.length) {
+      add('Goal scorers', goalEvents.map((item) => `${item.minute ? `${item.minute}' ` : ''}${personValue(item.player || item.player_name || item.name || item.description, 'Goal')}`).join(' · '));
+    }
+    add('Possession', firstUseful(findDeep(source, ['possession', 'ball_possession', 'ballPossession'])));
+    add('Last event', firstUseful(findDeep(source, ['last_event', 'lastEvent', 'last_play', 'lastPlay', 'commentary'])));
+  }
+
+  add('Game state', firstUseful(findDeep(source, ['game_state', 'gameState', 'state', 'status', 'description'])));
+  add('Last provider update', firstUseful(details?.lastProviderUpdate, event?.lastScoreUpdate, event?.updatedAt));
+
+  return rows.slice(0, 14);
+}
+
+function LiveSituationPanel({ details = {}, event = {} }) {
+  const rows = normalizeLiveState(details, event);
+  if (!rows.length) {
+    return (
+      <div className="sports-live-situation-empty">
+        <strong>Live state coverage limited</strong>
+        <span>এই fixture-এ OpticOdds odds/score দিচ্ছে, কিন্তু ball-by-ball, batsman, bowler, scorer বা deep live state payload দেয়নি। Provider data এলে এখানে automatic দেখাবে।</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sports-live-situation-grid">
+      {rows.map((row) => (
+        <div className="sports-live-situation-card" key={`${row.label}:${row.value}`}>
+          <span>{row.label}</span>
+          <strong>{row.value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function GenericDataList({ items = [], empty = 'Not available yet' }) {
   const limited = asArray(items).slice(0, 18);
   if (!limited.length) return <p className="sports-detail-muted">{empty}</p>;
@@ -288,17 +445,33 @@ function ScoresPanel({ scores }) {
   );
 }
 
-function OddsList({ market }) {
+function OddsList({ market, event, onSelect, selectedIds = new Set() }) {
   const selections = asArray(market?.selections);
   if (!selections.length) return <p className="sports-detail-muted">No betting market available</p>;
+
+  const canBet = Boolean(event && onSelect);
+  const matchId = event ? getMatchId(event) : '';
+
   return (
-    <div className="sports-detail-odds-row">
-      {selections.map((selection) => (
-        <div key={selection.selectionId || selection.name}>
-          <span>{selection.name}</span>
-          <strong>{Number(selection.price || 0).toFixed(2)}</strong>
-        </div>
-      ))}
+    <div className="sports-detail-odds-row sports-detail-odds-row-clickable">
+      {selections.map((selection, index) => {
+        const odd = normalizeProviderOddForSlip(selection, market || {}, index);
+        const selected = selectedIds.has(`${matchId}:${odd.selectionId}`);
+        const disabled = !canBet || String(odd.status || 'OPEN').toUpperCase() !== 'OPEN' || odd.price <= 1;
+        return (
+          <button
+            type="button"
+            key={odd.selectionId || selection.selectionId || selection.name || index}
+            className={`sports-provider-odd-card sports-main-market-card ${selected ? 'selected' : ''}`}
+            disabled={disabled}
+            onClick={() => onSelect?.(event, odd)}
+          >
+            <small>{textValue(odd.sportsbook || market?.bookmaker || '', 'Provider')}</small>
+            <span>{odd.label}</span>
+            <b>{odd.price.toFixed(2)}</b>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -546,7 +719,7 @@ function ActiveMarketsPanel({ items }) {
   );
 }
 
-function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds }) {
+function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betSlipCount = 0 }) {
   if (!data && !loading) return null;
 
   const event = data?.event || data?.data?.event;
@@ -589,6 +762,10 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds }) {
               </div>
             </DetailsSection>
 
+            <DetailsSection icon={<Activity size={18} />} title="Live situation / match state">
+              <LiveSituationPanel details={details} event={event} />
+            </DetailsSection>
+
             <DetailsSection icon={<Users size={18} />} title="Teams">
               <div className="sports-detail-teams">
                 <MiniTeam team={details?.homeTeam || event.homeTeam} />
@@ -609,7 +786,7 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds }) {
             </DetailsSection>
 
             <DetailsSection icon={<Ticket size={18} />} title="Betting odds">
-              <OddsList market={market} />
+              <OddsList market={market} event={event} onSelect={onSelect} selectedIds={selectedIds} />
             </DetailsSection>
 
             <DetailsSection icon={<Ticket size={18} />} title="Premium sportsbook markets">
@@ -670,6 +847,13 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds }) {
               </DetailsSection>
             ) : null}
 
+          </div>
+        ) : null}
+
+        {betSlipCount > 0 ? (
+          <div className="sports-detail-slip-sticky">
+            <span>{betSlipCount} selection{betSlipCount === 1 ? '' : 's'} in bet slip</span>
+            <button type="button" onClick={onClose}>Close details to place bet</button>
           </div>
         ) : null}
       </div>
@@ -964,6 +1148,7 @@ export default function SportsPage() {
         toast('Already added to bet slip');
         return current;
       }
+      toast.success('Added to bet slip');
       return [...current, item];
     });
   };
@@ -1137,6 +1322,7 @@ export default function SportsPage() {
           loading={detailsLoading}
           onSelect={addSelection}
           selectedIds={selectedIds}
+          betSlipCount={betSlipItems.length}
           onClose={() => {
             setDetailsOpen(false);
             setMatchDetails(null);

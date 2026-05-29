@@ -2299,3 +2299,113 @@
     font-size: 0.82rem;
   }
 }
+
+/* Premium live situation + clickable details odds patch */
+.sports-live-situation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.sports-live-situation-card {
+  padding: 12px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.64));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.sports-live-situation-card span {
+  display: block;
+  color: rgba(226, 232, 240, 0.62);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.sports-live-situation-card strong {
+  color: #f8fafc;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.sports-live-situation-empty {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  border-radius: 16px;
+  color: rgba(254, 249, 195, 0.92);
+  background: rgba(113, 63, 18, 0.18);
+}
+
+.sports-live-situation-empty span {
+  color: rgba(254, 249, 195, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sports-detail-odds-row-clickable {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.sports-main-market-card {
+  min-height: 78px;
+  cursor: pointer;
+}
+
+.sports-provider-odd-card.selected,
+.sports-main-market-card.selected {
+  border-color: rgba(132, 255, 96, 0.9);
+  box-shadow: 0 0 0 1px rgba(132, 255, 96, 0.22), 0 10px 26px rgba(34, 197, 94, 0.16);
+}
+
+.sports-provider-odd-card:disabled,
+.sports-main-market-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.sports-detail-slip-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 16px -4px -4px;
+  padding: 12px;
+  border: 1px solid rgba(132, 255, 96, 0.32);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(10, 28, 22, 0.96), rgba(13, 25, 51, 0.96));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -12px 32px rgba(0,0,0,0.26);
+}
+
+.sports-detail-slip-sticky span {
+  color: #dcfce7;
+  font-weight: 800;
+}
+
+.sports-detail-slip-sticky button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, #84ff60, #22c55e);
+  color: #052e16;
+  font-weight: 900;
+}
+
+@media (max-width: 640px) {
+  .sports-live-situation-grid,
+  .sports-detail-odds-row-clickable {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sports-detail-slip-sticky {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
