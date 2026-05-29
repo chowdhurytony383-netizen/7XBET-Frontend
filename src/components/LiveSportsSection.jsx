@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import EmptyState from './EmptyState.jsx';
-import MatchOfDayCard from './MatchOfDayCard.jsx';
 import {
   getMatchId,
   getScore,
@@ -26,11 +25,20 @@ function getLeague(match) {
   return [country, league].filter(Boolean).join(' · ');
 }
 
-function getMatchMeta(match) {
-  const round = match.round || match.stage || match.matchRound;
-  const venue = match.venue?.name || match.venue;
-  const start = match.startTime || match.dateTime || match.kickoffTime;
-  return [round, venue, start].filter(Boolean).join(' · ');
+function scoreText(value) {
+  if (value === undefined || value === null || value === '') return '0';
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (typeof value === 'object') {
+    return value.display || value.formatted || value.value || value.score || value.runs || value.points || value.goals || '0';
+  }
+  return String(value);
+}
+
+function compactTime(match) {
+  const raw = match.startTime || match.dateTime || match.kickoffTime || match.commenceTime || '';
+  const time = Date.parse(raw);
+  if (!Number.isFinite(time)) return raw || 'Auto update';
+  return new Intl.DateTimeFormat(undefined, { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(time));
 }
 
 function TeamLogo({ team, sportKey }) {
@@ -40,22 +48,6 @@ function TeamLogo({ team, sportKey }) {
       {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
     </span>
   );
-}
-
-function MobileTeamScoreRow({ team, sportKey, score }) {
-  return (
-    <div className="live-mobile-team-row">
-      <TeamLogo team={team} sportKey={sportKey} />
-      <span>{getTeamName(team)}</span>
-      <strong>{typeof score === 'object' ? '0' : String(score ?? '0')}</strong>
-    </div>
-  );
-}
-
-function marketLabelFromOdds(odds = []) {
-  const first = odds.find((odd) => odd?.marketDisplayName || odd?.marketName || odd?.marketKey);
-  const label = first?.marketDisplayName || first?.marketName || first?.marketKey || 'Main market';
-  return String(label).replace(/_/g, ' ');
 }
 
 function matchDetailsLink(match) {
@@ -68,110 +60,100 @@ function matchDetailsLink(match) {
   return `/sports${query ? `?${query}` : ''}`;
 }
 
-function LiveMatchRow({ match, onSelectBet }) {
+function marketLabelFromOdds(odds = []) {
+  const first = odds.find((odd) => odd?.marketDisplayName || odd?.marketName || odd?.marketKey);
+  const label = first?.marketDisplayName || first?.marketName || first?.marketKey || 'Main market';
+  return String(label).replace(/_/g, ' ');
+}
+
+function LiveMatchCard({ match, onSelectBet }) {
   const homeTeam = match.homeTeam || match.home || match.teamA;
   const awayTeam = match.awayTeam || match.away || match.teamB;
   const home = getTeamName(homeTeam);
   const away = getTeamName(awayTeam);
-  const odds = normalizeMatchOdds(match);
+  const odds = normalizeMatchOdds(match).slice(0, 4);
   const marketLabel = marketLabelFromOdds(odds);
   const status = getStrictMatchStatus(match);
   const league = getLeague(match);
-  const meta = getMatchMeta(match);
   const sportMeta = sportMetaFromMatch(match);
-  const homeScore = getScore(match, 'home');
-  const awayScore = getScore(match, 'away');
   const disabled = match.completed || statusClass(status) === 'finished';
 
   return (
-    <article className="live-match-row">
-      <Link className="live-match-header live-match-header-link" to={matchDetailsLink(match)} aria-label={`Open details for ${home} vs ${away}`}>
-        <div className="live-competition-line">
-          <span className={`sport-ball ${sportMeta.className}`} aria-hidden="true">{sportMeta.icon}</span>
-          <span className="live-competition-name">{sportMeta.name}{league ? ` · ${league}` : ''}</span>
-        </div>
-        <span className="live-header-actions">
-          <span className={`live-header-status ${statusClass(status)}`}>{status}</span>
-          <span className="live-card-chevron" aria-hidden="true">»</span>
-        </span>
+    <article className="seven-sports-card">
+      <Link className="seven-sports-card-head" to={matchDetailsLink(match)} aria-label={`Open ${home} vs ${away}`}>
+        <span className={`seven-sport-icon ${sportMeta.className}`}>{sportMeta.icon}</span>
+        <span>{league || sportMeta.name}</span>
+        <b className={statusClass(status)}>{statusClass(status) === 'live' ? 'LIVE' : compactTime(match)}</b>
       </Link>
 
-      <div className="live-match-content">
-        <div className="live-match-info">
-          <div className="live-league-line">
-            <span className={`sport-ball ${sportMeta.className}`} aria-hidden="true">{sportMeta.icon}</span>
-            <strong>{league || sportMeta.name}</strong>
-          </div>
-
-          <div className="live-mobile-details">
-            <TeamLogo team={homeTeam} sportKey={match.sportKey} />
-            <div className="live-mobile-copy">
-              <div className="live-match-title">{home} - {away}</div>
-              {meta ? <div className="live-match-meta">{meta}</div> : null}
-            </div>
-          </div>
-
-          <div className="live-mobile-scorecard" aria-label={`${home} vs ${away} score`}>
-            <MobileTeamScoreRow team={homeTeam} sportKey={match.sportKey} score={homeScore} />
-            <MobileTeamScoreRow team={awayTeam} sportKey={match.sportKey} score={awayScore} />
-          </div>
-
-          <div className="live-teams">
-            <span><TeamLogo team={homeTeam} sportKey={match.sportKey} /> {home}</span>
-            <span><TeamLogo team={awayTeam} sportKey={match.sportKey} /> {away}</span>
-          </div>
+      <div className="seven-match-score-row">
+        <div>
+          <TeamLogo team={homeTeam} sportKey={match.sportKey} />
+          <strong>{home}</strong>
         </div>
-
-        <div className="live-score-box">
-          <span className={`live-pill ${statusClass(status)}`}>{status}</span>
-          <div className="live-score-values"><span>{typeof homeScore === 'object' ? '0' : homeScore}</span><span>{typeof awayScore === 'object' ? '0' : awayScore}</span></div>
+        <span>{scoreText(getScore(match, 'home'))}</span>
+      </div>
+      <div className="seven-match-score-row">
+        <div>
+          <TeamLogo team={awayTeam} sportKey={match.sportKey} />
+          <strong>{away}</strong>
         </div>
+        <span>{scoreText(getScore(match, 'away'))}</span>
+      </div>
 
-        <div className="live-market-label">{marketLabel}</div>
-
-        <div className="live-odds-grid">
-          {odds.length ? odds.map((odd) => (
-            <button type="button" className="odd-cell" key={odd.selectionId} disabled={disabled} onClick={() => onSelectBet?.(match, odd)}>
-              <small>{odd.label}</small>
-              <strong>{odd.price.toFixed(2)}</strong>
-            </button>
-          )) : (
-            <span className="no-odds">Odds unavailable</span>
-          )}
-        </div>
-
-        {match.moreMarkets ? <span className="more-markets">+{match.moreMarkets}</span> : null}
+      <div className="seven-market-title">{marketLabel}</div>
+      <div className="seven-home-odds-grid">
+        {odds.length ? odds.map((odd) => (
+          <button type="button" className="seven-odd-button" key={odd.selectionId} disabled={disabled} onClick={() => onSelectBet?.(match, odd)}>
+            <small>{odd.label}</small>
+            <strong>{odd.price.toFixed(2)}</strong>
+          </button>
+        )) : <span className="seven-no-odds">Markets opening soon</span>}
       </div>
     </article>
   );
 }
 
-export default function LiveSportsSection({ matches = [], matchOfTheDay, onSelectBet }) {
-  const sortedMatches = sortMatchesBySportPriority(matches);
-  const selectedMatch = matchOfTheDay || sortedMatches[0] || null;
+function splitMatches(matches = []) {
+  const sorted = sortMatchesBySportPriority(matches);
+  const live = [];
+  const prematch = [];
+  sorted.forEach((match) => {
+    if (statusClass(getStrictMatchStatus(match)) === 'live') live.push(match);
+    else prematch.push(match);
+  });
+  return { live, prematch };
+}
+
+function HorizontalMatchRail({ title, items, onSelectBet, linkLabel = 'All' }) {
+  if (!items.length) return null;
+  return (
+    <div className="seven-sports-rail-block">
+      <div className="section-row-title seven-rail-title">
+        <h2>{title}</h2>
+        <Link className="view-all-link" to={`/sports?mode=${title.toLowerCase().includes('pre') ? 'prematch' : 'live'}`}>{linkLabel} ›</Link>
+      </div>
+      <div className="seven-sports-rail">
+        {items.slice(0, 8).map((match) => <LiveMatchCard key={getMatchKey(match)} match={match} onSelectBet={onSelectBet} />)}
+      </div>
+    </div>
+  );
+}
+
+export default function LiveSportsSection({ matches = [], onSelectBet }) {
+  const { live, prematch } = splitMatches(matches);
+  const fallback = sortMatchesBySportPriority(matches).slice(0, 8);
 
   return (
-    <section className="live-sports-section" id="live">
-      <div className="section-row-title">
-        <h2>Live Sports</h2>
-        <a href="/sports" className="view-all-link">
-          <span className="view-label-desktop">View all</span>
-          <span className="view-label-mobile">All</span>
-          <span aria-hidden="true"> ›</span>
-        </a>
-      </div>
-
-      <div className="live-sports-grid">
-        <div className="live-match-list">
-          {sortedMatches.length ? (
-            sortedMatches.slice(0, 8).map((match) => <LiveMatchRow key={getMatchKey(match)} match={match} onSelectBet={onSelectBet} />)
-          ) : (
-            <EmptyState title="Live matches unavailable" message="Sports odds will appear here when the provider sends live/upcoming events." />
-          )}
-        </div>
-
-        <MatchOfDayCard match={selectedMatch} />
-      </div>
+    <section className="live-sports-section seven-home-sports" id="live">
+      {live.length || prematch.length ? (
+        <>
+          <HorizontalMatchRail title="Live Sports" items={live.length ? live : fallback} onSelectBet={onSelectBet} />
+          <HorizontalMatchRail title="Pre-match" items={prematch} onSelectBet={onSelectBet} />
+        </>
+      ) : (
+        <EmptyState title="Sports feed loading" message="7XBET live and pre-match markets will appear here automatically." />
+      )}
     </section>
   );
 }
