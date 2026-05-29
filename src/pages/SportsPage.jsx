@@ -445,6 +445,18 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <ActiveMarketsPanel items={details?.activeMarkets} />
             </DetailsSection>
 
+            <DetailsSection icon={<Trophy size={18} />} title="Futures / outright markets">
+              <GenericDataList items={details?.futures} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Ticket size={18} />} title="Futures odds">
+              <GenericDataList items={details?.futuresOdds} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Info size={18} />} title="Provider league / team catalog">
+              <GenericDataList items={[...(asArray(details?.leagues).slice(0, 10)), ...(asArray(details?.teamsCatalog).slice(0, 10))]} empty="No league/team catalog returned for this fixture." />
+            </DetailsSection>
+
             <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
               <EventList items={details?.events} />
             </DetailsSection>
