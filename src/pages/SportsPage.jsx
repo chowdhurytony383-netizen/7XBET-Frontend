@@ -377,6 +377,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
   const event = data?.event || data?.data?.event;
   const market = data?.market || data?.data?.market;
   const details = data?.details || data?.data?.details;
+  const showRawProviderPayload = String(import.meta.env.VITE_SPORTS_SHOW_RAW_PROVIDER || '').toLowerCase() === 'true';
 
   return (
     <div className="sports-detail-backdrop" role="dialog" aria-modal="true">
@@ -436,7 +437,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <OddsList market={market} />
             </DetailsSection>
 
-            <DetailsSection icon={<Ticket size={18} />} title="All OpticOdds markets / odds">
+            <DetailsSection icon={<Ticket size={18} />} title="All provider markets / odds">
               <AllOddsMarketsPanel markets={details?.markets} odds={details?.odds} />
             </DetailsSection>
 
@@ -476,9 +477,11 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <GenericDataList items={details?.standings} />
             </DetailsSection>
 
-            <DetailsSection icon={<Info size={18} />} title="Raw provider payload">
-              <ProviderRawPanel raw={details?.raw} />
-            </DetailsSection>
+            {showRawProviderPayload ? (
+              <DetailsSection icon={<Info size={18} />} title="Raw provider payload">
+                <ProviderRawPanel raw={details?.raw} />
+              </DetailsSection>
+            ) : null}
 
           </div>
         ) : null}
@@ -674,6 +677,7 @@ export default function SportsPage() {
     };
   }, [load]);
 
+
   useEffect(() => {
     const socket = connectRealtimeSocket();
 
@@ -689,7 +693,7 @@ export default function SportsPage() {
           details: current.details ? {
             ...current.details,
             scores: Array.isArray(payload.scores) ? payload.scores : current.details.scores,
-            resultInfo: payload.score?.display || current.details.resultInfo,
+            resultInfo: payload.score?.display || payload.score?.summary || current.details.resultInfo,
             state: current.details.state ? { ...current.details.state, name: payload.status || current.details.state.name } : current.details.state,
           } : current.details,
         };
@@ -853,15 +857,15 @@ export default function SportsPage() {
     <div className="page-stack sports-page">
       <PageHeader
         eyebrow="Sportsbook"
-        title="Live Sports Betting"
-        description="Live and upcoming matches are grouped by sports category. Select one or many odds, then place them from the bet slip."
+        title="Premium Sportsbook"
+        description="Real provider odds, live scores, match details, and professional sportsbook markets optimized for desktop and mobile."
       />
 
       <section className="sports-hero-panel">
         <div>
           <span className="page-eyebrow">Automatic live mode</span>
-          <h2>Category based sports with live odds</h2>
-          <p>Football, cricket, basketball, tennis and other available provider sports appear with colorful sports and team logos. Win/loss settlement updates the wallet automatically.</p>
+          <h2>Premium live sportsbook</h2>
+          <p>International-style live markets powered by OpticOdds, with real provider odds, score updates, and automatic settlement.</p>
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
@@ -882,6 +886,12 @@ export default function SportsPage() {
         <span className="sports-live-sync-pill"><Radio size={16} /> Auto update</span>
       </div>
 
+
+      <div className="sports-trust-strip">
+        <span><ShieldCheck size={16} /> Real provider odds only</span>
+        <span><Radio size={16} /> Live score updates</span>
+        <span><Ticket size={16} /> Locked/suspended odds protected</span>
+      </div>
 
       <div className="sports-layout-grid">
         <section className="sports-live-list">
