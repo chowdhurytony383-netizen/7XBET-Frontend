@@ -303,37 +303,212 @@ function OddsList({ market }) {
   );
 }
 
-function AllOddsMarketsPanel({ markets = [], odds = [] }) {
-  const rows = asArray(markets).length
-    ? asArray(markets)
-    : Object.values(asArray(odds).reduce((acc, odd) => {
-      const key = textValue(odd.market_id || odd.market || 'market');
-      acc[key] = acc[key] || { marketKey: key, marketName: odd.market || odd.market_id || 'Market', odds: [] };
-      acc[key].odds.push(odd);
-      return acc;
-    }, {}));
+
+const MARKET_GROUP_DEFINITIONS = [
+  { key: 'main', label: 'Main', hint: 'Winner, 1X2, moneyline', pattern: /\b(moneyline|match winner|winner|1x2|3-way|3 way|draw no bet|double chance)\b/i },
+  { key: 'runs', label: 'Runs / Overs', hint: 'Runs, innings, over totals', pattern: /\b(run|runs|over|overs|innings|odd\/even|odd even|total runs|team total|1st|first)\b/i },
+  { key: 'player', label: 'Player Props', hint: 'Player runs, batsman, bowler, wickets', pattern: /\b(player|batsman|bowler|wicket|wickets|six|sixes|boundary|boundaries|dismissal)\b/i },
+  { key: 'team', label: 'Team Props', hint: 'Team score and team specials', pattern: /\b(team|to score|top team|last team|first team|clean sheet)\b/i },
+  { key: 'handicap', label: 'Handicap / Totals', hint: 'Spread, handicap, totals', pattern: /\b(handicap|spread|asian|total points|total goals|total|over\/under|line)\b/i },
+  { key: 'specials', label: 'Specials', hint: 'Tie, periods, corners, cards, specials', pattern: /\b(tie|special|correct|exact|corner|corners|card|cards|period|half|quarter|set|method|race to)\b/i },
+];
+
+const MARKET_GROUP_FALLBACK = { key: 'specials', label: 'Specials', hint: 'Other provider markets' };
+
+function cleanMarketTitle(value = '') {
+  return textValue(value, 'Market')
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim();
+}
+
+function marketTitleFrom(market = {}) {
+  return cleanMarketTitle(
+    market.marketDisplayName
+    || market.marketName
+    || market.market
+    || market.marketKey
+    || market.market_id
+    || market.name
+    || market.id
+    || 'Market',
+  );
+}
+
+function marketGroupFor(market = {}) {
+  const title = `${marketTitleFrom(market)} ${market.marketKey || ''} ${market.market_id || ''}`.toLowerCase();
+  // Player props must win over generic runs because markets like "Player Runs" are player bets.
+  const player = MARKET_GROUP_DEFINITIONS.find((group) => group.key === 'player');
+  if (player.pattern.test(title)) return player;
+  const found = MARKET_GROUP_DEFINITIONS.find((group) => group.key !== 'player' && group.pattern.test(title));
+  return found || MARKET_GROUP_FALLBACK;
+}
+
+function priceNumber(value) {
+  const price = Number(value?.price ?? value?.odds ?? value?.value ?? value?.rate ?? value?.decimal ?? 0);
+  return Number.isFinite(price) ? price : 0;
+}
+
+function lineText(odd = {}) {
+  const point = odd.point ?? odd.points ?? odd.line ?? odd.handicap ?? odd.total;
+  if (point === undefined || point === null || point === '') return '';
+  return String(point);
+}
+
+function normalizeProviderOddForSlip(odd = {}, market = {}, index = 0) {
+  const marketKey = odd.marketKey || odd.market_id || odd.marketId || market.marketKey || market.market_id || market.id || 'market';
+  const title = marketTitleFrom({ ...market, marketKey });
+  const line = lineText(odd);
+  const labelBase = textValue(odd.displayName || odd.selectionName || odd.name || odd.selection || odd.label || odd.outcome || odd.team || odd.participant, 'Selection');
+  const label = line && !String(labelBase).includes(line) ? `${labelBase} ${line}` : labelBase;
+  const selectionId = odd.selectionId
+    || odd.selection_id
+    || odd.id
+    || odd.key
+    || odd.code
+    || odd.providerOddsId
+    || `${marketKey}:${label}:${line || index}`;
+
+  return {
+    key: selectionId,
+    selectionId,
+    providerOddsId: odd.providerOddsId || odd.provider_odds_id || odd.id || '',
+    sportsbook: odd.sportsbook || odd.bookmaker || market.bookmaker || market.sportsbook || '',
+    marketKey,
+    marketName: title,
+    marketDisplayName: title,
+    label,
+    point: odd.point ?? odd.points ?? odd.line ?? odd.handicap ?? odd.total ?? null,
+    price: priceNumber(odd),
+    status: odd.status || 'OPEN',
+    raw: odd,
+  };
+}
+
+function buildProviderMarketRows(markets = [], odds = []) {
+  const marketRows = asArray(markets).map((market, marketIndex) => {
+    const rawOdds = asArray(market.selections || market.odds || market.outcomes || market.options);
+    const normalizedOdds = rawOdds
+      .map((odd, index) => normalizeProviderOddForSlip(odd, market, index))
+      .filter((odd) => odd.price > 1);
+
+    return {
+      ...market,
+      id: market._id || market.id || market.marketKey || market.market_id || `market-${marketIndex}`,
+      marketKey: market.marketKey || market.market_id || market.id || `market-${marketIndex}`,
+      marketName: marketTitleFrom(market),
+      odds: normalizedOdds,
+    };
+  }).filter((market) => market.odds.length);
+
+  if (marketRows.length) return marketRows;
+
+  const grouped = new Map();
+  asArray(odds).forEach((odd, index) => {
+    const marketKey = odd.marketKey || odd.market_id || odd.market || 'market';
+    const current = grouped.get(marketKey) || {
+      id: marketKey,
+      marketKey,
+      marketName: marketTitleFrom(odd),
+      odds: [],
+    };
+    const normalized = normalizeProviderOddForSlip(odd, current, index);
+    if (normalized.price > 1) current.odds.push(normalized);
+    grouped.set(marketKey, current);
+  });
+
+  return Array.from(grouped.values()).filter((market) => market.odds.length);
+}
+
+function AllOddsMarketsPanel({ markets = [], odds = [], event, onSelect, selectedIds = new Set() }) {
+  const [activeGroup, setActiveGroup] = useState('main');
+  const [visibleCount, setVisibleCount] = useState(18);
+  const rows = buildProviderMarketRows(markets, odds);
 
   if (!rows.length) return <p className="sports-detail-muted">No extra provider odds returned for this fixture.</p>;
 
+  const grouped = MARKET_GROUP_DEFINITIONS.reduce((acc, group) => ({ ...acc, [group.key]: [] }), { all: rows });
+  rows.forEach((market) => {
+    const group = marketGroupFor(market);
+    grouped[group.key] = grouped[group.key] || [];
+    grouped[group.key].push(market);
+  });
+
+  const tabs = [
+    { key: 'all', label: 'All Markets', hint: 'Everything', count: rows.length },
+    ...MARKET_GROUP_DEFINITIONS.map((group) => ({ ...group, count: grouped[group.key]?.length || 0 })),
+  ].filter((tab) => tab.key === 'all' || tab.count > 0);
+
+  const effectiveKey = grouped[activeGroup]?.length ? activeGroup : (tabs.find((tab) => tab.key !== 'all')?.key || 'all');
+  const selectedRows = (effectiveKey === 'all' ? rows : grouped[effectiveKey] || rows);
+  const visibleRows = selectedRows.slice(0, visibleCount);
+  const selectedGroup = tabs.find((tab) => tab.key === effectiveKey) || tabs[0];
+  const canBet = Boolean(onSelect && event);
+  const matchId = event ? getMatchId(event) : '';
+
   return (
-    <div className="sports-provider-markets">
-      {rows.slice(0, 24).map((market, index) => {
-        const marketOdds = asArray(market.odds || market.selections).slice(0, 8);
-        return (
-          <div className="sports-provider-market" key={market.marketKey || market.marketName || index}>
-            <strong>{textValue(market.marketName || market.marketDisplayName || market.marketKey, 'Market')}</strong>
-            <div className="sports-provider-odds-grid">
-              {marketOdds.map((odd, oddIndex) => (
-                <span key={odd.id || odd.selectionId || `${index}-${oddIndex}`}>
-                  <small>{textValue(odd.sportsbook || odd.bookmaker, '')}</small>
-                  {textValue(odd.name || odd.selection || odd.displayName || odd.label, 'Selection')}
-                  <b>{Number(odd.price || odd.odds || odd.value || 0).toFixed(2)}</b>
-                </span>
-              ))}
+    <div className="sports-market-browser">
+      <div className="sports-market-browser-head">
+        <div>
+          <strong>{selectedGroup?.label || 'All Markets'}</strong>
+          <span>{selectedGroup?.hint || 'Provider markets'} · {selectedRows.length} market{selectedRows.length === 1 ? '' : 's'}</span>
+        </div>
+        <small>{canBet ? 'Tap any open price to add it to bet slip' : 'Provider odds preview'}</small>
+      </div>
+
+      <div className="sports-market-tabs" role="tablist" aria-label="Market groups">
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            key={tab.key}
+            className={effectiveKey === tab.key ? 'active' : ''}
+            onClick={() => { setActiveGroup(tab.key); setVisibleCount(18); }}
+          >
+            <span>{tab.label}</span>
+            <b>{tab.count}</b>
+          </button>
+        ))}
+      </div>
+
+      <div className="sports-provider-markets sports-provider-markets-premium">
+        {visibleRows.map((market, index) => {
+          const marketOdds = asArray(market.odds).slice(0, 18);
+          return (
+            <div className="sports-provider-market" key={market._id || market.id || market.marketKey || index}>
+              <strong>
+                {marketTitleFrom(market)}
+                <small>{market.bookmaker || market.sportsbook || marketOdds[0]?.sportsbook || ''}</small>
+              </strong>
+              <div className="sports-provider-odds-grid sports-provider-odds-grid-clickable">
+                {marketOdds.map((odd, oddIndex) => {
+                  const selected = selectedIds.has(`${matchId}:${odd.selectionId}`);
+                  const disabled = !canBet || String(odd.status || 'OPEN').toUpperCase() !== 'OPEN' || odd.price <= 1;
+                  return (
+                    <button
+                      type="button"
+                      key={odd.selectionId || `${market.marketKey}-${oddIndex}`}
+                      className={`sports-provider-odd-card ${selected ? 'selected' : ''}`}
+                      disabled={disabled}
+                      onClick={() => onSelect?.(event, odd)}
+                    >
+                      <small>{textValue(odd.sportsbook || market.bookmaker || '', 'Provider')}</small>
+                      <span>{odd.label}</span>
+                      <b>{odd.price.toFixed(2)}</b>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+
+      {selectedRows.length > visibleRows.length ? (
+        <button type="button" className="sports-show-more-markets" onClick={() => setVisibleCount((count) => count + 18)}>
+          Show more markets ({selectedRows.length - visibleRows.length} remaining)
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -371,7 +546,7 @@ function ActiveMarketsPanel({ items }) {
   );
 }
 
-function MatchDetailsModal({ data, loading, onClose }) {
+function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds }) {
   if (!data && !loading) return null;
 
   const event = data?.event || data?.data?.event;
@@ -437,8 +612,8 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <OddsList market={market} />
             </DetailsSection>
 
-            <DetailsSection icon={<Ticket size={18} />} title="All provider markets / odds">
-              <AllOddsMarketsPanel markets={details?.markets} odds={details?.odds} />
+            <DetailsSection icon={<Ticket size={18} />} title="Premium sportsbook markets">
+              <AllOddsMarketsPanel markets={details?.markets || details?.dbMarkets} odds={details?.odds} event={event} onSelect={onSelect} selectedIds={selectedIds} />
             </DetailsSection>
 
             <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
@@ -960,6 +1135,8 @@ export default function SportsPage() {
         <MatchDetailsModal
           data={matchDetails}
           loading={detailsLoading}
+          onSelect={addSelection}
+          selectedIds={selectedIds}
           onClose={() => {
             setDetailsOpen(false);
             setMatchDetails(null);
