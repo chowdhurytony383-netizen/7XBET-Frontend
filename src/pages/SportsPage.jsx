@@ -256,8 +256,8 @@ function MatchDetailsModal({ data, loading, onClose }) {
           <div className="sports-warning-panel">
             <Info size={20} />
             <div>
-              <strong>Details not available</strong>
-              <p>{details.message || 'Provider did not return full details for this match yet.'}</p>
+              <strong>Live details limited</strong>
+              <p>{details.message || 'OpticOdds odds are available. Full stats, lineups and commentary will show only when the details provider returns them.'}</p>
             </div>
           </div>
         ) : null}
@@ -337,7 +337,7 @@ function MatchTeam({ team, sportKey, score }) {
         {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
       </span>
       <strong>{getTeamName(team)}</strong>
-      <b>{String(score ?? '0')}</b>
+      <b>{typeof score === 'object' ? '0' : String(score ?? '0')}</b>
     </div>
   );
 }
