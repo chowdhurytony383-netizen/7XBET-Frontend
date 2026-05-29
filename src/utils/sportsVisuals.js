@@ -114,26 +114,28 @@ function scoreValueText(value, fallback = '0') {
   }
 
   if (typeof value === 'object') {
-    const direct = value.display
-      ?? value.displayName
-      ?? value.value
-      ?? value.total
-      ?? value.runs
-      ?? value.points
-      ?? value.goals
-      ?? value.score;
-
-    if (direct !== undefined && direct !== null && direct !== value) {
-      const base = scoreValueText(direct, '');
-      if (base) {
-        const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
-        const overs = value.overs ? ` (${value.overs} ov)` : '';
-        return `${base}${wickets}${overs}`;
-      }
+    const runs = value.runs ?? value.run ?? value.score ?? value.total ?? value.value ?? value.points ?? value.goals;
+    const wickets = value.wickets ?? value.wkts ?? value.outs;
+    const overs = value.overs ?? value.over;
+    if (runs !== undefined && runs !== null && runs !== value) {
+      const base = scoreValueText(runs, '0');
+      return `${base}${wickets !== undefined && wickets !== null && wickets !== '' ? `/${wickets}` : ''}${overs !== undefined && overs !== null && overs !== '' ? ` (${overs} ov)` : ''}`;
     }
 
-    const home = value.home ?? value.homeScore ?? value.scores?.home;
-    const away = value.away ?? value.awayScore ?? value.scores?.away;
+    const nested = value.total_score ?? value.totalScore ?? value.current ?? value.current_score ?? value.currentScore ?? value.score;
+    if (nested && typeof nested === 'object' && nested !== value) {
+      const text = scoreValueText(nested, '');
+      if (text) return text;
+    }
+
+    const display = value.display ?? value.displayName ?? value.formatted;
+    if (display !== undefined && display !== null && display !== value) {
+      const text = safeString(display, '');
+      if (text) return text;
+    }
+
+    const home = value.home ?? value.homeScore ?? value.localteam_score ?? value.scores?.home;
+    const away = value.away ?? value.awayScore ?? value.visitorteam_score ?? value.scores?.away;
     if (home !== undefined || away !== undefined) {
       return `${scoreValueText(home, '0')} - ${scoreValueText(away, '0')}`;
     }
