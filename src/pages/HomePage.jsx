@@ -364,29 +364,19 @@ export default function HomePage() {
     const refreshMs = Math.max(10000, Number(import.meta.env.VITE_SPORTS_REFRESH_MS || 15000));
 
     async function loadSportsContent() {
-      const [categoriesResponse, liveResponse] = await Promise.allSettled([
-        SportsAPI.categories(),
-        SportsAPI.liveMatches(),
-      ]);
+      const overviewResponse = await SportsAPI.overview({ limit: 12 }).catch(() => null);
 
       if (!active) return;
 
-      if (categoriesResponse.status === 'fulfilled') {
-        setSportsCategories(
-          normalizeList(categoriesResponse.value.data, ['categories', 'sports'])
-        );
-      }
+      const overview = overviewResponse?.data?.data || overviewResponse?.data || {};
+      const sports = normalizeList(overview, ['sports']);
+      const topLive = normalizeList(overview, ['topLive', 'liveMatches', 'matches']);
+      const topPrematch = normalizeList(overview, ['topPrematch', 'prematchMatches']);
+      const combinedMatches = sortMatchesBySportPriority([...topLive, ...topPrematch]).slice(0, 14);
 
-      if (liveResponse.status === 'fulfilled') {
-        const matches = normalizeList(liveResponse.value.data, [
-          'matches',
-          'liveMatches',
-          'events',
-        ]);
-        const sortedMatches = sortMatchesBySportPriority(matches);
-        setLiveMatches(sortedMatches);
-        setMatchOfTheDay(sortedMatches[0] || null);
-      }
+      if (sports.length) setSportsCategories(sports);
+      setLiveMatches(combinedMatches);
+      setMatchOfTheDay(topLive[0] || topPrematch[0] || combinedMatches[0] || null);
     }
 
     loadSportsContent();
@@ -414,11 +404,13 @@ export default function HomePage() {
       // The direct score event updates visible cards immediately. A delayed HTTP refresh
       // also pulls new markets/details if the provider added or locked odds.
       window.setTimeout(() => {
-        SportsAPI.liveMatches().then((response) => {
-          const matches = normalizeList(response.data, ['matches', 'liveMatches', 'events']);
-          const sortedMatches = sortMatchesBySportPriority(matches);
+        SportsAPI.overview({ limit: 12 }).then((response) => {
+          const overview = response.data?.data || response.data || {};
+          const topLive = normalizeList(overview, ['topLive', 'liveMatches', 'matches']);
+          const topPrematch = normalizeList(overview, ['topPrematch', 'prematchMatches']);
+          const sortedMatches = sortMatchesBySportPriority([...topLive, ...topPrematch]).slice(0, 14);
           setLiveMatches(sortedMatches);
-          setMatchOfTheDay(sortedMatches[0] || null);
+          setMatchOfTheDay(topLive[0] || topPrematch[0] || sortedMatches[0] || null);
         }).catch(() => {});
       }, 1200);
     };
