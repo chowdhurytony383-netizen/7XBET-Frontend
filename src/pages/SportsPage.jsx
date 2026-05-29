@@ -24,6 +24,7 @@ import {
 import { useAuth } from '../context/AuthContext.jsx';
 import PageHeader from '../components/PageHeader.jsx';
 import SportsBetSlip from '../components/SportsBetSlip.jsx';
+import { connectRealtimeSocket } from '../socket/realtimeSocket.js';
 import './SportsPage.css';
 
 
@@ -597,6 +598,27 @@ function BetHistory({ bets = [] }) {
   );
 }
 
+
+function mergeSportsScoreUpdateIntoMatches(list = [], payload = {}) {
+  if (!payload?.providerEventId && !payload?.eventId && !payload?.id) return list;
+  const wantedIds = new Set([payload.providerEventId, payload.eventId, payload.id].filter(Boolean).map(String));
+  let changed = false;
+  const next = list.map((match) => {
+    const ids = [getMatchId(match), match.providerEventId, match.eventId, match.id, match._id].filter(Boolean).map(String);
+    if (!ids.some((id) => wantedIds.has(id))) return match;
+    changed = true;
+    return {
+      ...match,
+      status: payload.status || match.status,
+      completed: payload.completed ?? match.completed,
+      score: payload.score || match.score,
+      scores: Array.isArray(payload.scores) ? payload.scores : match.scores,
+      lastScoreUpdate: payload.lastScoreUpdate || new Date().toISOString(),
+    };
+  });
+  return changed ? next : list;
+}
+
 export default function SportsPage() {
   const { user, refreshUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -649,6 +671,43 @@ export default function SportsPage() {
     return () => {
       active = false;
       window.clearInterval(timer);
+    };
+  }, [load]);
+
+  useEffect(() => {
+    const socket = connectRealtimeSocket();
+
+    const onScoreUpdate = (payload = {}) => {
+      setMatches((current) => mergeSportsScoreUpdateIntoMatches(current, payload));
+      setMatchDetails((current) => {
+        if (!current?.event) return current;
+        const merged = mergeSportsScoreUpdateIntoMatches([current.event], payload)[0];
+        if (merged === current.event) return current;
+        return {
+          ...current,
+          event: merged,
+          details: current.details ? {
+            ...current.details,
+            scores: Array.isArray(payload.scores) ? payload.scores : current.details.scores,
+            resultInfo: payload.score?.display || current.details.resultInfo,
+            state: current.details.state ? { ...current.details.state, name: payload.status || current.details.state.name } : current.details.state,
+          } : current.details,
+        };
+      });
+    };
+
+    const onRefreshHint = () => {
+      load({ silent: true });
+    };
+
+    socket.emit('sports:join');
+    socket.on('sports:score:update', onScoreUpdate);
+    socket.on('sports:refresh:hint', onRefreshHint);
+    if (!socket.connected) socket.connect();
+
+    return () => {
+      socket.off('sports:score:update', onScoreUpdate);
+      socket.off('sports:refresh:hint', onRefreshHint);
     };
   }, [load]);
 

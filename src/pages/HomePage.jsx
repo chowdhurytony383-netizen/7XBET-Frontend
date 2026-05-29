@@ -28,6 +28,7 @@ import EmptyState from '../components/EmptyState.jsx';
 import SportsCategoryStrip from '../components/SportsCategoryStrip.jsx';
 import LiveSportsSection from '../components/LiveSportsSection.jsx';
 import SportsBetSlip from '../components/SportsBetSlip.jsx';
+import { connectRealtimeSocket } from '../socket/realtimeSocket.js';
 import FooterSection from '../components/FooterSection.jsx';
 
 import './HomePage.css';
@@ -274,6 +275,27 @@ function pickHotJiliGames(list = []) {
 }
 
 
+
+function mergeSportsScoreUpdateIntoMatches(list = [], payload = {}) {
+  if (!payload?.providerEventId && !payload?.eventId && !payload?.id) return list;
+  const wantedIds = new Set([payload.providerEventId, payload.eventId, payload.id].filter(Boolean).map(String));
+  let changed = false;
+  const next = list.map((match) => {
+    const ids = [match._id, match.id, match.eventId, match.providerEventId].filter(Boolean).map(String);
+    if (!ids.some((id) => wantedIds.has(id))) return match;
+    changed = true;
+    return {
+      ...match,
+      status: payload.status || match.status,
+      completed: payload.completed ?? match.completed,
+      score: payload.score || match.score,
+      scores: Array.isArray(payload.scores) ? payload.scores : match.scores,
+      lastScoreUpdate: payload.lastScoreUpdate || new Date().toISOString(),
+    };
+  });
+  return changed ? sortMatchesBySportPriority(next) : list;
+}
+
 export default function HomePage() {
   const { user, refreshUser } = useAuth();
 
@@ -373,6 +395,42 @@ export default function HomePage() {
     return () => {
       active = false;
       window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = connectRealtimeSocket();
+
+    const onScoreUpdate = (payload = {}) => {
+      setLiveMatches((current) => mergeSportsScoreUpdateIntoMatches(current, payload));
+      setMatchOfTheDay((current) => {
+        if (!current) return current;
+        const [merged] = mergeSportsScoreUpdateIntoMatches([current], payload);
+        return merged || current;
+      });
+    };
+
+    const onRefreshHint = () => {
+      // The direct score event updates visible cards immediately. A delayed HTTP refresh
+      // also pulls new markets/details if the provider added or locked odds.
+      window.setTimeout(() => {
+        SportsAPI.liveMatches().then((response) => {
+          const matches = normalizeList(response.data, ['matches', 'liveMatches', 'events']);
+          const sortedMatches = sortMatchesBySportPriority(matches);
+          setLiveMatches(sortedMatches);
+          setMatchOfTheDay(sortedMatches[0] || null);
+        }).catch(() => {});
+      }, 1200);
+    };
+
+    socket.emit('sports:join');
+    socket.on('sports:score:update', onScoreUpdate);
+    socket.on('sports:refresh:hint', onRefreshHint);
+    if (!socket.connected) socket.connect();
+
+    return () => {
+      socket.off('sports:score:update', onScoreUpdate);
+      socket.off('sports:refresh:hint', onRefreshHint);
     };
   }, []);
 
