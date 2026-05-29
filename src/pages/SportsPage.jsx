@@ -270,7 +270,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
                 <DetailsItem label="League" value={details?.league?.name || event.league} />
                 <DetailsItem label="Status" value={getStrictMatchStatus(event)} />
                 <DetailsItem label="Start time" value={details?.startingAt || event.startTime} />
-                <DetailsItem label="Result" value={details?.resultInfo} />
+                <DetailsItem label="Result" value={details?.resultInfo || `${getScore(event, 'home')} - ${getScore(event, 'away')}`} />
                 <DetailsItem label="Round" value={details?.round?.name || details?.round?.id} />
               </div>
             </DetailsSection>
@@ -311,7 +311,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
             </DetailsSection>
 
             <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
-              <ScoresPanel scores={details?.scores} />
+              <ScoresPanel scores={details?.scores || event?.scores || event?.score} />
             </DetailsSection>
 
             <DetailsSection icon={<Users size={18} />} title="Player statistics">
