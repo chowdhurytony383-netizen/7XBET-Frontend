@@ -1884,3 +1884,88 @@
   font-size: 0.86rem;
   line-height: 1.35;
 }
+
+
+.sports-provider-markets {
+  display: grid;
+  gap: 12px;
+}
+
+.sports-provider-market {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.sports-provider-market > strong {
+  display: block;
+  color: #e5edf7;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.sports-provider-odds-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sports-provider-odds-grid span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  border-radius: 12px;
+  background: rgba(226, 232, 240, 0.08);
+  padding: 9px;
+  color: #dbeafe;
+  font-size: 0.82rem;
+}
+
+.sports-provider-odds-grid small {
+  color: #93a4b8;
+  font-size: 0.72rem;
+}
+
+.sports-provider-odds-grid b {
+  color: #c7f985;
+  font-size: 1rem;
+}
+
+.sports-provider-raw-list {
+  display: grid;
+  gap: 8px;
+}
+
+.sports-provider-raw-list details {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  overflow: hidden;
+}
+
+.sports-provider-raw-list summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  color: #cbd5e1;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.sports-provider-raw-list pre {
+  max-height: 260px;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(2, 6, 23, 0.7);
+  color: #a7f3d0;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 520px) {
+  .sports-provider-odds-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -35,15 +35,69 @@ function asArray(value) {
 
 function textValue(value, fallback = '—') {
   if (value === undefined || value === null || value === '') return fallback;
-  if (typeof value === 'object') return value.name || value.description || value.short_code || fallback;
-  return String(value);
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    const text = String(value).trim();
+    return text && text !== '[object Object]' ? text : fallback;
+  }
+  if (Array.isArray(value)) {
+    const text = value.map((item) => textValue(item, '')).filter(Boolean).join(', ');
+    return text || fallback;
+  }
+  if (typeof value === 'object') {
+    const direct = value.display
+      ?? value.displayName
+      ?? value.formatted
+      ?? value.name
+      ?? value.description
+      ?? value.short_code
+      ?? value.label
+      ?? value.title
+      ?? value.value
+      ?? value.total
+      ?? value.runs
+      ?? value.points
+      ?? value.goals
+      ?? value.score;
+    if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
+    const home = value.home ?? value.homeScore ?? value.scores?.home;
+    const away = value.away ?? value.awayScore ?? value.scores?.away;
+    if (home !== undefined || away !== undefined) return `${textValue(home, '0')} - ${textValue(away, '0')}`;
+    try {
+      const json = JSON.stringify(value);
+      return json && json !== '{}' ? json : fallback;
+    } catch (_error) {
+      return fallback;
+    }
+  }
+  return fallback;
+}
+
+function scoreText(value, fallback = '0') {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value !== 'object') return textValue(value, fallback);
+  const direct = value.display ?? value.displayName ?? value.formatted ?? value.value ?? value.total ?? value.runs ?? value.points ?? value.goals ?? value.score;
+  if (direct !== undefined && direct !== null && direct !== value) {
+    const base = scoreText(direct, '');
+    const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
+    const overs = value.overs ? ` (${value.overs} ov)` : '';
+    return `${base || fallback}${wickets}${overs}`;
+  }
+  const home = value.home ?? value.homeScore ?? value.scores?.home;
+  const away = value.away ?? value.awayScore ?? value.scores?.away;
+  if (home !== undefined || away !== undefined) return `${scoreText(home, '0')} - ${scoreText(away, '0')}`;
+  return textValue(value, fallback);
+}
+
+function scoreLineFor(event = {}, details = {}) {
+  if (details?.resultInfo && String(details.resultInfo) !== '[object Object] - [object Object]') return textValue(details.resultInfo, '0 - 0');
+  return `${scoreText(getScore(event, 'home'), '0')} - ${scoreText(getScore(event, 'away'), '0')}`;
 }
 
 function isEmptyDetailValue(value) {
   if (value === undefined || value === null || value === '') return true;
   if (Array.isArray(value)) return value.length === 0;
   if (typeof value === 'object') {
-    if (value.name || value.description || value.short_code || value.value || value.display) return false;
+    if (value.name || value.description || value.short_code || value.value || value.display || value.total || value.score || value.runs || value.points || value.goals) return false;
     return Object.keys(value).length === 0;
   }
   return false;
@@ -156,13 +210,14 @@ function GenericDataList({ items = [], empty = 'Not available yet' }) {
 }
 
 function formatCricketScoreItem(score = {}) {
-  if (score.display) return score.display;
-  if (score.value && typeof score.value !== 'object') return score.value;
-  const rawScore = score.score ?? score.runs ?? score.total;
+  if (!score) return '';
+  if (typeof score !== 'object') return textValue(score, '');
+  if (score.display || score.displayName || score.formatted) return textValue(score.display || score.displayName || score.formatted, '');
+  const rawScore = score.score ?? score.runs ?? score.total ?? score.value ?? score.points ?? score.goals;
   if (rawScore === undefined || rawScore === null || rawScore === '') return '';
   const wickets = score.wickets !== undefined && score.wickets !== null && score.wickets !== '' ? `/${score.wickets}` : '';
   const overs = score.overs ? ` (${score.overs} ov)` : '';
-  return `${rawScore}${wickets}${overs}`;
+  return `${textValue(rawScore, '0')}${wickets}${overs}`;
 }
 
 function ScoresPanel({ scores }) {
@@ -233,6 +288,74 @@ function OddsList({ market }) {
   );
 }
 
+function AllOddsMarketsPanel({ markets = [], odds = [] }) {
+  const rows = asArray(markets).length
+    ? asArray(markets)
+    : Object.values(asArray(odds).reduce((acc, odd) => {
+      const key = textValue(odd.market_id || odd.market || 'market');
+      acc[key] = acc[key] || { marketKey: key, marketName: odd.market || odd.market_id || 'Market', odds: [] };
+      acc[key].odds.push(odd);
+      return acc;
+    }, {}));
+
+  if (!rows.length) return <p className="sports-detail-muted">No extra provider odds returned for this fixture.</p>;
+
+  return (
+    <div className="sports-provider-markets">
+      {rows.slice(0, 24).map((market, index) => {
+        const marketOdds = asArray(market.odds || market.selections).slice(0, 8);
+        return (
+          <div className="sports-provider-market" key={market.marketKey || market.marketName || index}>
+            <strong>{textValue(market.marketName || market.marketDisplayName || market.marketKey, 'Market')}</strong>
+            <div className="sports-provider-odds-grid">
+              {marketOdds.map((odd, oddIndex) => (
+                <span key={odd.id || odd.selectionId || `${index}-${oddIndex}`}>
+                  <small>{textValue(odd.sportsbook || odd.bookmaker, '')}</small>
+                  {textValue(odd.name || odd.selection || odd.displayName || odd.label, 'Selection')}
+                  <b>{Number(odd.price || odd.odds || odd.value || 0).toFixed(2)}</b>
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ProviderRawPanel({ raw }) {
+  if (!raw || typeof raw !== 'object') return <p className="sports-detail-muted">No provider raw payload available.</p>;
+  const sections = Object.entries(raw).filter(([, value]) => value !== undefined && value !== null);
+  if (!sections.length) return <p className="sports-detail-muted">No provider raw payload available.</p>;
+
+  return (
+    <div className="sports-provider-raw-list">
+      {sections.map(([key, value]) => (
+        <details key={key}>
+          <summary>{key}</summary>
+          <pre>{compactJson(value)}</pre>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function ActiveMarketsPanel({ items }) {
+  const rows = asArray(items).slice(0, 40);
+  if (!rows.length) return <p className="sports-detail-muted">No active market catalog returned for this fixture.</p>;
+  return (
+    <div className="sports-detail-list">
+      {rows.map((item, index) => (
+        <div className="sports-detail-list-row" key={item.id || item.market_id || `${item.name}-${index}`}>
+          <span>{index + 1}</span>
+          <strong>{textValue(item.name || item.market || item.market_id || item.id, 'Market')}</strong>
+          <small>{textValue(item.sportsbook || item.bookmaker || item.league?.name || item.sport?.name || '', '')}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function MatchDetailsModal({ data, loading, onClose }) {
   if (!data && !loading) return null;
 
@@ -270,7 +393,7 @@ function MatchDetailsModal({ data, loading, onClose }) {
                 <DetailsItem label="League" value={details?.league?.name || event.league} />
                 <DetailsItem label="Status" value={getStrictMatchStatus(event)} />
                 <DetailsItem label="Start time" value={details?.startingAt || event.startTime} />
-                <DetailsItem label="Result" value={details?.resultInfo || `${getScore(event, 'home')} - ${getScore(event, 'away')}`} />
+                <DetailsItem label="Result" value={scoreLineFor(event, details)} />
                 <DetailsItem label="Round" value={details?.round?.name || details?.round?.id} />
               </div>
             </DetailsSection>
@@ -298,6 +421,14 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <OddsList market={market} />
             </DetailsSection>
 
+            <DetailsSection icon={<Ticket size={18} />} title="All OpticOdds markets / odds">
+              <AllOddsMarketsPanel markets={details?.markets} odds={details?.odds} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
+              <ActiveMarketsPanel items={details?.activeMarkets} />
+            </DetailsSection>
+
             <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
               <EventList items={details?.events} />
             </DetailsSection>
@@ -318,8 +449,20 @@ function MatchDetailsModal({ data, loading, onClose }) {
               <GenericDataList items={details?.players} />
             </DetailsSection>
 
+            <DetailsSection icon={<Users size={18} />} title="Squads / rosters">
+              <GenericDataList items={details?.squads} />
+            </DetailsSection>
+
+            <DetailsSection icon={<ShieldCheck size={18} />} title="Injuries / availability">
+              <GenericDataList items={details?.injuries} />
+            </DetailsSection>
+
             <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
               <GenericDataList items={details?.standings} />
+            </DetailsSection>
+
+            <DetailsSection icon={<Info size={18} />} title="Raw provider payload">
+              <ProviderRawPanel raw={details?.raw} />
             </DetailsSection>
 
           </div>
@@ -337,7 +480,7 @@ function MatchTeam({ team, sportKey, score }) {
         {logo ? <img src={logo} alt={getTeamName(team)} loading="lazy" /> : teamLogoText(team)}
       </span>
       <strong>{getTeamName(team)}</strong>
-      <b>{typeof score === 'object' ? '0' : String(score ?? '0')}</b>
+      <b>{scoreText(score, '0')}</b>
     </div>
   );
 }
