@@ -304,6 +304,17 @@ export function getScore(match, side) {
   return '0';
 }
 
+function marketPriority(odd = {}) {
+  const text = `${odd.marketDisplayName || ''} ${odd.marketName || ''} ${odd.market || ''} ${odd.marketKey || ''}`.toLowerCase();
+  if (/moneyline|match winner|winner|1x2|3-way|3 way/.test(text)) return 0;
+  if (/handicap|spread|asian|total/.test(text)) return 1;
+  if (/team total|runs|overs|run/.test(text)) return 2;
+  if (/team|to score/.test(text)) return 3;
+  if (/player|batsman|bowler|wicket|six/.test(text)) return 4;
+  if (/tie|special|period|half|quarter|set/.test(text)) return 5;
+  return 9;
+}
+
 export function normalizeMatchOdds(match) {
   const odds = match?.mainOdds || match?.odds || match?.markets || [];
   if (!Array.isArray(odds)) return [];
@@ -323,9 +334,11 @@ export function normalizeMatchOdds(match) {
         marketDisplayName: marketName,
         label: readableText(odd.label || odd.displayName || odd.name || odd.key, 'Selection'),
         price,
+        _priority: marketPriority(odd),
       };
     })
     .filter((odd) => odd.selectionId && odd.price > 1)
+    .sort((a, b) => a._priority - b._priority || String(a.marketName).localeCompare(String(b.marketName)) || String(a.label).localeCompare(String(b.label)))
     .slice(0, 6);
 }
 
