@@ -44,6 +44,9 @@ function textValue(value, fallback = '—') {
     return text || fallback;
   }
   if (typeof value === 'object') {
+    const scoreLike = scoreText(value, '');
+    if (scoreLike && scoreLike !== '[object Object]') return scoreLike;
+
     const direct = value.display
       ?? value.displayName
       ?? value.formatted
@@ -52,16 +55,8 @@ function textValue(value, fallback = '—') {
       ?? value.short_code
       ?? value.label
       ?? value.title
-      ?? value.value
-      ?? value.total
-      ?? value.runs
-      ?? value.points
-      ?? value.goals
-      ?? value.score;
+      ?? value.value;
     if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
-    const home = value.home ?? value.homeScore ?? value.scores?.home;
-    const away = value.away ?? value.awayScore ?? value.scores?.away;
-    if (home !== undefined || away !== undefined) return `${textValue(home, '0')} - ${textValue(away, '0')}`;
     try {
       const json = JSON.stringify(value);
       return json && json !== '{}' ? json : fallback;
@@ -75,17 +70,36 @@ function textValue(value, fallback = '—') {
 function scoreText(value, fallback = '0') {
   if (value === undefined || value === null || value === '') return fallback;
   if (typeof value !== 'object') return textValue(value, fallback);
-  const direct = value.display ?? value.displayName ?? value.formatted ?? value.value ?? value.total ?? value.runs ?? value.points ?? value.goals ?? value.score;
-  if (direct !== undefined && direct !== null && direct !== value) {
-    const base = scoreText(direct, '');
-    const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
-    const overs = value.overs ? ` (${value.overs} ov)` : '';
-    return `${base || fallback}${wickets}${overs}`;
+  if (Array.isArray(value)) {
+    const parts = value.map((item) => scoreText(item, '')).filter(Boolean);
+    return parts.length ? parts.join(' · ') : fallback;
   }
-  const home = value.home ?? value.homeScore ?? value.scores?.home;
-  const away = value.away ?? value.awayScore ?? value.scores?.away;
+
+  const runs = value.runs ?? value.run ?? value.score ?? value.total ?? value.value ?? value.points ?? value.goals;
+  const wickets = value.wickets ?? value.wkts ?? value.outs;
+  const overs = value.overs ?? value.over;
+  if (runs !== undefined && runs !== null && runs !== value) {
+    const base = scoreText(runs, '0');
+    return `${base}${wickets !== undefined && wickets !== null && wickets !== '' ? `/${wickets}` : ''}${overs !== undefined && overs !== null && overs !== '' ? ` (${overs} ov)` : ''}`;
+  }
+
+  const nested = value.total_score ?? value.totalScore ?? value.current ?? value.current_score ?? value.currentScore ?? value.score;
+  if (nested && typeof nested === 'object' && nested !== value) {
+    const text = scoreText(nested, '');
+    if (text) return text;
+  }
+
+  const directText = value.display ?? value.displayName ?? value.formatted;
+  if (directText !== undefined && directText !== null && directText !== value) {
+    const text = String(directText).trim();
+    if (text && text !== '[object Object]') return text;
+  }
+
+  const home = value.home ?? value.homeScore ?? value.localteam_score ?? value.scores?.home;
+  const away = value.away ?? value.awayScore ?? value.visitorteam_score ?? value.scores?.away;
   if (home !== undefined || away !== undefined) return `${scoreText(home, '0')} - ${scoreText(away, '0')}`;
-  return textValue(value, fallback);
+
+  return fallback;
 }
 
 function scoreLineFor(event = {}, details = {}) {
@@ -266,7 +280,7 @@ function ScoresPanel({ scores }) {
       {normalized.map((item, index) => (
         <div className="sports-detail-stat" key={`${item.label}-${index}`}>
           <span>{textValue(item.label, `Score ${index + 1}`)}</span>
-          <strong>{item.value !== undefined ? textValue(item.value) : `${textValue(item.home)}${item.away !== undefined ? ` - ${textValue(item.away)}` : ''}`}</strong>
+          <strong>{item.value !== undefined ? scoreText(item.value, textValue(item.value)) : `${scoreText(item.home, '0')}${item.away !== undefined ? ` - ${scoreText(item.away, '0')}` : ''}`}</strong>
         </div>
       ))}
     </div>
