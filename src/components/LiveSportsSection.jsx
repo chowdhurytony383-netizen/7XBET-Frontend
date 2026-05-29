@@ -47,7 +47,7 @@ function MobileTeamScoreRow({ team, sportKey, score }) {
     <div className="live-mobile-team-row">
       <TeamLogo team={team} sportKey={sportKey} />
       <span>{getTeamName(team)}</span>
-      <strong>{String(score ?? '0')}</strong>
+      <strong>{typeof score === 'object' ? '0' : String(score ?? '0')}</strong>
     </div>
   );
 }
@@ -124,7 +124,7 @@ function LiveMatchRow({ match, onSelectBet }) {
 
         <div className="live-score-box">
           <span className={`live-pill ${statusClass(status)}`}>{status}</span>
-          <div className="live-score-values"><span>{homeScore}</span><span>{awayScore}</span></div>
+          <div className="live-score-values"><span>{typeof homeScore === 'object' ? '0' : homeScore}</span><span>{typeof awayScore === 'object' ? '0' : awayScore}</span></div>
         </div>
 
         <div className="live-market-label">{marketLabel}</div>
