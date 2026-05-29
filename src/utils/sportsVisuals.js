@@ -52,9 +52,16 @@ export function sportMetaFromMatch(match = {}) {
   return sportMetaFrom(`${match.sportKey || ''} ${match.sport || ''} ${match.sportTitle || ''} ${match.categoryName || ''}`);
 }
 
+function safeString(value, fallback = '') {
+  if (value === undefined || value === null || value === '') return fallback;
+  const text = String(value).trim();
+  if (!text || text === '[object Object]') return fallback;
+  return text;
+}
+
 function readableText(value, fallback = '') {
   if (value === undefined || value === null || value === '') return fallback;
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return safeString(value, fallback);
   if (Array.isArray(value)) {
     return value.map((item) => readableText(item, '')).filter(Boolean).join(', ') || fallback;
   }
@@ -65,10 +72,13 @@ function readableText(value, fallback = '') {
         ?? value.name
         ?? value.shortName
         ?? value.label
+        ?? value.title
         ?? value.value
         ?? value.score
         ?? value.total
         ?? value.runs
+        ?? value.points
+        ?? value.goals
         ?? value.raw?.name
         ?? value.raw?.displayName,
       fallback,
@@ -79,21 +89,41 @@ function readableText(value, fallback = '') {
 
 function scoreValueText(value, fallback = '0') {
   if (value === undefined || value === null || value === '') return fallback;
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return safeString(value, fallback);
+  }
+
+  if (Array.isArray(value)) {
+    const parts = value.map((item) => scoreValueText(item, '')).filter(Boolean);
+    return parts.length ? parts.join(' · ') : fallback;
+  }
+
   if (typeof value === 'object') {
-    const direct = value.display ?? value.value ?? value.score ?? value.total ?? value.runs ?? value.points ?? value.goals;
-    const base = scoreValueText(direct, '');
-    if (base) {
-      const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
-      const overs = value.overs ? ` (${value.overs} ov)` : '';
-      return `${base}${wickets}${overs}`;
+    const direct = value.display
+      ?? value.displayName
+      ?? value.value
+      ?? value.total
+      ?? value.runs
+      ?? value.points
+      ?? value.goals
+      ?? value.score;
+
+    if (direct !== undefined && direct !== null && direct !== value) {
+      const base = scoreValueText(direct, '');
+      if (base) {
+        const wickets = value.wickets !== undefined && value.wickets !== null && value.wickets !== '' ? `/${value.wickets}` : '';
+        const overs = value.overs ? ` (${value.overs} ov)` : '';
+        return `${base}${wickets}${overs}`;
+      }
     }
+
     const home = value.home ?? value.homeScore ?? value.scores?.home;
     const away = value.away ?? value.awayScore ?? value.scores?.away;
     if (home !== undefined || away !== undefined) {
       return `${scoreValueText(home, '0')} - ${scoreValueText(away, '0')}`;
     }
   }
+
   return fallback;
 }
 
