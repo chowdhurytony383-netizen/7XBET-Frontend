@@ -1,6 +1,7 @@
 import api from './client.js';
 
 export const SportsAPI = {
+  overview: (params = {}) => api.get('/sports/overview', { params }),
   categories: () => api.get('/sports/categories'),
   liveMatches: (params = {}) => api.get('/sports/live-matches', { params }),
   matchOfTheDay: () => api.get('/sports/match-of-the-day'),
