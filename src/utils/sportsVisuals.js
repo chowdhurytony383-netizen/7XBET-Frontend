@@ -1,19 +1,28 @@
 export const SPORT_META = {
   football: { key: 'football', name: 'Football', icon: '⚽', className: 'sport-football' },
+  soccer: { key: 'soccer', name: 'Football', icon: '⚽', className: 'sport-football' },
   cricket: { key: 'cricket', name: 'Cricket', icon: '🏏', className: 'sport-cricket' },
   basketball: { key: 'basketball', name: 'Basketball', icon: '🏀', className: 'sport-basketball' },
   tennis: { key: 'tennis', name: 'Tennis', icon: '🎾', className: 'sport-tennis' },
   hockey: { key: 'hockey', name: 'Hockey', icon: '🏒', className: 'sport-hockey' },
   baseball: { key: 'baseball', name: 'Baseball', icon: '⚾', className: 'sport-baseball' },
   rugby: { key: 'rugby', name: 'Rugby', icon: '🏉', className: 'sport-rugby' },
+  rugby_league: { key: 'rugby_league', name: 'Rugby League', icon: '🏉', className: 'sport-rugby' },
+  rugby_union: { key: 'rugby_union', name: 'Rugby Union', icon: '🏉', className: 'sport-rugby' },
   volleyball: { key: 'volleyball', name: 'Volleyball', icon: '🏐', className: 'sport-volleyball' },
-  boxing: { key: 'boxing', name: 'Boxing / MMA', icon: '🥊', className: 'sport-boxing' },
+  boxing: { key: 'boxing', name: 'Boxing', icon: '🥊', className: 'sport-boxing' },
+  mma: { key: 'mma', name: 'MMA', icon: '🥊', className: 'sport-boxing' },
+  golf: { key: 'golf', name: 'Golf', icon: '⛳', className: 'sport-default' },
+  darts: { key: 'darts', name: 'Darts', icon: '🎯', className: 'sport-default' },
+  table_tennis: { key: 'table_tennis', name: 'Table Tennis', icon: '🏓', className: 'sport-tennis' },
+  esports: { key: 'esports', name: 'eSports', icon: '🎮', className: 'sport-default' },
   americanfootball: { key: 'americanfootball', name: 'American Football', icon: '🏈', className: 'sport-americanfootball' },
   sports: { key: 'sports', name: 'Sports', icon: '🏆', className: 'sport-default' },
 };
 
 const SPORT_PRIORITY = {
   cricket: 0,
+  soccer: 1,
   football: 1,
   basketball: 2,
   tennis: 3,
@@ -29,7 +38,8 @@ const SPORT_PRIORITY = {
 export function categoryKeyFromText(value = '') {
   const clean = String(value || '').toLowerCase();
   if (clean.includes('americanfootball') || clean.includes('american football') || clean.includes('nfl') || clean.includes('ncaaf')) return 'americanfootball';
-  if (clean.includes('soccer') || clean.includes('football') || clean.includes('uefa') || clean.includes('epl')) return 'football';
+  if (clean.includes('americanfootball') || clean.includes('american football') || clean.includes('nfl') || clean.includes('ncaaf')) return 'americanfootball';
+  if (clean.includes('soccer') || clean.includes('football') || clean.includes('uefa') || clean.includes('epl')) return clean.includes('soccer') ? 'soccer' : 'football';
   if (clean.includes('cricket')) return 'cricket';
   if (clean.includes('basket')) return 'basketball';
   if (clean.includes('tennis')) return 'tennis';
@@ -37,7 +47,12 @@ export function categoryKeyFromText(value = '') {
   if (clean.includes('baseball')) return 'baseball';
   if (clean.includes('rugby')) return 'rugby';
   if (clean.includes('volleyball')) return 'volleyball';
-  if (clean.includes('boxing') || clean.includes('mma')) return 'boxing';
+  if (clean.includes('table tennis')) return 'table_tennis';
+  if (clean.includes('darts')) return 'darts';
+  if (clean.includes('golf')) return 'golf';
+  if (clean.includes('esport')) return 'esports';
+  if (clean.includes('mma')) return 'mma';
+  if (clean.includes('boxing')) return 'boxing';
   return 'sports';
 }
 
