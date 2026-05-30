@@ -66,12 +66,31 @@ function marketLabelFromOdds(odds = []) {
   return String(label).replace(/_/g, ' ');
 }
 
+function selectPrimaryCardOdds(match) {
+  const allOdds = normalizeMatchOdds(match);
+  if (!allOdds.length) return [];
+
+  const grouped = new Map();
+  allOdds.forEach((odd) => {
+    const key = `${odd.marketKey || ''}:${odd.marketName || odd.marketDisplayName || ''}`;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(odd);
+  });
+
+  const groups = Array.from(grouped.values());
+  const preferred = groups.find((items) => items.length >= 3 && /moneyline|1x2|3-way|3 way|match winner|winner/i.test(`${items[0]?.marketName || ''} ${items[0]?.marketKey || ''}`))
+    || groups.find((items) => items.length >= 3)
+    || allOdds;
+
+  return preferred.slice(0, 3);
+}
+
 function LiveMatchCard({ match, onSelectBet }) {
   const homeTeam = match.homeTeam || match.home || match.teamA;
   const awayTeam = match.awayTeam || match.away || match.teamB;
   const home = getTeamName(homeTeam);
   const away = getTeamName(awayTeam);
-  const odds = normalizeMatchOdds(match).slice(0, 4);
+  const odds = selectPrimaryCardOdds(match);
   const marketLabel = marketLabelFromOdds(odds);
   const status = getStrictMatchStatus(match);
   const league = getLeague(match);

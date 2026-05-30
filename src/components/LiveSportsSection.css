@@ -1,1036 +1,3 @@
-.live-sports-section {
-  display: grid;
-  gap: 18px;
-}
-
-.view-all-link {
-  color: #b7c4ff;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.view-label-mobile {
-  display: none;
-}
-
-.live-sports-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(340px, .75fr);
-  gap: 24px;
-  align-items: start;
-}
-
-.live-match-list {
-  display: grid;
-  gap: 10px;
-}
-
-.live-match-row {
-  min-height: 86px;
-  padding: 14px 16px;
-  border-radius: 3px;
-  border: 1px solid rgba(255,255,255,.07);
-  background: #20232f;
-}
-
-.live-match-header {
-  display: none;
-}
-
-.live-match-content {
-  display: grid;
-  grid-template-columns: 330px 92px minmax(280px, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-}
-
-.live-match-info {
-  display: grid;
-  gap: 10px;
-  min-width: 0;
-}
-
-.live-league-line {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: #fff;
-  font-size: .86rem;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.ball-dot {
-  color: #dbeafe;
-  font-size: .8rem;
-}
-
-.live-mobile-details {
-  display: none;
-}
-
-.live-teams {
-  display: grid;
-  gap: 6px;
-  color: #fff;
-}
-
-.live-teams span {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.live-score-box {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px solid rgba(255,255,255,.08);
-  padding-left: 12px;
-}
-
-.live-pill {
-  display: inline-flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 8px;
-  border-radius: 5px;
-  background: #ff3b86;
-  color: #fff;
-  font-size: .78rem;
-  font-weight: 800;
-}
-
-.live-score-values {
-  display: grid;
-  gap: 6px;
-  color: #dbe6ff;
-  font-weight: 800;
-}
-
-.live-odds-grid {
-  display: grid;
-  grid-template-columns: repeat(9, minmax(54px, 1fr));
-  gap: 8px;
-  min-width: 0;
-  border-left: 1px solid rgba(255,255,255,.08);
-  padding-left: 14px;
-}
-
-.odd-cell {
-  min-height: 42px;
-  border: 0;
-  border-radius: 5px;
-  background: #565c73;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: transform .16s ease, filter .16s ease;
-}
-
-.odd-cell:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.1);
-}
-
-.odd-cell small {
-  color: #dce4ff;
-  font-size: .68rem;
-  font-weight: 800;
-}
-
-.odd-cell strong {
-  font-size: .84rem;
-}
-
-.no-odds {
-  color: var(--muted);
-  align-self: center;
-}
-
-.more-markets {
-  color: #96a2c8;
-  font-size: .82rem;
-}
-
-/* Tablet */
-@media (max-width: 1250px) {
-  .live-sports-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .live-match-content {
-    grid-template-columns: 1fr;
-  }
-
-  .live-score-box,
-  .live-odds-grid {
-    border-left: 0;
-    padding-left: 0;
-  }
-
-  .live-score-box {
-    justify-content: start;
-    grid-template-columns: auto auto;
-  }
-
-  .live-odds-grid {
-    grid-template-columns: repeat(3, minmax(70px, 1fr));
-  }
-}
-
-/* Mobile horizontal slider */
-@media (max-width: 768px) {
-  .live-sports-section {
-    width: 100%;
-    max-width: 100vw;
-    gap: 14px;
-    overflow: hidden;
-  }
-
-  .live-sports-section .section-row-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 18px;
-    margin-bottom: 0;
-  }
-
-  .live-sports-section .section-row-title h2 {
-    margin: 0;
-    font-size: 1.65rem;
-    line-height: 1.1;
-    font-weight: 500;
-    color: #eef3ff;
-  }
-
-  .view-all-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    color: #aeb5cf;
-    font-size: 1.45rem;
-    line-height: 1;
-    font-weight: 500;
-  }
-
-  .view-label-desktop {
-    display: none;
-  }
-
-  .view-label-mobile {
-    display: inline;
-  }
-
-  .live-sports-grid {
-    display: block;
-    width: 100%;
-    max-width: 100vw;
-    overflow: hidden;
-  }
-
-  .live-sports-grid > :not(.live-match-list) {
-    display: none;
-  }
-
-  .live-match-list {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 14px !important;
-
-    width: 100%;
-    max-width: 100vw;
-
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-
-    padding: 0 18px 10px !important;
-
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-
-    touch-action: pan-x;
-  }
-
-  .live-match-list::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
-  }
-
-  .live-match-row {
-    flex: 0 0 86vw !important;
-    width: 86vw !important;
-    max-width: 86vw !important;
-
-    scroll-snap-align: start;
-
-    min-height: 0;
-    padding: 0;
-    border-radius: 22px;
-    overflow: hidden;
-    background: #20232f;
-    border: 1px solid rgba(255,255,255,.06);
-  }
-
-  .live-match-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 56px;
-    padding: 12px 14px;
-    background: #303446;
-  }
-
-  .live-competition-line {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .sport-ball,
-  .country-flag {
-    flex: 0 0 auto;
-    font-size: 1.2rem;
-    line-height: 1;
-  }
-
-  .live-competition-name {
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: #e8ecf8;
-    font-size: 1rem;
-    font-weight: 500;
-  }
-
-  .live-card-chevron {
-    flex: 0 0 auto;
-    color: #aeb5cf;
-    font-size: 1.8rem;
-    line-height: 1;
-    font-weight: 700;
-  }
-
-  .live-match-content {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 10px;
-    row-gap: 14px;
-    align-items: start;
-    padding: 15px 14px 16px;
-  }
-
-  .live-match-info {
-    min-width: 0;
-  }
-
-  .live-league-line,
-  .live-teams {
-    display: none;
-  }
-
-  .live-mobile-details {
-    display: grid;
-    grid-template-columns: 42px minmax(0, 1fr);
-    gap: 10px;
-    align-items: start;
-    min-width: 0;
-  }
-
-  .match-star {
-    color: #aeb5cf;
-    font-size: 2rem;
-    line-height: 1;
-  }
-
-  .live-mobile-copy {
-    min-width: 0;
-    display: grid;
-    gap: 7px;
-  }
-
-  .live-match-title {
-    min-width: 0;
-    color: #f1f4ff;
-    font-size: 1rem;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .live-match-meta {
-    min-width: 0;
-    color: #8e94aa;
-    font-size: .82rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .live-score-box {
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    gap: 8px;
-    border-left: 0;
-    padding-left: 0;
-  }
-
-  .live-pill {
-    height: 30px;
-    padding: 0 9px;
-    border-radius: 8px;
-    background: #ff3b86;
-    font-size: .84rem;
-  }
-
-  .live-score-values {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    color: #eef3ff;
-    font-size: .95rem;
-    font-weight: 700;
-  }
-
-  .live-score-values span:first-child::after {
-    content: ':';
-    margin: 0 1px;
-  }
-
-  .live-odds-grid {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 9px;
-    border-left: 0;
-    padding-left: 0;
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .live-odds-grid .odd-cell:nth-child(n + 5) {
-    display: none;
-  }
-
-  .odd-cell {
-    min-height: 62px;
-    border-radius: 9px;
-    background: #676d84;
-    overflow: hidden;
-  }
-
-  .odd-cell small {
-    font-size: .82rem;
-    line-height: 1;
-    color: #eef3ff;
-    font-weight: 500;
-  }
-
-  .odd-cell strong {
-    font-size: .95rem;
-    line-height: 1;
-    font-weight: 500;
-  }
-
-  .more-markets {
-    display: none;
-  }
-
-  .no-odds {
-    grid-column: 1 / -1;
-    min-height: 54px;
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    background: rgba(255,255,255,.05);
-  }
-}
-
-/* Small mobile */
-@media (max-width: 420px) {
-  .live-sports-section .section-row-title {
-    padding: 0 14px;
-  }
-
-  .live-match-list {
-    padding-inline: 14px !important;
-    gap: 12px !important;
-  }
-
-  .live-match-row {
-    flex: 0 0 86vw !important;
-    width: 86vw !important;
-    max-width: 86vw !important;
-  }
-
-  .live-match-header {
-    min-height: 52px;
-    padding: 11px 12px;
-  }
-
-  .live-competition-name {
-    font-size: .92rem;
-  }
-
-  .live-match-content {
-    padding: 13px 12px 14px;
-  }
-
-  .live-mobile-details {
-    grid-template-columns: 36px minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .match-star {
-    font-size: 1.8rem;
-  }
-
-  .live-match-title {
-    font-size: .92rem;
-  }
-
-  .live-match-meta {
-    font-size: .76rem;
-  }
-
-  .live-pill {
-    height: 28px;
-    padding: 0 8px;
-    font-size: .78rem;
-  }
-
-  .live-odds-grid {
-    gap: 7px;
-  }
-
-  .odd-cell {
-    min-height: 56px;
-  }
-
-  .odd-cell small {
-    font-size: .74rem;
-  }
-
-  .odd-cell strong {
-    font-size: .86rem;
-  }
-}
-@media (max-width: 768px) {
-  .live-sports-section .section-row-title h2 {
-    font-size: 1.18rem !important;
-    line-height: 1 !important;
-    font-weight: 700 !important;
-  }
-
-  .live-sports-section .view-all-link {
-    font-size: 1.05rem !important;
-    line-height: 1 !important;
-    font-weight: 700 !important;
-  }
-}
-@media (max-width: 768px) {
-  .live-match-row {
-    border-radius: 3px !important;
-  }
-}
-.home-team-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  display: inline-grid;
-  place-items: center;
-  color: #fff;
-  font-size: .68rem;
-  font-weight: 1000;
-  line-height: 1;
-  flex: 0 0 auto;
-}
-
-.live-teams span {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sport-ball {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  display: inline-grid;
-  place-items: center;
-  line-height: 1;
-}
-
-.odd-cell:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-.live-pill.upcoming {
-  background: #2563eb;
-}
-
-.live-pill.finished {
-  background: #64748b;
-}
-
-/* 7XBET mobile sportsbook polish: priority order + clickable header + team logos */
-.live-match-header-link {
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.live-match-header-link:hover .live-competition-name,
-.live-match-header-link:focus-visible .live-competition-name {
-  color: #ffffff;
-}
-
-.home-team-logo img,
-.sport-ball img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: inherit;
-  display: block;
-}
-
-.home-team-logo:has(img) {
-  background: rgba(15, 23, 42, .68) !important;
-  padding: 3px;
-}
-
-@media (max-width: 768px) {
-  .live-match-row {
-    flex-basis: min(88vw, 420px) !important;
-    width: min(88vw, 420px) !important;
-    max-width: min(88vw, 420px) !important;
-  }
-
-  .live-match-header-link {
-    min-height: 50px !important;
-    padding: 10px 12px !important;
-  }
-
-  .live-match-content {
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    row-gap: 10px !important;
-    padding: 12px 11px 13px !important;
-  }
-
-  .live-mobile-details {
-    grid-template-columns: 36px minmax(0, 1fr) !important;
-  }
-
-  .home-team-logo {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    font-size: .66rem;
-  }
-
-  .live-match-title {
-    font-size: .9rem !important;
-    line-height: 1.18 !important;
-  }
-
-  .live-match-meta {
-    font-size: .74rem !important;
-  }
-
-  .live-score-box {
-    align-self: start;
-    gap: 6px !important;
-  }
-
-  .live-pill {
-    height: 28px !important;
-    padding: 0 8px !important;
-    font-size: .75rem !important;
-  }
-
-  .live-score-values {
-    font-size: .86rem !important;
-  }
-
-  .live-odds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
-
-  .live-odds-grid .odd-cell:nth-child(n + 5) {
-    display: grid;
-  }
-
-  .odd-cell {
-    min-height: 54px !important;
-    padding: 6px 4px !important;
-    border-radius: 10px !important;
-  }
-
-  .odd-cell small {
-    max-width: 100%;
-    white-space: normal !important;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-height: 1.05 !important;
-    font-size: .74rem !important;
-    text-align: center;
-  }
-
-  .odd-cell strong {
-    font-size: .92rem !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .live-odds-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .home-team-logo {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* Reference-style compact mobile live sports card */
-.live-mobile-scorecard,
-.live-market-label {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .live-match-row {
-    background: linear-gradient(180deg, rgba(17, 24, 39, .98), rgba(10, 16, 32, .98)) !important;
-    border: 1px solid rgba(203, 213, 225, .10) !important;
-    box-shadow: 0 12px 26px rgba(0,0,0,.28) !important;
-  }
-
-  .live-match-header-link {
-    background: rgba(255,255,255,.10) !important;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-  }
-
-  .live-match-content {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-    padding: 12px 12px 14px !important;
-  }
-
-  .live-mobile-details,
-  .live-score-box {
-    display: none !important;
-  }
-
-  .live-mobile-scorecard {
-    display: grid;
-    gap: 7px;
-    grid-column: 1 / -1;
-  }
-
-  .live-mobile-team-row {
-    display: grid;
-    grid-template-columns: 38px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    min-height: 42px;
-  }
-
-  .live-mobile-team-row .home-team-logo {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-  }
-
-  .live-mobile-team-row span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #eef3ff;
-    font-size: 1rem;
-    font-weight: 800;
-  }
-
-  .live-mobile-team-row strong {
-    color: #eef3ff;
-    font-size: 1.04rem;
-    font-weight: 900;
-    white-space: nowrap;
-    text-align: right;
-  }
-
-  .live-market-label {
-    display: block;
-    grid-column: 1 / -1;
-    margin-top: 2px;
-    color: #dbeafe;
-    font-size: .95rem;
-    font-weight: 900;
-    letter-spacing: .02em;
-  }
-
-  .live-odds-grid {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
-
-  .live-odds-grid .odd-cell:nth-child(n + 5) {
-    display: none !important;
-  }
-
-  .live-odds-grid .odd-cell {
-    min-height: 48px !important;
-    padding: 7px 8px !important;
-    border-radius: 12px !important;
-    background: #e7eeee !important;
-    color: #0f2a27 !important;
-    border: 1px solid rgba(255,255,255,.2) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
-  }
-
-  .live-odds-grid .odd-cell small {
-    color: rgba(15, 42, 39, .64) !important;
-    font-size: .76rem !important;
-    font-weight: 900 !important;
-  }
-
-  .live-odds-grid .odd-cell strong {
-    color: #0f2a27 !important;
-    font-size: .98rem !important;
-    font-weight: 1000 !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .live-mobile-team-row {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
-    gap: 8px;
-  }
-
-  .live-mobile-team-row span {
-    font-size: .92rem;
-  }
-
-  .live-mobile-team-row strong {
-    font-size: .94rem;
-  }
-
-  .live-odds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-/* 7XBET compact mobile sportsbook card: logos, scores, odds inside, vertical scroll friendly */
-.live-header-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-.live-header-status {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .live-match-list {
-    touch-action: pan-x pan-y !important;
-    overscroll-behavior: auto !important;
-    padding: 0 12px 8px !important;
-    gap: 10px !important;
-  }
-
-  .live-match-row {
-    flex: 0 0 min(82vw, 370px) !important;
-    width: min(82vw, 370px) !important;
-    max-width: min(82vw, 370px) !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
-  }
-
-  .live-match-header-link {
-    min-height: 38px !important;
-    padding: 7px 10px !important;
-  }
-
-  .live-competition-line {
-    gap: 7px !important;
-  }
-
-  .live-match-header-link .sport-ball {
-    width: 27px !important;
-    height: 27px !important;
-    border-radius: 9px !important;
-    font-size: .98rem !important;
-  }
-
-  .live-competition-name {
-    font-size: .88rem !important;
-    font-weight: 800 !important;
-    line-height: 1.05 !important;
-  }
-
-  .live-header-actions {
-    gap: 6px !important;
-  }
-
-  .live-header-status {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 22px;
-    min-width: 44px;
-    padding: 0 7px;
-    border-radius: 999px;
-    background: rgba(34, 197, 94, .22);
-    color: #bbf7d0;
-    font-size: .66rem;
-    font-weight: 1000;
-    text-transform: capitalize;
-    line-height: 1;
-  }
-
-  .live-header-status.upcoming {
-    background: rgba(37, 99, 235, .24);
-    color: #bfdbfe;
-  }
-
-  .live-header-status.finished {
-    background: rgba(100, 116, 139, .26);
-    color: #e2e8f0;
-  }
-
-  .live-card-chevron {
-    font-size: 1.38rem !important;
-  }
-
-  .live-match-content {
-    padding: 8px 9px 10px !important;
-    gap: 7px !important;
-  }
-
-  .live-mobile-scorecard {
-    gap: 4px !important;
-  }
-
-  .live-mobile-team-row {
-    grid-template-columns: 26px minmax(0, 1fr) auto !important;
-    gap: 7px !important;
-    min-height: 29px !important;
-  }
-
-  .live-mobile-team-row .home-team-logo,
-  .home-team-logo {
-    width: 26px !important;
-    height: 26px !important;
-    border-radius: 8px !important;
-    font-size: .58rem !important;
-    border: 1px solid rgba(255,255,255,.12);
-  }
-
-  .home-team-logo:has(img) {
-    padding: 2px !important;
-    background: rgba(255,255,255,.08) !important;
-  }
-
-  .live-mobile-team-row .home-team-logo img,
-  .home-team-logo img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    border-radius: 6px !important;
-  }
-
-  .live-mobile-team-row span {
-    font-size: .83rem !important;
-    line-height: 1 !important;
-    font-weight: 850 !important;
-  }
-
-  .live-mobile-team-row strong {
-    font-size: .79rem !important;
-    line-height: 1 !important;
-    font-weight: 900 !important;
-    max-width: 118px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .live-market-label {
-    margin-top: 1px !important;
-    font-size: .76rem !important;
-    line-height: 1 !important;
-  }
-
-  .live-odds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 6px !important;
-    margin-top: 0 !important;
-  }
-
-  .live-odds-grid .odd-cell:nth-child(n + 3) {
-    display: none !important;
-  }
-
-  .live-odds-grid .odd-cell {
-    min-height: 35px !important;
-    padding: 4px 6px !important;
-    border-radius: 8px !important;
-  }
-
-  .live-odds-grid .odd-cell small {
-    font-size: .62rem !important;
-    line-height: .95 !important;
-    -webkit-line-clamp: 1 !important;
-  }
-
-  .live-odds-grid .odd-cell strong {
-    font-size: .8rem !important;
-    line-height: 1 !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .live-match-row {
-    flex-basis: 84vw !important;
-    width: 84vw !important;
-    max-width: 84vw !important;
-  }
-
-  .live-mobile-team-row strong {
-    max-width: 105px;
-    font-size: .74rem !important;
-  }
-
-  .live-mobile-team-row span {
-    font-size: .78rem !important;
-  }
-}
-
-/* =========================================================
-   7XBET Fast Sports Home Rail support + mobile compact mode
-   Supports the new lightweight seven-* home sports cards.
-   ========================================================= */
 .live-sports-section,
 .seven-home-sports {
   display: grid;
@@ -1223,82 +190,104 @@
   padding: 12px;
 }
 
-/* 7XBET mobile ultra-compact home sports cards */
 @media (max-width: 720px) {
-  .seven-home-sports,
-  .live-sports-section {
-    gap: 14px !important;
+  .seven-home-sports {
+    gap: 20px;
     margin-inline: calc(var(--page-x, 0px) * -1);
   }
+  .seven-rail-title {
+    padding-inline: 16px;
+  }
+  .seven-rail-title h2 {
+    font-size: 1.45rem;
+  }
+  .seven-sports-rail {
+    grid-auto-columns: minmax(280px, 82vw);
+    padding-inline: 16px;
+    padding-bottom: 10px;
+  }
+  .seven-sports-card {
+    min-height: 226px;
+    border-radius: 18px;
+  }
+}
 
-  .seven-rail-title,
-  .live-sports-section .section-row-title {
-    padding-inline: 12px !important;
+/* 7XBET mobile compact horizontal sportsbook cards - demo style */
+@media (max-width: 720px) {
+  .seven-home-sports {
+    gap: 14px !important;
+    margin-inline: -10px !important;
+    overflow: visible !important;
   }
 
-  .seven-rail-title h2,
-  .live-sports-section .section-row-title h2 {
+  .seven-rail-title {
+    padding-inline: 14px !important;
+  }
+
+  .seven-rail-title h2 {
     font-size: 1.18rem !important;
     line-height: 1.1 !important;
-    letter-spacing: -.045em !important;
-  }
-
-  .live-sports-section .view-all-link,
-  .seven-rail-title .view-all-link {
-    font-size: 1rem !important;
-    font-weight: 900 !important;
   }
 
   .seven-sports-rail {
-    grid-auto-columns: minmax(218px, 68vw) !important;
-    gap: 9px !important;
-    padding-inline: 12px !important;
-    padding-bottom: 6px !important;
-    scrollbar-width: none;
+    grid-auto-columns: minmax(244px, 78vw) !important;
+    gap: 10px !important;
+    padding: 0 14px 8px !important;
+    scrollbar-width: none !important;
   }
 
   .seven-sports-rail::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 
   .seven-sports-card {
-    min-height: 158px !important;
-    gap: 5px !important;
-    border-radius: 14px !important;
-    box-shadow: 0 10px 28px rgba(0,0,0,.24) !important;
+    min-height: 166px !important;
+    gap: 6px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,.20) !important;
   }
 
   .seven-sports-card-head {
-    min-height: 35px !important;
-    padding: 6px 8px !important;
+    min-height: 38px !important;
+    padding: 7px 8px !important;
     gap: 6px !important;
-  }
-
-  .seven-sports-card-head span:nth-child(2) {
-    font-size: .78rem !important;
-    line-height: 1.05 !important;
-  }
-
-  .seven-sports-card-head b {
-    padding: 4px 7px !important;
-    font-size: .62rem !important;
-    line-height: 1 !important;
+    grid-template-columns: 30px minmax(0, 1fr) auto !important;
   }
 
   .seven-sport-icon,
   .home-team-logo {
-    width: 25px !important;
-    height: 25px !important;
-    border-radius: 8px !important;
-    font-size: .76rem !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    font-size: .78rem !important;
+  }
+
+  .home-team-logo:has(img) {
+    background: rgba(255,255,255,.08) !important;
+    padding: 2px !important;
+  }
+
+  .home-team-logo img {
+    object-fit: contain !important;
+    border-radius: 50% !important;
+  }
+
+  .seven-sports-card-head span:nth-child(2) {
+    font-size: .78rem !important;
+    line-height: 1 !important;
+  }
+
+  .seven-sports-card-head b {
+    padding: 4px 7px !important;
+    font-size: .64rem !important;
   }
 
   .seven-match-score-row {
-    min-height: 30px !important;
+    min-height: 34px !important;
     margin: 0 8px !important;
-    padding: 4px 7px !important;
-    border-radius: 10px !important;
+    padding: 5px 7px !important;
     gap: 6px !important;
+    border-radius: 10px !important;
   }
 
   .seven-match-score-row div {
@@ -1307,43 +296,42 @@
 
   .seven-match-score-row strong {
     font-size: .78rem !important;
-    line-height: 1 !important;
+    line-height: 1.05 !important;
   }
 
   .seven-match-score-row > span {
-    font-size: .86rem !important;
-    line-height: 1 !important;
+    font-size: .9rem !important;
   }
 
   .seven-market-title {
     margin: 1px 10px 0 !important;
-    font-size: .74rem !important;
+    font-size: .76rem !important;
     line-height: 1.05 !important;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .seven-home-odds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 6px !important;
     padding: 0 8px 8px !important;
   }
 
-  .seven-home-odds-grid .seven-odd-button:nth-child(n + 3) {
+  .seven-home-odds-grid .seven-odd-button:nth-child(n + 4) {
     display: none !important;
   }
 
   .seven-odd-button {
-    min-height: 36px !important;
-    border-radius: 9px !important;
-    padding: 4px 6px !important;
-    gap: 1px !important;
+    min-height: 40px !important;
+    border-radius: 10px !important;
+    padding: 4px 3px !important;
   }
 
   .seven-odd-button small {
-    font-size: .59rem !important;
-    line-height: .95 !important;
+    font-size: .56rem !important;
+    line-height: 1 !important;
+    max-width: 100%;
   }
 
   .seven-odd-button strong {
@@ -1351,60 +339,20 @@
     line-height: 1 !important;
   }
 
-  /* legacy home sports grid fallback compacting */
-  .live-match-list {
-    gap: 9px !important;
-    padding: 0 12px 8px !important;
-  }
-
-  .live-match-row {
-    width: min(68vw, 236px) !important;
-    min-width: min(68vw, 236px) !important;
-    min-height: 160px !important;
-    padding: 9px !important;
-    border-radius: 14px !important;
-  }
-
-  .live-match-content {
-    gap: 7px !important;
-  }
-
-  .live-league-line,
-  .live-teams span,
-  .live-mobile-details {
+  .seven-no-odds {
+    padding: 8px !important;
     font-size: .72rem !important;
-    line-height: 1.05 !important;
-  }
-
-  .live-odds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 6px !important;
-  }
-
-  .live-odds-grid .odd-cell:nth-child(n + 3) {
-    display: none !important;
-  }
-
-  .odd-cell {
-    min-height: 34px !important;
-    border-radius: 8px !important;
-  }
-
-  .odd-cell small {
-    font-size: .58rem !important;
-  }
-
-  .odd-cell strong {
-    font-size: .78rem !important;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 370px) {
   .seven-sports-rail {
-    grid-auto-columns: minmax(202px, 70vw) !important;
+    grid-auto-columns: minmax(232px, 80vw) !important;
   }
-
-  .seven-sports-card {
-    min-height: 150px !important;
+  .seven-home-odds-grid {
+    gap: 5px !important;
+  }
+  .seven-odd-button small {
+    font-size: .52rem !important;
   }
 }
