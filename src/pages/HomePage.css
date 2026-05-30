@@ -1494,3 +1494,167 @@
   }
 }
 
+
+/* =========================================================
+   7XBET compact mobile home layout
+   - smaller brand banner
+   - tighter section spacing
+   - sportsbook rail above the fold loads visibly compact
+   ========================================================= */
+@media (max-width: 768px) {
+  body:has(.home-brand-card) {
+    overflow-x: hidden;
+  }
+
+  body:has(.home-brand-card) .main-content,
+  body:has(.home-brand-card) main {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  .home-page,
+  .dashboard-page.home-page {
+    gap: 14px !important;
+  }
+
+  .home-hero {
+    min-height: 0 !important;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .home-hero::before,
+  .home-hero::after,
+  .home-hero:before,
+  .home-hero:after {
+    display: none !important;
+  }
+
+  .home-hero-copy {
+    display: none !important;
+  }
+
+  .home-hero-image {
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  .home-hero .home-brand-card,
+  .home-brand-card {
+    min-height: 132px !important;
+    height: 132px !important;
+    width: 100% !important;
+    border-radius: 17px !important;
+    gap: 6px !important;
+    padding: 12px 14px !important;
+    box-shadow: 0 12px 34px rgba(0, 100, 255, .22), inset 0 0 0 1px rgba(255,255,255,.05) !important;
+  }
+
+  .home-brand-logo {
+    width: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .home-brand-logo img {
+    max-width: min(68vw, 250px) !important;
+    width: auto !important;
+    max-height: 76px !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+
+  .home-brand-card p {
+    margin: 0 !important;
+    font-size: .62rem !important;
+    line-height: 1 !important;
+    letter-spacing: .20em !important;
+    white-space: nowrap !important;
+  }
+
+  .home-crush-banner-section {
+    margin-top: 2px !important;
+    gap: 6px !important;
+  }
+
+  .home-crush-banner-heading h3,
+  .casino-hot-heading h3 {
+    font-size: 1.02rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .home-crush-banner-link,
+  .home-crush-banner-image {
+    min-height: 68px !important;
+    height: 68px !important;
+    border-radius: 11px !important;
+  }
+
+  .casino-lobby-section,
+  .casino-lobby-section-hot-only,
+  .casino-hot-panel {
+    margin-top: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .casino-hot-panel {
+    padding: 12px !important;
+  }
+
+  .casino-hot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .casino-hot-card {
+    min-height: 98px !important;
+    padding: 7px 6px !important;
+    border-radius: 12px !important;
+  }
+
+  .casino-hot-media {
+    height: 46px !important;
+    border-radius: 9px !important;
+  }
+
+  .casino-hot-card strong {
+    font-size: .58rem !important;
+    line-height: 1.05 !important;
+    min-height: 2em !important;
+  }
+
+  .casino-hot-card em {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .home-hero .home-brand-card,
+  .home-brand-card {
+    height: 118px !important;
+    min-height: 118px !important;
+    border-radius: 15px !important;
+  }
+
+  .home-brand-logo img {
+    max-height: 66px !important;
+    max-width: min(70vw, 220px) !important;
+  }
+
+  .home-brand-card p {
+    font-size: .55rem !important;
+    letter-spacing: .16em !important;
+  }
+
+  .home-crush-banner-link,
+  .home-crush-banner-image {
+    height: 60px !important;
+    min-height: 60px !important;
+  }
+}

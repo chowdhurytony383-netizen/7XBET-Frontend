@@ -2410,253 +2410,157 @@
   }
 }
 
-/* 7XBET fast sportsbook redesign patch */
-.sports-page {
-  --seven-card: rgba(15, 23, 42, .92);
-  --seven-card-2: rgba(8, 17, 31, .97);
-  --seven-soft: rgba(241, 248, 247, .10);
-  --seven-mint: #12d6a3;
-  --seven-lime: #84ff60;
-  --seven-line: rgba(148, 163, 184, .16);
-}
-
-.sports-page .page-header,
-.sports-hero-panel {
-  border-color: var(--seven-line);
-  background:
-    radial-gradient(circle at top left, rgba(18, 214, 163, .16), transparent 36%),
-    linear-gradient(135deg, rgba(10, 31, 47, .96), rgba(7, 16, 31, .98));
-}
-
-.sports-mode-switch {
-  width: min(560px, 100%);
-  margin: 0 auto 6px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 6px;
-  border-radius: 999px;
-  background: rgba(238, 248, 246, .08);
-  border: 1px solid var(--seven-line);
-}
-
-.sports-mode-switch button {
-  border: 0;
-  border-radius: 999px;
-  min-height: 46px;
-  background: transparent;
-  color: #b9c8d8;
-  font-weight: 1000;
-  letter-spacing: .01em;
-  cursor: pointer;
-}
-
-.sports-mode-switch button.active {
-  color: #052e16;
-  background: linear-gradient(135deg, #84ff60, #12d6a3);
-  box-shadow: 0 12px 28px rgba(18, 214, 163, .22);
-}
-
-.sports-toolbar-premium {
-  position: sticky;
-  top: 70px;
-  z-index: 12;
-  border-radius: 22px;
-  padding: 10px;
-  background: rgba(4, 13, 24, .82);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--seven-line);
-}
-
-.sports-tabs-counts button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 46px;
-}
-
-.sports-tabs-counts button b {
-  min-width: 30px;
-  min-height: 24px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  padding: 0 8px;
-  background: rgba(226, 239, 236, .14);
-  color: #dffaf3;
-  font-size: .78rem;
-}
-
-.sports-tabs-counts button.active b {
-  background: rgba(5, 46, 22, .18);
-  color: #052e16;
-}
-
-.sports-trust-strip {
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.sports-live-card {
-  border-radius: 22px;
-  overflow: hidden;
-  border: 1px solid var(--seven-line);
-  background:
-    radial-gradient(circle at top left, rgba(34, 197, 94, .12), transparent 32%),
-    linear-gradient(180deg, var(--seven-card), var(--seven-card-2));
-  box-shadow: 0 18px 44px rgba(0,0,0,.25);
-}
-
-.sports-live-card-top {
-  background: linear-gradient(90deg, rgba(53, 61, 83, .90), rgba(34, 49, 76, .66));
-}
-
-.sports-score-board {
-  padding: 12px 14px 4px;
-}
-
-.sports-team-row {
-  min-height: 48px;
-  border-radius: 15px;
-  background: rgba(2, 6, 23, .46);
-}
-
-.sports-team-row b {
-  font-size: 1.1rem;
-  color: #fff;
-}
-
-.sports-odds-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px;
-  padding: 0 14px 14px;
-}
-
-.sports-odd-button,
-.sports-provider-odd-card,
-.sports-main-market-card {
-  border-color: rgba(203, 213, 225, .20) !important;
-  background: linear-gradient(180deg, #effafa, #dfecec) !important;
-  color: #0b2a2b !important;
-  cursor: pointer;
-}
-
-.sports-odd-button small,
-.sports-provider-odd-card small,
-.sports-provider-odd-card span {
-  color: #637a75 !important;
-}
-
-.sports-odd-button strong,
-.sports-provider-odd-card b {
-  color: #0f2f32 !important;
-}
-
-.sports-odd-button.selected,
-.sports-provider-odd-card.selected,
-.sports-main-market-card.selected {
-  outline: 2px solid var(--seven-lime);
-  box-shadow: 0 0 0 4px rgba(132, 255, 96, .14);
-}
-
-.sports-detail-backdrop {
-  z-index: 1200;
-}
-
-.sports-detail-modal {
-  border-radius: 26px;
-  background:
-    radial-gradient(circle at top left, rgba(18, 214, 163, .16), transparent 34%),
-    linear-gradient(180deg, #0b1630, #050b18);
-}
-
-.sports-market-tabs button.active,
-.sports-show-more-markets,
-.sports-detail-slip-sticky button {
-  background: linear-gradient(135deg, #84ff60, #12d6a3) !important;
-  color: #052e16 !important;
-}
-
-.sports-side-card {
-  display: grid;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 22px;
-  border: 1px solid var(--seven-line);
-  background: linear-gradient(180deg, rgba(15,23,42,.92), rgba(2,6,23,.96));
-}
-
-.sports-side-card h3 {
-  margin: 0;
-}
-
-@media (max-width: 768px) {
+/* =========================================================
+   7XBET compact mobile Sports page refinement
+   Makes list/details closer to premium sportsbook mobile density.
+   ========================================================= */
+@media (max-width: 760px) {
   .sports-page {
-    gap: 16px;
+    gap: 10px !important;
   }
-  .sports-hero-panel {
-    padding: 16px;
-    border-radius: 22px;
+
+  .sports-trust-strip {
+    gap: 7px !important;
+    margin: 8px 0 10px !important;
+    padding-inline: 2px !important;
   }
-  .sports-hero-panel h2 {
-    font-size: 1.45rem;
+
+  .sports-trust-strip span {
+    padding: 7px 9px !important;
+    font-size: .66rem !important;
   }
-  .sports-hero-stats {
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 8px;
+
+  .sports-live-title-row h2 {
+    font-size: 1.12rem !important;
   }
-  .sports-hero-stats div {
-    min-width: 0;
-    padding: 10px 8px;
+
+  .sports-list-hint {
+    margin: -4px 0 6px !important;
+    font-size: .72rem !important;
+    line-height: 1.2 !important;
   }
-  .sports-mode-switch {
-    margin-top: 2px;
-  }
-  .sports-toolbar-premium {
-    top: 58px;
-    margin-inline: -2px;
-    border-radius: 18px;
-  }
-  .sports-tabs-counts {
-    gap: 9px;
-    overflow-x: auto;
-    flex-wrap: nowrap !important;
-    padding-bottom: 4px;
-  }
-  .sports-tabs-counts button {
-    flex: 0 0 auto;
-  }
-  .sports-layout-grid {
-    grid-template-columns: 1fr;
-  }
-  .sports-side-panel {
-    order: 2;
-  }
-  .sports-live-list {
-    order: 1;
-  }
+
   .sports-category-block {
-    border-radius: 22px;
+    padding: 8px !important;
+    border-radius: 15px !important;
   }
+
   .sports-live-card {
-    border-radius: 18px;
+    padding: 8px !important;
+    border-radius: 13px !important;
   }
-  .sports-live-card-top {
-    grid-template-columns: 1fr;
-    gap: 10px;
+
+  .sports-live-card h3 {
+    font-size: .92rem !important;
+    margin: 3px 0 !important;
+    line-height: 1.1 !important;
   }
-  .sports-card-actions {
-    justify-content: space-between;
+
+  .sports-card-title-block p,
+  .sports-live-card p {
+    font-size: .68rem !important;
   }
-  .sports-detail-backdrop {
-    padding: 0;
-    align-items: stretch;
+
+  .sports-score-board {
+    margin: 7px 0 !important;
+    border-radius: 11px !important;
   }
+
+  .sports-team-row {
+    min-height: 34px !important;
+    padding: 5px 7px !important;
+    grid-template-columns: 27px minmax(0, 1fr) auto !important;
+  }
+
+  .sports-team-logo {
+    width: 27px !important;
+    height: 27px !important;
+    border-radius: 8px !important;
+  }
+
+  .sports-team-row strong {
+    font-size: .8rem !important;
+  }
+
+  .sports-team-row b {
+    font-size: .82rem !important;
+  }
+
+  .sports-market-label {
+    margin: 3px 0 5px !important;
+    font-size: .75rem !important;
+  }
+
+  .sports-odds-grid {
+    gap: 6px !important;
+  }
+
+  .sports-odd-button {
+    min-height: 34px !important;
+    border-radius: 8px !important;
+    padding: 4px 6px !important;
+  }
+
+  .sports-odd-button small {
+    font-size: .58rem !important;
+    line-height: .95 !important;
+  }
+
+  .sports-odd-button strong {
+    font-size: .8rem !important;
+  }
+
   .sports-detail-modal {
-    width: 100%;
-    max-height: 100dvh;
-    border-radius: 24px 24px 0 0;
+    height: 88dvh !important;
+    max-height: 88dvh !important;
+    padding: 8px 7px calc(10px + env(safe-area-inset-bottom)) !important;
+    border-radius: 16px 16px 0 0 !important;
   }
-  .sports-provider-odds-grid {
-    grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+
+  .sports-detail-header {
+    padding: 11px 12px 9px !important;
+    margin: -1px -1px 9px !important;
+  }
+
+  .sports-detail-header h3 {
+    font-size: 1rem !important;
+  }
+
+  .sports-detail-body {
+    gap: 7px !important;
+  }
+
+  .sports-detail-section {
+    padding: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .sports-provider-market {
+    padding: 9px !important;
+    border-radius: 13px !important;
+  }
+
+  .sports-provider-market > strong {
+    font-size: .82rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .sports-provider-odd-card {
+    padding: 7px 8px !important;
+    border-radius: 10px !important;
+    gap: 2px !important;
+  }
+
+  .sports-provider-odd-card small {
+    font-size: .6rem !important;
+  }
+
+  .sports-provider-odd-card span {
+    font-size: .72rem !important;
+    -webkit-line-clamp: 2;
+  }
+
+  .sports-provider-odd-card b {
+    font-size: .88rem !important;
   }
 }
