@@ -364,29 +364,48 @@ export default function HomePage() {
     const refreshMs = Math.max(10000, Number(import.meta.env.VITE_SPORTS_REFRESH_MS || 15000));
 
     async function loadSportsContent() {
-      const [categoriesResponse, liveResponse] = await Promise.allSettled([
-        SportsAPI.categories(),
-        SportsAPI.liveMatches({ status: 'live', limit: Number(import.meta.env.VITE_SPORTS_HOME_MATCH_LIMIT || 12) }),
-      ]);
+      const limit = Number(import.meta.env.VITE_SPORTS_HOME_MATCH_LIMIT || 12);
 
+      // Fast first paint: /sports/overview is cached and returns sport counts plus
+      // top live/pre-match cards in one small response. This prevents the home page
+      // from waiting for heavy all-sports match APIs before showing content.
+      const overviewResponse = await SportsAPI.overview({ limit }).catch(() => null);
       if (!active) return;
 
-      if (categoriesResponse.status === 'fulfilled') {
-        setSportsCategories(
-          normalizeList(categoriesResponse.value.data, ['categories', 'sports'])
-        );
-      }
+      const overviewPayload = overviewResponse?.data?.data || overviewResponse?.data || null;
+      const overviewSports = overviewPayload?.sports || overviewResponse?.data?.sports || [];
+      const overviewMatches = [
+        ...(overviewPayload?.topLive || overviewResponse?.data?.topLive || []),
+        ...(overviewPayload?.topPrematch || overviewResponse?.data?.topPrematch || []),
+      ];
 
-      if (liveResponse.status === 'fulfilled') {
-        const matches = normalizeList(liveResponse.value.data, [
-          'matches',
-          'liveMatches',
-          'events',
-        ]);
-        const sortedMatches = sortMatchesBySportPriority(matches);
+      if (overviewSports.length) setSportsCategories(overviewSports);
+      if (overviewMatches.length) {
+        const sortedMatches = sortMatchesBySportPriority(overviewMatches).slice(0, limit * 2);
         setLiveMatches(sortedMatches);
         setMatchOfTheDay(sortedMatches[0] || null);
       }
+
+      // Silent background refresh of live-only data. If it is slow or unavailable,
+      // the overview data already on screen remains visible.
+      SportsAPI.liveMatches({ status: 'live', limit })
+        .then((liveResponse) => {
+          if (!active) return;
+          const liveOnly = normalizeList(liveResponse.data, ['matches', 'liveMatches', 'events']);
+          if (!liveOnly.length) return;
+          const combined = [...liveOnly, ...overviewMatches];
+          const seen = new Set();
+          const deduped = combined.filter((match) => {
+            const id = match?.id || match?._id || match?.providerEventId || `${match?.homeTeam?.name || match?.homeTeam}-${match?.awayTeam?.name || match?.awayTeam}-${match?.startTime || match?.dateTime}`;
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+          });
+          const sortedMatches = sortMatchesBySportPriority(deduped).slice(0, limit * 2);
+          setLiveMatches(sortedMatches);
+          setMatchOfTheDay(sortedMatches[0] || null);
+        })
+        .catch(() => {});
     }
 
     loadSportsContent();

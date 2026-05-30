@@ -34,6 +34,15 @@ function asArray(value) {
   return [];
 }
 
+function withTimeout(promise, ms = 4500, label = 'request') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      window.setTimeout(() => reject(new Error(`${label} timed out`)), ms);
+    }),
+  ]);
+}
+
 function textValue(value, fallback = '—') {
   if (value === undefined || value === null || value === '') return fallback;
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -1037,19 +1046,37 @@ export default function SportsPage() {
       const matchParams = { status: viewMode, limit: maxVisibleMatches };
       if (selectedSport !== 'all') matchParams.sport = selectedSport;
 
-      const [overviewResponse, matchesResponse, statusResponse, betResponse] = await Promise.all([
-        SportsAPI.overview({ limit: 12 }).catch(() => null),
-        SportsAPI.liveMatches(matchParams),
-        SportsAPI.syncStatus().catch(() => null),
-        user ? SportsAPI.myBets().catch(() => null) : Promise.resolve(null),
+      // Load the small cached overview first so mobile never waits 3-5 minutes on a
+      // heavy match feed. Then hydrate the exact selected sport/mode in background.
+      const overviewResponse = await withTimeout(SportsAPI.overview({ limit: 16 }), 4500, 'sports overview').catch(() => null);
+      const overviewPayload = overviewResponse?.data?.data || overviewResponse?.data || null;
+      const overviewMatches = [
+        ...(viewMode === 'live' ? (overviewPayload?.topLive || overviewResponse?.data?.topLive || []) : []),
+        ...(viewMode === 'prematch' ? (overviewPayload?.topPrematch || overviewResponse?.data?.topPrematch || []) : []),
+      ].filter((match) => selectedSport === 'all' || sportMetaFromMatch(match).key === selectedSport);
+
+      if (overviewPayload) {
+        setOverview(overviewPayload);
+        setCategories(overviewPayload?.sports || overviewResponse?.data?.sports || []);
+        if (overviewMatches.length) setMatches(overviewMatches);
+        if (!silent) setLoading(false);
+      }
+
+      const [matchesResponse, statusResponse, betResponse] = await Promise.allSettled([
+        withTimeout(SportsAPI.liveMatches(matchParams), 6500, 'sports matches'),
+        withTimeout(SportsAPI.syncStatus(), 4500, 'sports status'),
+        user ? withTimeout(SportsAPI.myBets(), 4500, 'sports bets') : Promise.resolve(null),
       ]);
 
-      const overviewPayload = overviewResponse?.data?.data || overviewResponse?.data || null;
-      setOverview(overviewPayload);
-      setCategories(overviewPayload?.sports || overviewResponse?.data?.sports || []);
-      setMatches(matchesResponse.data?.data || matchesResponse.data?.matches || []);
-      setStatus(statusResponse?.data?.data || null);
-      setBets(user ? (betResponse?.data?.data || betResponse?.data?.bets || []) : []);
+      if (matchesResponse.status === 'fulfilled') {
+        const nextMatches = matchesResponse.value.data?.data || matchesResponse.value.data?.matches || [];
+        setMatches(nextMatches);
+      } else if (overviewMatches.length) {
+        setMatches(overviewMatches);
+      }
+
+      if (statusResponse.status === 'fulfilled') setStatus(statusResponse.value?.data?.data || null);
+      if (user && betResponse.status === 'fulfilled') setBets(betResponse.value?.data?.data || betResponse.value?.data?.bets || []);
     } catch (error) {
       if (!silent) toast.error(getApiError(error, 'Unable to load sports data'));
     } finally {
