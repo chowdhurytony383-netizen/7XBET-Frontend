@@ -3324,3 +3324,43 @@
     font-size: .78rem !important;
   }
 }
+
+
+/* 7XBET production patch: compact phone cards must keep 3 bettable odds visible. */
+@media (max-width: 760px) {
+  .sports-page .sports-odds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+  .sports-page .sports-odds-grid .sports-odd-button:nth-child(n + 3) {
+    display: grid !important;
+  }
+  .sports-page .sports-odds-grid .sports-odd-button:nth-child(n + 4) {
+    display: none !important;
+  }
+  .sports-page .sports-odd-button {
+    min-height: 38px !important;
+    padding: 4px 3px !important;
+  }
+  .sports-page .sports-odd-button small {
+    font-size: .56rem !important;
+    line-height: 1.05 !important;
+  }
+  .sports-page .sports-odd-button strong {
+    font-size: .82rem !important;
+  }
+  .sports-page .sports-detail-modal {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+  .sports-page .sports-provider-odds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .sports-page .sports-odds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
