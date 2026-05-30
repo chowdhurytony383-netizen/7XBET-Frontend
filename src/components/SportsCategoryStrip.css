@@ -1,5 +1,4 @@
-.sports-strip-section,
-.seven-sport-strip-section {
+.sports-strip-section {
   display: grid;
   gap: 14px;
 }
@@ -15,6 +14,122 @@
   margin: 0;
   font-size: clamp(1.45rem, 2.4vw, 2rem);
   letter-spacing: -.04em;
+}
+
+.sports-strip-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(126px, 1fr);
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+}
+
+.sport-tile {
+  min-height: 132px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.10), transparent 5rem),
+    linear-gradient(180deg, rgba(15, 33, 47, .98), rgba(5, 18, 30, .98));
+  color: #dbeafe;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 9px;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  box-shadow: 0 12px 34px rgba(0,0,0,.18);
+}
+
+.sport-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34,197,94,.55);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(34,197,94,.18), transparent 5rem),
+    linear-gradient(180deg, rgba(19, 43, 58, .98), rgba(5, 24, 39, .98));
+}
+
+.sport-tile span:nth-child(2) {
+  width: 100%;
+  padding: 0 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-weight: 900;
+}
+
+.sport-tile small {
+  color: #9fb1c7;
+  font-weight: 800;
+  font-size: .72rem;
+}
+
+.sport-tile-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 1000;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 24px rgba(0,0,0,.24);
+}
+
+.sport-tile-icon img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+@media (max-width: 720px) {
+  .sports-strip-section {
+    gap: 8px !important;
+  }
+
+  .sports-strip-section .section-row-title h2 {
+    font-size: 1.18rem !important;
+  }
+
+  .sports-strip-scroll {
+    grid-auto-columns: 86px !important;
+    gap: 8px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .sport-tile {
+    min-height: 88px !important;
+    border-radius: 12px !important;
+    gap: 4px !important;
+  }
+
+  .sport-tile-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 13px !important;
+    font-size: 1.35rem !important;
+  }
+
+  .sport-tile span:nth-child(2) {
+    font-size: .72rem !important;
+    padding: 0 4px !important;
+  }
+
+  .sport-tile small {
+    display: none;
+  }
+}
+
+/* =========================================================
+   7XBET new sports category rail support + compact mobile
+   ========================================================= */
+.sports-strip-section,
+.seven-sport-strip-section {
+  display: grid;
+  gap: 14px;
 }
 
 .seven-sports-category-rail {
@@ -85,26 +200,92 @@
 }
 
 @media (max-width: 720px) {
+  .sports-strip-section,
   .seven-sport-strip-section {
+    gap: 8px !important;
     margin-inline: calc(var(--page-x, 0px) * -1);
   }
+
+  .sports-strip-section .section-row-title,
   .seven-sport-strip-section .section-row-title {
-    padding-inline: 16px;
+    padding-inline: 12px !important;
   }
+
+  .sports-strip-section .section-row-title h2,
   .seven-sport-strip-section .section-row-title h2 {
-    font-size: 1.22rem;
+    font-size: 1.13rem !important;
+    line-height: 1.05 !important;
+    letter-spacing: -.045em !important;
   }
+
+  .sports-strip-section .view-all-link,
+  .seven-sport-strip-section .view-all-link {
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+  }
+
   .seven-sports-category-rail {
-    grid-auto-columns: 156px;
-    padding-inline: 16px;
+    grid-auto-columns: 112px !important;
+    gap: 8px !important;
+    padding-inline: 12px !important;
+    padding-bottom: 4px !important;
+    scrollbar-width: none;
   }
+
+  .seven-sports-category-rail::-webkit-scrollbar {
+    display: none;
+  }
+
   .seven-sport-pill-card {
-    min-height: 62px;
-    gap: 8px;
-    padding: 8px 10px;
+    min-height: 46px !important;
+    grid-template-columns: 30px minmax(0, 1fr) 26px !important;
+    gap: 6px !important;
+    border-radius: 18px !important;
+    padding: 6px 7px !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 20px rgba(0,0,0,.14) !important;
   }
+
   .seven-sport-pill-icon {
-    width: 40px;
-    height: 40px;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 10px !important;
+    font-size: 1rem !important;
+  }
+
+  .seven-sport-pill-card strong {
+    font-size: .72rem !important;
+    line-height: .98 !important;
+  }
+
+  .seven-sport-pill-card small {
+    min-width: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: .68rem !important;
+  }
+
+  /* legacy square tile fallback compacting */
+  .sports-strip-scroll {
+    grid-auto-columns: 76px !important;
+    gap: 7px !important;
+    padding-inline: 12px !important;
+  }
+
+  .sport-tile {
+    min-height: 74px !important;
+    border-radius: 11px !important;
+    gap: 3px !important;
+  }
+
+  .sport-tile-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 11px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .sport-tile span:nth-child(2) {
+    font-size: .66rem !important;
+    line-height: 1 !important;
   }
 }
