@@ -180,20 +180,63 @@ export function teamLogoClass(team, sportKey = '') {
 
 export function getTeamLogoUrl(team) {
   if (!team || typeof team !== 'object') return '';
-  return team.logo
-    || team.logoUrl
-    || team.image
-    || team.imageUrl
-    || team.image_path
-    || team.flag
-    || team.flagUrl
-    || team.badge
-    || team.raw?.logo
-    || team.raw?.logoUrl
-    || team.raw?.image
-    || team.raw?.imageUrl
-    || team.raw?.image_path
-    || '';
+  const candidates = [
+    team.logo,
+    team.logoUrl,
+    team.logoURL,
+    team.logo_url,
+    team.image,
+    team.imageUrl,
+    team.imageURL,
+    team.image_url,
+    team.image_path,
+    team.flag,
+    team.flagUrl,
+    team.flagURL,
+    team.flag_url,
+    team.badge,
+    team.badgeUrl,
+    team.badge_url,
+    team.icon,
+    team.country?.flag,
+    team.country?.flagUrl,
+    team.team?.logo,
+    team.team?.logoUrl,
+    team.competitor?.logo,
+    team.competitor?.logoUrl,
+    team.participant?.logo,
+    team.participant?.logoUrl,
+    team.raw?.logo,
+    team.raw?.logoUrl,
+    team.raw?.logo_url,
+    team.raw?.image,
+    team.raw?.imageUrl,
+    team.raw?.image_url,
+    team.raw?.image_path,
+    team.raw?.flag,
+    team.raw?.flagUrl,
+    team.raw?.flag_url,
+    team.raw?.badge,
+    team.raw?.badgeUrl,
+    team.raw?.badge_url,
+    team.raw?.team?.logo,
+    team.raw?.team?.logoUrl,
+    team.raw?.competitor?.logo,
+    team.raw?.competitor?.logoUrl,
+    team.raw?.participant?.logo,
+    team.raw?.participant?.logoUrl,
+  ];
+  const direct = candidates.find((value) => typeof value === 'string' && /^https?:\/\//i.test(value.trim()));
+  if (direct) return direct.trim();
+
+  const logoArray = team.logos || team.images || team.raw?.logos || team.raw?.images;
+  if (Array.isArray(logoArray)) {
+    const found = logoArray.find((item) => typeof item === 'string' && /^https?:\/\//i.test(item.trim()))
+      || logoArray.map((item) => item?.url || item?.href || item?.src).find((value) => typeof value === 'string' && /^https?:\/\//i.test(value.trim()));
+    if (found) return found.trim();
+  }
+
+  return '';
 }
 
 function sportPriorityFor(metaOrMatch = {}) {
@@ -339,7 +382,7 @@ export function normalizeMatchOdds(match) {
     })
     .filter((odd) => odd.selectionId && odd.price > 1)
     .sort((a, b) => a._priority - b._priority || String(a.marketName).localeCompare(String(b.marketName)) || String(a.label).localeCompare(String(b.label)))
-    .slice(0, 6);
+    .slice(0, 12);
 }
 
 export function statusClass(status = '') {
