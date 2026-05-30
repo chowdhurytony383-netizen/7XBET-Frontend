@@ -168,9 +168,27 @@ function colorIndexFor(value = '') {
   return (hash % 8) + 1;
 }
 
+
+const COUNTRY_FLAG_EMOJI = {
+  afghanistan: '🇦🇫', australia: '🇦🇺', bangladesh: '🇧🇩', canada: '🇨🇦', england: '🏴', india: '🇮🇳', ireland: '🇮🇪', namibia: '🇳🇦', nepal: '🇳🇵', netherlands: '🇳🇱', newzealand: '🇳🇿', pakistan: '🇵🇰', scotland: '🏴', southafrica: '🇿🇦', srilanka: '🇱🇰', unitedarabemirates: '🇦🇪', usa: '🇺🇸', unitedstates: '🇺🇸', westindies: '🌴', zimbabwe: '🇿🇼', oman: '🇴🇲', bahrain: '🇧🇭', qatar: '🇶🇦', kuwait: '🇰🇼', malaysia: '🇲🇾', singapore: '🇸🇬', hongkong: '🇭🇰', thailand: '🇹🇭', philippines: '🇵🇭', indonesia: '🇮🇩', france: '🇫🇷', italy: '🇮🇹', germany: '🇩🇪', spain: '🇪🇸', portugal: '🇵🇹', brazil: '🇧🇷', argentina: '🇦🇷', colombia: '🇨🇴', chile: '🇨🇱', japan: '🇯🇵', korea: '🇰🇷', china: '🇨🇳', russia: '🇷🇺', ukraine: '🇺🇦'
+};
+
+function countryFlagForTeamName(name = '') {
+  const clean = String(name || '').toLowerCase().replace(/women|men|county|fc|club|team|cricket|national|u19|u20|u21|u23|[^a-z0-9]/g, '');
+  if (!clean) return '';
+  if (COUNTRY_FLAG_EMOJI[clean]) return COUNTRY_FLAG_EMOJI[clean];
+  const found = Object.entries(COUNTRY_FLAG_EMOJI).find(([key]) => clean.includes(key) || key.includes(clean));
+  return found?.[1] || '';
+}
+
 export function teamLogoText(team) {
+  if (team && typeof team === 'object' && team.logoText && String(team.logoText).length <= 3) {
+    const flag = countryFlagForTeamName(getTeamName(team));
+    return flag || team.logoText;
+  }
   if (team && typeof team === 'object' && team.logoText) return team.logoText;
-  return shortTeamCode(getTeamName(team));
+  const flag = countryFlagForTeamName(getTeamName(team));
+  return flag || shortTeamCode(getTeamName(team));
 }
 
 export function teamLogoClass(team, sportKey = '') {
