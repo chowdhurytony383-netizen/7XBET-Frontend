@@ -43,59 +43,36 @@ function withTimeout(promise, ms = 4500, label = 'request') {
   ]);
 }
 
-function joinNameParts(...parts) {
-  const text = parts.map((part) => textValue(part, '')).filter(Boolean).join(' ').trim();
-  return text || '';
-}
-
 function textValue(value, fallback = '—') {
   if (value === undefined || value === null || value === '') return fallback;
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     const text = String(value).trim();
-    return text && text !== '[object Object]' && text !== '{}' ? text : fallback;
+    return text && text !== '[object Object]' ? text : fallback;
   }
   if (Array.isArray(value)) {
-    const text = value.map((item) => textValue(item, '')).filter(Boolean).slice(0, 12).join(', ');
+    const text = value.map((item) => textValue(item, '')).filter(Boolean).join(', ');
     return text || fallback;
   }
   if (typeof value === 'object') {
+    const scoreLike = scoreText(value, '');
+    if (scoreLike && scoreLike !== '[object Object]') return scoreLike;
+
     const direct = value.display
       ?? value.displayName
       ?? value.formatted
-      ?? value.fullname
-      ?? value.full_name
-      ?? value.fullName
-      ?? value.player_name
-      ?? value.playerName
-      ?? value.short_name
-      ?? value.shortName
-      ?? value.short_code
       ?? value.name
       ?? value.description
+      ?? value.short_code
       ?? value.label
       ?? value.title
-      ?? value.value
-      ?? value.result
-      ?? value.scoreName
-      ?? value.team?.name
-      ?? value.player?.fullname
-      ?? value.player?.full_name
-      ?? value.player?.fullName
-      ?? value.player?.display_name
-      ?? value.player?.displayName
-      ?? value.player?.name;
+      ?? value.value;
     if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
-
-    const name = joinNameParts(
-      value.firstname ?? value.first_name ?? value.firstName,
-      value.lastname ?? value.last_name ?? value.lastName,
-    );
-    if (name) return name;
-
-    const scoreLike = scoreText(value, '');
-    if (scoreLike && scoreLike !== '[object Object]' && scoreLike !== '{}') return scoreLike;
-
-    return fallback;
+    try {
+      const json = JSON.stringify(value);
+      return json && json !== '{}' ? json : fallback;
+    } catch (_error) {
+      return fallback;
+    }
   }
   return fallback;
 }
@@ -212,34 +189,17 @@ function StatisticsList({ items = [] }) {
   );
 }
 
-function lineupPlayerName(item = {}) {
-  return personValue(
-    item.player || item.participant || item.athlete || item.person || item.player_name || item.name || item.fullname || item.full_name,
-    'Player',
-  );
-}
-
-function lineupMeta(item = {}) {
-  const parts = [
-    personValue(item.position || item.player?.position || item.role || item.type, ''),
-    item.captain || item.is_captain ? 'Captain' : '',
-    item.wicketkeeper || item.wicket_keeper || item.is_wicket_keeper ? 'WK' : '',
-    item.substitution || item.substitute ? 'Sub' : '',
-  ].filter(Boolean);
-  return parts.join(' · ');
-}
-
 function LineupsList({ items = [] }) {
-  const limited = asArray(items).slice(0, 22);
+  const limited = asArray(items).slice(0, 16);
   if (!limited.length) return <p className="sports-detail-muted">Not available yet</p>;
 
   return (
-    <div className="sports-detail-lineups sports-detail-lineups-clean">
+    <div className="sports-detail-lineups">
       {limited.map((item, index) => (
         <div className="sports-detail-lineup" key={item.id || `${item.player_id || 'player'}-${index}`}>
-          <span>{item.jersey_number || item.number || item.shirt_number || index + 1}</span>
-          <strong>{lineupPlayerName(item)}</strong>
-          <small>{lineupMeta(item)}</small>
+          <span>{item.jersey_number || item.number || index + 1}</span>
+          <strong>{textValue(item.player?.display_name || item.player?.name || item.player_name || item.name, 'Player')}</strong>
+          <small>{textValue(item.position?.name || item.position_id || item.type || item.formation_position, '')}</small>
         </div>
       ))}
     </div>
@@ -276,7 +236,6 @@ function personValue(value, fallback = '') {
   if (typeof value === 'object') {
     const direct = value.display_name
       ?? value.displayName
-      ?? value.fullname
       ?? value.full_name
       ?? value.fullName
       ?? value.player_name
@@ -289,64 +248,14 @@ function personValue(value, fallback = '') {
       ?? value.value
       ?? value.player?.display_name
       ?? value.player?.displayName
-      ?? value.player?.fullname
       ?? value.player?.full_name
       ?? value.player?.fullName
       ?? value.player?.name
       ?? value.team?.name
       ?? value.competitor?.name;
     if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
-
-    const name = joinNameParts(
-      value.firstname ?? value.first_name ?? value.firstName ?? value.player?.firstname ?? value.player?.first_name ?? value.player?.firstName,
-      value.lastname ?? value.last_name ?? value.lastName ?? value.player?.lastname ?? value.player?.last_name ?? value.player?.lastName,
-    );
-    if (name) return name;
-  }
-  return fallback;
-}
-
-function stateValue(value, fallback = '') {
-  if (!valueLooksUseful(value)) return fallback;
-  if (typeof value !== 'object' || Array.isArray(value)) return textValue(value, fallback);
-  const clock = textValue(value.clock ?? value.minute ?? value.minutes ?? value.time ?? value.timer, '');
-  const period = textValue(value.period ?? value.inning ?? value.innings ?? value.current_period ?? value.currentPeriod, '');
-  const state = textValue(value.gameState ?? value.game_state ?? value.status ?? value.description ?? value.name, '');
-  return [period ? `P${period}` : '', clock ? `${clock}` : '', state].filter(Boolean).join(' · ') || fallback;
-}
-
-function formatBallEntry(ball) {
-  if (!valueLooksUseful(ball)) return '';
-  if (typeof ball === 'string' || typeof ball === 'number') return textValue(ball, '');
-  if (typeof ball !== 'object') return '';
-  const over = ball.over ?? ball.over_number ?? ball.overNumber ?? ball.ball ?? ball.ball_number ?? ball.ballNumber;
-  const run = ball.score?.runs ?? ball.runs ?? ball.run ?? ball.score ?? ball.value ?? ball.result;
-  const wicket = ball.wicket || ball.is_wicket || ball.isWicket || /wicket/i.test(`${ball.type || ball.name || ''}`);
-  const batter = personValue(ball.batsman || ball.batter || ball.player || ball.player_name || ball.batsman_name || '', '');
-  const label = wicket ? 'W' : textValue(run, '');
-  const suffix = batter ? ` ${batter}` : '';
-  return [over ? `${over}` : '', label ? `${label}` : textValue(ball.name || ball.description, '')].filter(Boolean).join(': ') + suffix;
-}
-
-function formatBallSequence(value, fallback = '') {
-  if (!valueLooksUseful(value)) return fallback;
-  if (typeof value === 'string') {
-    const parts = value.split(/\s*[·,|]\s*/).map((part) => part.trim()).filter(Boolean);
-    if (parts.length > 10) return parts.slice(-10).join(' · ');
-    return textValue(value, fallback);
-  }
-  const balls = Array.isArray(value)
-    ? value
-    : asArray(value?.data || value?.balls || value?.items || value?.values || value?.payload || value?.results);
-  if (balls.length) {
-    const compact = balls.map(formatBallEntry).filter(Boolean).slice(-10);
-    return compact.join(' · ') || fallback;
   }
   return textValue(value, fallback);
-}
-
-function rowClassName(label = '') {
-  return `sports-live-situation-card sports-live-field-${normalizeKey(label) || 'item'}`;
 }
 
 function findDeep(root, candidateKeys = [], options = {}) {
@@ -413,7 +322,7 @@ function normalizeLiveState(details = {}, event = {}) {
 
   if (cricket) {
     add('Current over', firstUseful(findDeep(source, ['overs', 'over', 'current_over', 'currentOver', 'over_number', 'overNumber'])));
-    add('Balls', firstUseful(findDeep(source, ['balls', 'ball', 'balls_bowled', 'ballsBowled'])), formatBallSequence);
+    add('Balls', firstUseful(findDeep(source, ['balls', 'ball', 'balls_bowled', 'ballsBowled'])));
     add('Batting team', firstUseful(findDeep(source, ['batting_team', 'battingTeam', 'current_batting_team', 'currentBattingTeam'])));
     add('Bowling team', firstUseful(findDeep(source, ['bowling_team', 'bowlingTeam', 'current_bowling_team', 'currentBowlingTeam'])));
     add('Striker', firstUseful(findDeep(source, ['striker', 'on_strike', 'onStrike', 'current_batter', 'currentBatter', 'batter', 'batsman', 'current_batsman', 'currentBatsman'])), personValue);
@@ -435,7 +344,7 @@ function normalizeLiveState(details = {}, event = {}) {
     add('Last event', firstUseful(findDeep(source, ['last_event', 'lastEvent', 'last_play', 'lastPlay', 'commentary'])));
   }
 
-  add('Game state', firstUseful(findDeep(source, ['game_state', 'gameState', 'state', 'status', 'description'])), stateValue);
+  add('Game state', firstUseful(findDeep(source, ['game_state', 'gameState', 'state', 'status', 'description'])));
   add('Last update', firstUseful(details?.lastProviderUpdate, event?.lastScoreUpdate, event?.updatedAt));
 
   return rows.slice(0, 14);
@@ -455,7 +364,7 @@ function LiveSituationPanel({ details = {}, event = {} }) {
   return (
     <div className="sports-live-situation-grid">
       {rows.map((row) => (
-        <div className={rowClassName(row.label)} key={`${row.label}:${row.value}`}>
+        <div className="sports-live-situation-card" key={`${row.label}:${row.value}`}>
           <span>{row.label}</span>
           <strong>{row.value}</strong>
         </div>
@@ -464,42 +373,17 @@ function LiveSituationPanel({ details = {}, event = {} }) {
   );
 }
 
-function genericItemTitle(item = {}, fallback = 'Item') {
-  return personValue(
-    item.player || item.participant || item.athlete || item.person || item.team || item.competitor || item.league
-      || item.player_name || item.playerName || item.name || item.display_name || item.displayName || item.fullname || item.full_name
-      || item.type?.name || item.type || item.description || item.group,
-    fallback,
-  );
-}
-
-function genericItemSubline(item = {}) {
-  const statParts = [];
-  const runs = item.runs ?? item.score ?? item.total ?? item.points ?? item.value;
-  const wickets = item.wickets ?? item.wkts;
-  const overs = item.overs ?? item.over;
-  if (runs !== undefined && runs !== null && runs !== '') statParts.push(`Total ${textValue(runs, '')}`);
-  if (overs !== undefined && overs !== null && overs !== '') statParts.push(`${textValue(overs, '')} overs`);
-  if (wickets !== undefined && wickets !== null && wickets !== '') statParts.push(`${textValue(wickets, '')} wkts`);
-
-  const direct = personValue(
-    item.position || item.role || item.country || item.country?.name || item.team?.name || item.league?.name || item.result || item.info,
-    '',
-  );
-  return statParts.length ? statParts.join(' · ') : direct;
-}
-
 function GenericDataList({ items = [], empty = 'Not available yet' }) {
   const limited = asArray(items).slice(0, 18);
   if (!limited.length) return <p className="sports-detail-muted">{empty}</p>;
 
   return (
-    <div className="sports-detail-list sports-detail-list-clean">
+    <div className="sports-detail-list">
       {limited.map((item, index) => (
-        <div className="sports-detail-list-row" key={item.id || item.player_id || item.team_id || `${genericItemTitle(item, 'row')}-${index}`}>
-          <span>{item.minute ?? item.time ?? item.position_number ?? item.position ?? item.rank ?? index + 1}</span>
-          <strong>{genericItemTitle(item, 'Item')}</strong>
-          <small>{genericItemSubline(item)}</small>
+        <div className="sports-detail-list-row" key={item.id || item.player_id || item.team_id || `${item.name || 'row'}-${index}`}>
+          <span>{item.minute ?? item.time ?? item.position ?? item.rank ?? index + 1}</span>
+          <strong>{textValue(item.name || item.player?.name || item.team?.name || item.type?.name || item.type || item.description || item.group || item.league?.name, 'Item')}</strong>
+          <small>{textValue(item.value ?? item.total ?? item.points ?? item.score ?? item.result ?? item.country?.name ?? item.info ?? compactJson(item.data), '')}</small>
         </div>
       ))}
     </div>
@@ -844,15 +728,6 @@ function ActiveMarketsPanel({ items }) {
   );
 }
 
-function hasRows(value) {
-  if (!value) return false;
-  if (Array.isArray(value)) return value.length > 0;
-  if (Array.isArray(value?.data)) return value.data.length > 0;
-  if (typeof value === 'object') return Object.keys(value).length > 0;
-  return Boolean(value);
-}
-
-
 function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betSlipCount = 0 }) {
   if (!data && !loading) return null;
 
@@ -927,77 +802,53 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betS
               <AllOddsMarketsPanel markets={details?.markets || details?.dbMarkets} odds={details?.odds} event={event} onSelect={onSelect} selectedIds={selectedIds} />
             </DetailsSection>
 
-            {hasRows(details?.activeMarkets) ? (
-              <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
-                <ActiveMarketsPanel items={details?.activeMarkets} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
+              <ActiveMarketsPanel items={details?.activeMarkets} />
+            </DetailsSection>
 
-            {hasRows(details?.futures) ? (
-              <DetailsSection icon={<Trophy size={18} />} title="Futures / outright markets">
-                <GenericDataList items={details?.futures} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Trophy size={18} />} title="Futures / outright markets">
+              <GenericDataList items={details?.futures} />
+            </DetailsSection>
 
-            {hasRows(details?.futuresOdds) ? (
-              <DetailsSection icon={<Ticket size={18} />} title="Futures odds">
-                <GenericDataList items={details?.futuresOdds} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Ticket size={18} />} title="Futures odds">
+              <GenericDataList items={details?.futuresOdds} />
+            </DetailsSection>
 
-            {hasRows(details?.leagues) || hasRows(details?.teamsCatalog) ? (
-              <DetailsSection icon={<Info size={18} />} title="League / team catalog">
-                <GenericDataList items={[...(asArray(details?.leagues).slice(0, 10)), ...(asArray(details?.teamsCatalog).slice(0, 10))]} empty="No league/team catalog returned for this fixture." />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Info size={18} />} title="League / team catalog">
+              <GenericDataList items={[...(asArray(details?.leagues).slice(0, 10)), ...(asArray(details?.teamsCatalog).slice(0, 10))]} empty="No league/team catalog returned for this fixture." />
+            </DetailsSection>
 
-            {hasRows(details?.events) ? (
-              <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
-                <EventList items={details?.events} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
+              <EventList items={details?.events} />
+            </DetailsSection>
 
-            {hasRows(details?.statistics) ? (
-              <DetailsSection icon={<BarChart3 size={18} />} title="Statistics">
-                <StatisticsList items={details?.statistics} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<BarChart3 size={18} />} title="Statistics">
+              <StatisticsList items={details?.statistics} />
+            </DetailsSection>
 
-            {hasRows(details?.lineups) ? (
-              <DetailsSection icon={<Users size={18} />} title="Lineups / players">
-                <LineupsList items={details?.lineups} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Users size={18} />} title="Lineups / players">
+              <LineupsList items={details?.lineups} />
+            </DetailsSection>
 
-            {hasRows(details?.scores || event?.scores || event?.score) ? (
-              <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
-                <ScoresPanel scores={details?.scores || event?.scores || event?.score} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
+              <ScoresPanel scores={details?.scores || event?.scores || event?.score} />
+            </DetailsSection>
 
-            {hasRows(details?.players || details?.playerResults) ? (
-              <DetailsSection icon={<Users size={18} />} title="Player statistics">
-                <GenericDataList items={details?.players || details?.playerResults} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Users size={18} />} title="Player statistics">
+              <GenericDataList items={details?.players} />
+            </DetailsSection>
 
-            {hasRows(details?.squads) ? (
-              <DetailsSection icon={<Users size={18} />} title="Squads / rosters">
-                <GenericDataList items={details?.squads} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Users size={18} />} title="Squads / rosters">
+              <GenericDataList items={details?.squads} />
+            </DetailsSection>
 
-            {hasRows(details?.injuries) ? (
-              <DetailsSection icon={<ShieldCheck size={18} />} title="Injuries / availability">
-                <GenericDataList items={details?.injuries} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<ShieldCheck size={18} />} title="Injuries / availability">
+              <GenericDataList items={details?.injuries} />
+            </DetailsSection>
 
-            {hasRows(details?.standings) ? (
-              <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
-                <GenericDataList items={details?.standings} />
-              </DetailsSection>
-            ) : null}
+            <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
+              <GenericDataList items={details?.standings} />
+            </DetailsSection>
 
             {showRawProviderPayload ? (
               <DetailsSection icon={<Info size={18} />} title="Raw feed payload">
@@ -1186,7 +1037,7 @@ export default function SportsPage() {
   const [matchDetails, setMatchDetails] = useState(null);
   const [overview, setOverview] = useState(null);
   const [viewMode, setViewMode] = useState(searchParams.get('mode') || 'live');
-  const maxVisibleMatches = Math.max(12, Number(import.meta.env.VITE_SPORTS_PAGE_MATCH_LIMIT || 24));
+  const maxVisibleMatches = Math.max(12, Number(import.meta.env.VITE_SPORTS_PAGE_MATCH_LIMIT || 48));
 
   const load = useCallback(async ({ silent = false } = {}) => {
     if (!silent) setLoading(true);
@@ -1486,9 +1337,9 @@ export default function SportsPage() {
 
 
       <div className="sports-trust-strip">
-        <span><ShieldCheck size={16} /> Real 7XBET odds</span>
-        <span><Radio size={16} /> Live score updates</span>
-        <span><Ticket size={16} /> Locked/suspended odds protected</span>
+        <span><ShieldCheck size={16} /> Real odds</span>
+        <span><Radio size={16} /> Live scores</span>
+        <span><Ticket size={16} /> Protected odds</span>
       </div>
 
       <div className="sports-layout-grid">
