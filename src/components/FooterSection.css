@@ -228,6 +228,45 @@
   }
 }
 
+
+/* Mobile full-width customer support bar fix
+   Keeps the footer padding for text columns, but makes the support banner
+   stretch almost edge-to-edge like the demo screenshot without creating horizontal scroll. */
+@media (max-width: 768px) {
+  .footer-wrapper {
+    overflow-x: hidden;
+  }
+
+  .footer-support-cta {
+    box-sizing: border-box;
+    width: calc(100vw - 16px);
+    max-width: none;
+    margin-left: calc(50% - 50vw + 8px);
+    margin-right: calc(50% - 50vw + 8px);
+    margin-bottom: 18px;
+  }
+}
+
+@media (max-width: 430px) {
+  .footer-support-cta {
+    width: calc(100vw - 12px);
+    margin-left: calc(50% - 50vw + 6px);
+    margin-right: calc(50% - 50vw + 6px);
+    min-height: 72px;
+    padding: 10px 12px;
+  }
+
+  .footer-support-cta-copy strong {
+    font-size: clamp(14px, 4.2vw, 17px);
+    white-space: nowrap;
+  }
+
+  .footer-support-cta-copy span {
+    font-size: clamp(12px, 3.5vw, 14px);
+    white-space: nowrap;
+  }
+}
+
 .footer-brand {
   margin-bottom: 30px;
 }
