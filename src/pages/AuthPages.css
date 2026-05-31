@@ -1352,3 +1352,108 @@
     font-size: .7rem !important;
   }
 }
+
+/* Agent login mobile compact premium layout */
+.agent-login-page {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(34,197,94,.18), transparent 22rem),
+    radial-gradient(circle at 92% 12%, rgba(59,130,246,.14), transparent 24rem),
+    linear-gradient(180deg, #03111b 0%, #041827 46%, #020c14 100%);
+}
+
+.agent-login-page .auth-card {
+  border-color: rgba(34, 197, 94, .16);
+}
+
+@media (max-width: 760px) {
+  .agent-login-page {
+    min-height: 100dvh;
+    grid-template-columns: 1fr;
+    align-content: start;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .agent-login-page .auth-visual {
+    padding: 16px 10px 4px;
+    text-align: center;
+    align-content: start;
+    justify-items: center;
+    min-height: auto;
+  }
+
+  .agent-login-page .auth-visual h1 {
+    margin: 12px 0 6px;
+    font-size: clamp(2rem, 12vw, 3rem);
+    line-height: .96;
+  }
+
+  .agent-login-page .auth-visual p {
+    font-size: .88rem;
+    line-height: 1.45;
+    max-width: 340px;
+    margin: 0;
+  }
+
+  .agent-login-page .auth-panel {
+    padding: 0;
+    border-left: 0;
+    background: transparent;
+    backdrop-filter: none;
+    align-content: start;
+  }
+
+  .agent-login-page .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(15,33,47,.9);
+  }
+
+  .agent-login-page .auth-card h2 {
+    font-size: 1.45rem;
+    margin-bottom: 6px;
+  }
+
+  .agent-login-page .auth-card p {
+    margin-bottom: 14px;
+    font-size: .84rem;
+    line-height: 1.4;
+  }
+
+  .agent-login-page .form-grid {
+    gap: 12px;
+  }
+
+  .agent-login-page .input-group {
+    gap: 6px;
+  }
+
+  .agent-login-page .input-group label {
+    font-size: .78rem;
+  }
+
+  .agent-login-page .input-group input {
+    min-height: 42px;
+    border-radius: 12px;
+    padding: 0 12px;
+  }
+
+  .agent-login-page .password-field input {
+    padding-right: 46px;
+  }
+
+  .agent-login-page .password-field button {
+    width: 34px;
+    height: 34px;
+    right: 7px;
+    bottom: 4px;
+    border-radius: 10px;
+  }
+
+  .agent-login-page .btn-full {
+    min-height: 42px;
+    border-radius: 12px;
+  }
+}

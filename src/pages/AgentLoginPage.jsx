@@ -31,7 +31,7 @@ export default function AgentLoginPage() {
   };
 
   return (
-    <section className="auth-page">
+    <section className="auth-page agent-login-page">
       <div className="auth-visual">
         <Logo />
         <h1>Agent panel login.</h1>
