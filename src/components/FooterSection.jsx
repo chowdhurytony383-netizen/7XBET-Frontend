@@ -6,11 +6,27 @@ import {
   FaTelegramPlane,
   FaAndroid,
   FaApple,
+  FaHeadset,
+  FaChevronRight,
 } from "react-icons/fa";
 
 const FooterSection = () => {
   return (
     <footer className="footer-wrapper">
+      <Link className="footer-support-cta" to="/customer-support" aria-label="Open 7XBET customer support">
+        <span className="footer-support-cta-art" aria-hidden="true">
+          <span className="footer-support-headset"><FaHeadset /></span>
+          <span className="footer-support-bubble">•••</span>
+        </span>
+
+        <span className="footer-support-cta-copy">
+          <strong>CUSTOMER SUPPORT</strong>
+          <span>Ask any questions</span>
+        </span>
+
+        <span className="footer-support-cta-arrow" aria-hidden="true"><FaChevronRight /></span>
+      </Link>
+
       <div className="footer-top">
         <div className="footer-brand">
           <Link className="footer-logo" to="/" aria-label="7XBET home">
