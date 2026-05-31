@@ -356,3 +356,62 @@
     font-size: .52rem !important;
   }
 }
+
+/* 7XBET final home sportsbook rail polish: compact cards, round logos, 3 primary odds. */
+@media (min-width: 901px) {
+  .seven-sports-rail {
+    grid-auto-columns: minmax(300px, 340px) !important;
+    gap: 12px !important;
+  }
+
+  .seven-sports-card {
+    min-height: 210px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .seven-home-sports {
+    gap: 12px !important;
+  }
+
+  .seven-sports-rail {
+    grid-auto-columns: minmax(238px, 70vw) !important;
+    gap: 9px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .seven-sports-card {
+    min-height: 158px !important;
+    border-radius: 14px !important;
+  }
+
+  .seven-sports-card-head {
+    min-height: 34px !important;
+    padding: 6px 7px !important;
+  }
+
+  .seven-match-score-row {
+    min-height: 32px !important;
+    margin-inline: 7px !important;
+  }
+
+  .seven-home-odds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    padding: 0 7px 7px !important;
+  }
+
+  .seven-home-odds-grid .seven-odd-button:nth-child(n + 4) {
+    display: none !important;
+  }
+
+  .seven-odd-button {
+    min-height: 37px !important;
+  }
+
+  .seven-sport-icon,
+  .home-team-logo {
+    border-radius: 50% !important;
+  }
+}
