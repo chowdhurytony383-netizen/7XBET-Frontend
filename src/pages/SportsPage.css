@@ -3364,3 +3364,225 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
+
+/* =========================================================
+   7XBET final production polish: clean, compact desktop/mobile sports UI.
+   Keeps real provider data, hides raw JSON-style noise, and makes odds/cards dense.
+   ========================================================= */
+.sports-page .sports-category-block,
+.sports-page .sports-live-card,
+.sports-detail-modal,
+.sports-detail-section,
+.sports-provider-market,
+.sports-provider-odd-card,
+.sports-odd-button {
+  box-sizing: border-box;
+}
+
+@media (min-width: 900px) {
+  .sports-page .sports-category-block {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sports-page .sports-category-heading,
+  .sports-page .sports-list-hint {
+    grid-column: 1 / -1;
+  }
+
+  .sports-page .sports-live-card {
+    min-height: 228px;
+  }
+}
+
+.sports-detail-list-clean .sports-detail-list-row small:empty,
+.sports-detail-lineups-clean .sports-detail-lineup small:empty {
+  display: none;
+}
+
+.sports-live-field-balls {
+  grid-column: span 2;
+}
+
+.sports-live-field-balls strong,
+.sports-live-field-lastballplay strong,
+.sports-live-field-goalscorers strong {
+  display: block;
+  max-height: 88px;
+  overflow: auto;
+  padding-right: 3px;
+  scrollbar-width: thin;
+}
+
+.sports-live-field-striker strong,
+.sports-live-field-nonstriker strong,
+.sports-live-field-currentbowler strong {
+  font-size: .92rem !important;
+}
+
+.sports-detail-list-row small,
+.sports-detail-lineup small {
+  overflow-wrap: anywhere;
+}
+
+.sports-detail-list-row strong,
+.sports-detail-lineup strong {
+  white-space: normal;
+}
+
+.sports-provider-odd-card small,
+.sports-provider-market > strong small,
+.sports-main-market-card small {
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+@media (min-width: 1180px) {
+  .sports-detail-body {
+    align-items: start;
+  }
+
+  .sports-detail-body > .sports-detail-section {
+    min-height: 0;
+  }
+
+  .sports-detail-body > .sports-detail-section:has(.sports-market-browser) {
+    grid-column: 1 / -1 !important;
+  }
+
+  .sports-provider-markets-premium {
+    grid-template-columns: repeat(3, minmax(250px, 1fr)) !important;
+  }
+
+  .sports-provider-odds-grid-clickable {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .sports-page {
+    gap: 8px !important;
+  }
+
+  .sports-layout-grid {
+    margin-top: 4px !important;
+  }
+
+  .sports-category-block {
+    gap: 7px !important;
+  }
+
+  .sports-category-heading {
+    display: none !important;
+  }
+
+  .sports-live-title-row {
+    margin-top: 4px !important;
+  }
+
+  .sports-live-card {
+    margin: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .sports-live-card::before {
+    opacity: .35 !important;
+  }
+
+  .sports-live-card-top,
+  .sports-live-card-top-clickable {
+    min-height: 0 !important;
+  }
+
+  .sports-card-title-block h3,
+  .sports-live-card h3 {
+    max-height: 2.25em;
+  }
+
+  .sports-score-board {
+    background: rgba(1, 7, 20, .74) !important;
+  }
+
+  .sports-team-row {
+    min-height: 34px !important;
+  }
+
+  .sports-team-row strong {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .sports-team-row b {
+    font-size: .9rem !important;
+  }
+
+  .sports-odds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .sports-odd-button {
+    box-shadow: none !important;
+  }
+
+  .sports-detail-modal {
+    background:
+      radial-gradient(circle at 18% 0%, rgba(34, 197, 94, .08), transparent 36%),
+      linear-gradient(180deg, rgba(5, 13, 32, .99), rgba(2, 7, 22, .99)) !important;
+  }
+
+  .sports-detail-body {
+    gap: 6px !important;
+  }
+
+  .sports-detail-section {
+    border-color: rgba(130, 166, 227, .14) !important;
+  }
+
+  .sports-live-field-balls {
+    grid-column: 1 / -1 !important;
+  }
+
+  .sports-live-field-balls strong,
+  .sports-live-field-lastballplay strong,
+  .sports-live-field-goalscorers strong {
+    max-height: 56px !important;
+  }
+
+  .sports-provider-markets-premium {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sports-provider-odds-grid-clickable,
+  .sports-provider-odds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .sports-provider-odd-card {
+    min-height: 42px !important;
+  }
+
+  .sports-market-browser-head small {
+    display: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .sports-page .sports-tabs-counts button {
+    max-width: 148px;
+  }
+
+  .sports-page .sports-tabs-counts button span:not(:first-child) {
+    display: none;
+  }
+
+  .sports-card-actions .sports-details-button {
+    min-width: 70px !important;
+  }
+
+  .sports-detail-grid,
+  .sports-live-situation-grid,
+  .sports-detail-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
