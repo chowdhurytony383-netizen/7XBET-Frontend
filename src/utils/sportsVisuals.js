@@ -196,13 +196,69 @@ export function teamLogoClass(team, sportKey = '') {
   return `team-logo-${colorIndexFor(`${sportKey}:${getTeamName(team)}`)}`;
 }
 
+function firstLogoUrl(...values) {
+  for (const value of values) {
+    if (!value) continue;
+    if (typeof value === 'string') {
+      const text = value.trim();
+      if (/^https?:\/\//i.test(text) || /^\//.test(text)) return text;
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const found = firstLogoUrl(...value);
+      if (found) return found;
+      continue;
+    }
+    if (typeof value === 'object') {
+      const found = firstLogoUrl(
+        value.url,
+        value.href,
+        value.src,
+        value.path,
+        value.logo,
+        value.logoUrl,
+        value.logoURL,
+        value.logo_url,
+        value.logo_path,
+        value.logoPath,
+        value.image,
+        value.imageUrl,
+        value.imageURL,
+        value.image_url,
+        value.image_path,
+        value.imagePath,
+        value.flag,
+        value.flagUrl,
+        value.flagURL,
+        value.flag_url,
+        value.flag_path,
+        value.badge,
+        value.badgeUrl,
+        value.badge_url,
+        value.thumbnail,
+        value.thumbnailUrl,
+        value.country?.flag,
+        value.country?.flagUrl,
+        value.country?.flag_url,
+        value.team,
+        value.competitor,
+        value.participant,
+        value.raw
+      );
+      if (found) return found;
+    }
+  }
+  return '';
+}
+
 export function getTeamLogoUrl(team) {
   if (!team || typeof team !== 'object') return '';
-  const candidates = [
+  return firstLogoUrl(
     team.logo,
     team.logoUrl,
     team.logoURL,
     team.logo_url,
+    team.logo_path,
     team.image,
     team.imageUrl,
     team.imageURL,
@@ -216,45 +272,14 @@ export function getTeamLogoUrl(team) {
     team.badgeUrl,
     team.badge_url,
     team.icon,
-    team.country?.flag,
-    team.country?.flagUrl,
-    team.team?.logo,
-    team.team?.logoUrl,
-    team.competitor?.logo,
-    team.competitor?.logoUrl,
-    team.participant?.logo,
-    team.participant?.logoUrl,
-    team.raw?.logo,
-    team.raw?.logoUrl,
-    team.raw?.logo_url,
-    team.raw?.image,
-    team.raw?.imageUrl,
-    team.raw?.image_url,
-    team.raw?.image_path,
-    team.raw?.flag,
-    team.raw?.flagUrl,
-    team.raw?.flag_url,
-    team.raw?.badge,
-    team.raw?.badgeUrl,
-    team.raw?.badge_url,
-    team.raw?.team?.logo,
-    team.raw?.team?.logoUrl,
-    team.raw?.competitor?.logo,
-    team.raw?.competitor?.logoUrl,
-    team.raw?.participant?.logo,
-    team.raw?.participant?.logoUrl,
-  ];
-  const direct = candidates.find((value) => typeof value === 'string' && /^https?:\/\//i.test(value.trim()));
-  if (direct) return direct.trim();
-
-  const logoArray = team.logos || team.images || team.raw?.logos || team.raw?.images;
-  if (Array.isArray(logoArray)) {
-    const found = logoArray.find((item) => typeof item === 'string' && /^https?:\/\//i.test(item.trim()))
-      || logoArray.map((item) => item?.url || item?.href || item?.src).find((value) => typeof value === 'string' && /^https?:\/\//i.test(value.trim()));
-    if (found) return found.trim();
-  }
-
-  return '';
+    team.logos,
+    team.images,
+    team.country,
+    team.team,
+    team.competitor,
+    team.participant,
+    team.raw
+  );
 }
 
 function sportPriorityFor(metaOrMatch = {}) {
