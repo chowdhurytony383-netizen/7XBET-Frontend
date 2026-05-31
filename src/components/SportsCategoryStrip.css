@@ -161,3 +161,47 @@
     font-size: .68rem !important;
   }
 }
+
+/* =========================================================
+   7XBET mobile left-edge safe hotfix for sports category rail
+   Keeps first category pill aligned with page content, not clipped.
+   ========================================================= */
+@media (max-width: 720px) {
+  .sports-strip-section,
+  .seven-sport-strip-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .seven-sport-strip-section .section-row-title,
+  .sports-strip-section .section-row-title {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .seven-sports-category-rail {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 12px !important;
+    transform: none !important;
+    translate: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-padding-left: 8px !important;
+    box-sizing: border-box !important;
+    contain: inline-size !important;
+  }
+
+  .seven-sport-pill-card:first-child {
+    margin-left: 0 !important;
+  }
+}
