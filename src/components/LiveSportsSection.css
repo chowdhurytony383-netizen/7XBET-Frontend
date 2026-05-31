@@ -357,49 +357,108 @@
   }
 }
 
-/* 7XBET final home sportsbook rail polish: compact cards, round logos, 3 primary odds. */
-@media (min-width: 901px) {
-  .seven-sports-rail {
-    grid-auto-columns: minmax(300px, 340px) !important;
-    gap: 12px !important;
-  }
-
-  .seven-sports-card {
-    min-height: 210px !important;
-  }
-}
-
+/* =========================================================
+   7XBET HOME SPORTS CARDS — compact height + wider mobile card
+   User requested: card up/down smaller, left/right longer.
+   Applies only to Home page Live Sports / Pre-match horizontal cards.
+   ========================================================= */
 @media (max-width: 720px) {
   .seven-home-sports {
-    gap: 12px !important;
+    gap: 14px !important;
+    margin-inline: -6px !important;
+    overflow: visible !important;
+  }
+
+  .seven-sports-rail-block {
+    gap: 8px !important;
+  }
+
+  .seven-rail-title {
+    padding-inline: 12px !important;
   }
 
   .seven-sports-rail {
-    grid-auto-columns: minmax(238px, 70vw) !important;
-    gap: 9px !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    grid-auto-columns: calc(100dvw - 30px) !important;
+    gap: 12px !important;
+    padding: 0 12px 8px !important;
+    scroll-padding-inline: 12px !important;
+    scrollbar-width: none !important;
+  }
+
+  .seven-sports-rail::-webkit-scrollbar {
+    display: none !important;
   }
 
   .seven-sports-card {
-    min-height: 158px !important;
-    border-radius: 14px !important;
+    min-height: 148px !important;
+    gap: 4px !important;
+    border-radius: 16px !important;
   }
 
   .seven-sports-card-head {
     min-height: 34px !important;
-    padding: 6px 7px !important;
+    padding: 5px 8px !important;
+    gap: 6px !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+  }
+
+  .seven-sports-card-head span:nth-child(2) {
+    font-size: .76rem !important;
+    line-height: 1 !important;
+  }
+
+  .seven-sports-card-head b {
+    padding: 4px 7px !important;
+    font-size: .62rem !important;
+  }
+
+  .seven-sport-icon,
+  .home-team-logo {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+    font-size: .68rem !important;
   }
 
   .seven-match-score-row {
-    min-height: 32px !important;
-    margin-inline: 7px !important;
+    min-height: 31px !important;
+    margin: 0 8px !important;
+    padding: 4px 7px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
+  }
+
+  .seven-match-score-row div {
+    gap: 6px !important;
+  }
+
+  .seven-match-score-row strong {
+    font-size: .78rem !important;
+    line-height: 1 !important;
+  }
+
+  .seven-match-score-row > span {
+    font-size: .86rem !important;
+    line-height: 1 !important;
+    max-width: 154px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .seven-market-title {
+    margin: 1px 10px 0 !important;
+    font-size: .74rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .seven-home-odds-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 5px !important;
-    padding: 0 7px 7px !important;
+    gap: 6px !important;
+    padding: 0 8px 7px !important;
   }
 
   .seven-home-odds-grid .seven-odd-button:nth-child(n + 4) {
@@ -407,166 +466,34 @@
   }
 
   .seven-odd-button {
-    min-height: 37px !important;
-  }
-
-  .seven-sport-icon,
-  .home-team-logo {
-    border-radius: 50% !important;
-  }
-}
-
-/* =========================================================
-   7XBET mobile left-edge safe hotfix
-   Fixes sportsbook rails/cards being clipped on the left side in phone view.
-   ========================================================= */
-@media (max-width: 720px) {
-  .live-sports-section.seven-home-sports,
-  .seven-home-sports {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-
-  .seven-home-sports .seven-sports-rail-block {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-
-  .seven-home-sports .seven-rail-title {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-    box-sizing: border-box !important;
-  }
-
-  .seven-home-sports .seven-sports-rail {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 8px !important;
-    padding-right: 12px !important;
-    transform: none !important;
-    translate: none !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    overscroll-behavior-inline: contain !important;
-    scroll-padding-left: 8px !important;
-    grid-auto-columns: minmax(238px, 70vw) !important;
-    box-sizing: border-box !important;
-    contain: inline-size !important;
-  }
-
-  .seven-home-sports .seven-sports-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    scroll-snap-align: start !important;
-    box-sizing: border-box !important;
-  }
-
-  .seven-home-sports .seven-sports-card:first-child {
-    margin-left: 0 !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .seven-home-sports .seven-sports-rail {
-    grid-auto-columns: minmax(226px, 72vw) !important;
-    padding-left: 7px !important;
-    padding-right: 10px !important;
-    scroll-padding-left: 7px !important;
-  }
-}
-
-/* =========================================================
-   7XBET mobile wide/long match cards hotfix
-   Makes each Live / Pre-match card almost full phone width,
-   while keeping 3 odds buttons visible and the left edge safe.
-   ========================================================= */
-@media (max-width: 720px) {
-  .live-sports-section.seven-home-sports,
-  .seven-home-sports {
-    overflow: hidden !important;
-  }
-
-  .seven-home-sports .seven-sports-rail {
-    grid-auto-columns: minmax(318px, calc(100vw - 28px)) !important;
-    gap: 14px !important;
-    padding-left: 8px !important;
-    padding-right: 14px !important;
-    scroll-padding-left: 8px !important;
-    scroll-snap-type: x mandatory !important;
-  }
-
-  .seven-home-sports .seven-sports-card {
-    min-height: 174px !important;
-    border-radius: 17px !important;
-  }
-
-  .seven-home-sports .seven-sports-card-head {
-    min-height: 39px !important;
-    padding: 7px 9px !important;
-    grid-template-columns: 31px minmax(0, 1fr) auto !important;
-  }
-
-  .seven-home-sports .seven-match-score-row {
     min-height: 35px !important;
-    margin-left: 9px !important;
-    margin-right: 9px !important;
-    padding: 5px 8px !important;
+    border-radius: 10px !important;
+    padding: 3px 5px !important;
   }
 
-  .seven-home-sports .seven-market-title {
-    margin-left: 10px !important;
-    margin-right: 10px !important;
-    font-size: .82rem !important;
+  .seven-odd-button small {
+    font-size: .56rem !important;
+    line-height: .95 !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  .seven-home-sports .seven-home-odds-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 7px !important;
-    padding-left: 9px !important;
-    padding-right: 9px !important;
-    padding-bottom: 9px !important;
-  }
-
-  .seven-home-sports .seven-home-odds-grid .seven-odd-button:nth-child(n + 4) {
-    display: none !important;
-  }
-
-  .seven-home-sports .seven-odd-button {
-    min-height: 43px !important;
-    border-radius: 11px !important;
-  }
-
-  .seven-home-sports .seven-odd-button small {
-    font-size: .58rem !important;
-  }
-
-  .seven-home-sports .seven-odd-button strong {
-    font-size: .9rem !important;
+  .seven-odd-button strong {
+    font-size: .78rem !important;
+    line-height: 1 !important;
   }
 }
 
 @media (max-width: 380px) {
-  .seven-home-sports .seven-sports-rail {
-    grid-auto-columns: minmax(300px, calc(100vw - 22px)) !important;
-    gap: 12px !important;
-    padding-left: 6px !important;
-    padding-right: 10px !important;
-    scroll-padding-left: 6px !important;
+  .seven-sports-rail {
+    grid-auto-columns: calc(100dvw - 24px) !important;
+    padding-inline: 10px !important;
+    scroll-padding-inline: 10px !important;
   }
 
-  .seven-home-sports .seven-home-odds-grid {
-    gap: 5px !important;
+  .seven-home-sports {
+    margin-inline: -4px !important;
   }
 }
