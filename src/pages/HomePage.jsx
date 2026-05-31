@@ -82,6 +82,68 @@ const JILI_CATEGORY_ID_MAP = {
   8: 'casino',
 };
 
+const HOME_PROMO_BARS = [
+  '/images/home-promo-bars/bar-01.webp',
+  '/images/home-promo-bars/bar-02.webp',
+  '/images/home-promo-bars/bar-03.webp',
+  '/images/home-promo-bars/bar-04.webp',
+  '/images/home-promo-bars/bar-05.webp',
+  '/images/home-promo-bars/bar-06.webp',
+  '/images/home-promo-bars/bar-07.webp',
+  '/images/home-promo-bars/bar-08.webp',
+  '/images/home-promo-bars/bar-09.webp',
+  '/images/home-promo-bars/bar-10.webp',
+  '/images/home-promo-bars/bar-11.webp',
+  '/images/home-promo-bars/bar-12.webp',
+  '/images/home-promo-bars/bar-13.webp',
+  '/images/home-promo-bars/bar-14.webp',
+];
+
+function HomePromoBarCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (HOME_PROMO_BARS.length <= 1) return undefined;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % HOME_PROMO_BARS.length);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="home-promo-bar" aria-label="7XBET promotion banners">
+      <div
+        className="home-promo-bar-track"
+        style={{ transform: `translate3d(-${activeIndex * 100}%, 0, 0)` }}
+      >
+        {HOME_PROMO_BARS.map((src, index) => (
+          <Link
+            className="home-promo-bar-slide"
+            key={src}
+            to="/promotions"
+            aria-label={`Open 7XBET promotion ${index + 1}`}
+          >
+            <img
+              src={src}
+              alt={`7XBET promotion ${index + 1}`}
+              loading={index <= 1 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </Link>
+        ))}
+      </div>
+
+      <div className="home-promo-bar-dots" aria-hidden="true">
+        {HOME_PROMO_BARS.map((src, index) => (
+          <span key={`${src}-dot`} className={index === activeIndex ? 'is-active' : ''} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function pickJiliGameName(raw = {}) {
   const candidates = [
     raw.displayName,
@@ -601,6 +663,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <HomePromoBarCarousel />
 
         <SportsCategoryStrip categories={sportsCategories} />
 
