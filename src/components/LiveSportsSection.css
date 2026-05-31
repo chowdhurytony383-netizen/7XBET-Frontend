@@ -497,3 +497,97 @@
     margin-inline: -4px !important;
   }
 }
+
+/* =========================================================
+   FINAL FIX — 7XBET mobile home sports left-edge alignment
+   Purpose: stop Live/Pre-match cards and loading states from
+   bleeding/cutting on the left while keeping cards wide.
+   ========================================================= */
+@media (max-width: 720px) {
+  .live-sports-section.seven-home-sports {
+    --seven-mobile-safe-x: clamp(10px, 3.2vw, 14px);
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: var(--seven-mobile-safe-x) !important;
+    padding-right: var(--seven-mobile-safe-x) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-sports-rail-block {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-rail-title {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    box-sizing: border-box !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-sports-rail {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin-left: calc(var(--seven-mobile-safe-x) * -1) !important;
+    margin-right: calc(var(--seven-mobile-safe-x) * -1) !important;
+    padding-left: var(--seven-mobile-safe-x) !important;
+    padding-right: var(--seven-mobile-safe-x) !important;
+    padding-top: 0 !important;
+    padding-bottom: 8px !important;
+    gap: 12px !important;
+    grid-auto-columns: calc(100dvw - (var(--seven-mobile-safe-x) * 2)) !important;
+    scroll-padding-left: var(--seven-mobile-safe-x) !important;
+    scroll-padding-right: var(--seven-mobile-safe-x) !important;
+    scroll-snap-type: x proximity !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-inline: contain !important;
+    box-sizing: border-box !important;
+    scrollbar-width: none !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-sports-rail::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-sports-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    scroll-snap-align: start !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .live-sports-section.seven-home-sports > .empty-state {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    min-height: 165px !important;
+    padding: 22px 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .live-sports-section.seven-home-sports .seven-match-score-row {
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .live-sports-section.seven-home-sports {
+    --seven-mobile-safe-x: 10px;
+  }
+}

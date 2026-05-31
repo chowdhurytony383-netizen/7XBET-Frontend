@@ -205,3 +205,63 @@
     margin-left: 0 !important;
   }
 }
+
+/* =========================================================
+   FINAL FIX — 7XBET mobile sports category left-edge alignment
+   Keeps the first category pill fully inside the viewport.
+   ========================================================= */
+@media (max-width: 720px) {
+  .sports-strip-section.seven-sport-strip-section,
+  .seven-sport-strip-section {
+    --seven-mobile-safe-x: clamp(10px, 3.2vw, 14px);
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: var(--seven-mobile-safe-x) !important;
+    padding-right: var(--seven-mobile-safe-x) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .sports-strip-section.seven-sport-strip-section .section-row-title,
+  .seven-sport-strip-section .section-row-title {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    box-sizing: border-box !important;
+  }
+
+  .seven-sport-strip-section .seven-sports-category-rail,
+  .sports-strip-section.seven-sport-strip-section .seven-sports-category-rail {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin-left: calc(var(--seven-mobile-safe-x) * -1) !important;
+    margin-right: calc(var(--seven-mobile-safe-x) * -1) !important;
+    padding-left: var(--seven-mobile-safe-x) !important;
+    padding-right: var(--seven-mobile-safe-x) !important;
+    padding-top: 0 !important;
+    padding-bottom: 7px !important;
+    scroll-padding-left: var(--seven-mobile-safe-x) !important;
+    scroll-padding-right: var(--seven-mobile-safe-x) !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    box-sizing: border-box !important;
+    scrollbar-width: none !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .seven-sport-strip-section .seven-sports-category-rail::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .sports-strip-section.seven-sport-strip-section,
+  .seven-sport-strip-section {
+    --seven-mobile-safe-x: 10px;
+  }
+}
