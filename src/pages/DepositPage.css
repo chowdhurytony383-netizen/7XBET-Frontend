@@ -797,3 +797,112 @@
     height: 78px;
   }
 }
+
+/* =========================================================
+   7XBET FIX: Crypto deposit modal logo full-visible
+   Fixes popup logo clipping caused by deposit-popup-logo base
+   width/height/overflow rules. Safe for mobile + desktop.
+   ========================================================= */
+.crypto-deposit-popup .crypto-popup-logo.deposit-popup-logo,
+.crypto-deposit-popup .deposit-popup-logo.crypto-popup-logo,
+.deposit-popup.crypto-deposit-popup .crypto-popup-logo {
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+  height: auto !important;
+  min-height: 114px !important;
+  max-height: none !important;
+  padding: 10px !important;
+  margin: 0 0 6px 0 !important;
+  overflow: visible !important;
+  border-radius: 24px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: start !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
+  border: 1px solid rgba(148, 163, 184, .26) !important;
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, .18), transparent 5.5rem),
+    linear-gradient(135deg, #101827, #172033) !important;
+}
+
+.crypto-deposit-popup .crypto-popup-logo .crypto-method-icon,
+.crypto-deposit-popup .crypto-popup-logo .crypto-method-icon--popup {
+  width: 84px !important;
+  height: 84px !important;
+  min-width: 84px !important;
+  min-height: 84px !important;
+  max-width: 84px !important;
+  max-height: 84px !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  transform: none !important;
+}
+
+.crypto-deposit-popup .crypto-popup-logo .crypto-method-icon svg,
+.crypto-deposit-popup .crypto-popup-logo svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 84px !important;
+  max-height: 84px !important;
+  display: block !important;
+  object-fit: contain !important;
+  overflow: visible !important;
+}
+
+.crypto-deposit-popup .crypto-popup-logo .crypto-popup-symbol {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  color: #f8fafc !important;
+  font-size: .76rem !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  letter-spacing: .08em !important;
+}
+
+.crypto-deposit-popup .crypto-popup-title {
+  min-width: 0 !important;
+  margin-top: 2px !important;
+}
+
+@media (max-width: 620px) {
+  .crypto-deposit-popup {
+    width: min(100%, calc(100vw - 26px)) !important;
+    padding: 30px 18px 22px !important;
+  }
+
+  .crypto-deposit-popup .crypto-popup-logo.deposit-popup-logo,
+  .crypto-deposit-popup .deposit-popup-logo.crypto-popup-logo,
+  .deposit-popup.crypto-deposit-popup .crypto-popup-logo {
+    width: 104px !important;
+    min-width: 104px !important;
+    max-width: 104px !important;
+    min-height: 106px !important;
+    padding: 9px !important;
+    border-radius: 22px !important;
+  }
+
+  .crypto-deposit-popup .crypto-popup-logo .crypto-method-icon,
+  .crypto-deposit-popup .crypto-popup-logo .crypto-method-icon--popup,
+  .crypto-deposit-popup .crypto-popup-logo .crypto-method-icon svg,
+  .crypto-deposit-popup .crypto-popup-logo svg {
+    width: 78px !important;
+    height: 78px !important;
+    min-width: 78px !important;
+    min-height: 78px !important;
+    max-width: 78px !important;
+    max-height: 78px !important;
+  }
+}
+
