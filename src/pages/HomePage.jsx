@@ -491,10 +491,16 @@ export default function HomePage() {
       });
     };
 
+    let lastRefreshHintAt = 0;
+    let refreshTimer = null;
     const onRefreshHint = () => {
       // The direct score event updates visible cards immediately. A delayed HTTP refresh
       // also pulls new markets/details if the provider added or locked odds.
-      window.setTimeout(() => {
+      const now = Date.now();
+      if (now - lastRefreshHintAt < 12000) return;
+      lastRefreshHintAt = now;
+      window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => {
         SportsAPI.liveMatches({ status: 'live', limit: Number(import.meta.env.VITE_SPORTS_HOME_MATCH_LIMIT || 12) }).then((response) => {
           const matches = normalizeList(response.data, ['matches', 'liveMatches', 'events']);
           const sortedMatches = sortMatchesBySportPriority(matches);
@@ -510,6 +516,7 @@ export default function HomePage() {
     if (!socket.connected) socket.connect();
 
     return () => {
+      window.clearTimeout(refreshTimer);
       socket.off('sports:score:update', onScoreUpdate);
       socket.off('sports:refresh:hint', onRefreshHint);
     };

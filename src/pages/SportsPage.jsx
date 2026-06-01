@@ -43,6 +43,27 @@ function withTimeout(promise, ms = 4500, label = 'request') {
   ]);
 }
 
+function readCachedSportsOverview() {
+  try {
+    const raw = window.sessionStorage?.getItem('7xbet:sports:overview:v1');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.payload || Date.now() - Number(parsed.savedAt || 0) > 60000) return null;
+    return parsed.payload;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function writeCachedSportsOverview(payload) {
+  if (!payload) return;
+  try {
+    window.sessionStorage?.setItem('7xbet:sports:overview:v1', JSON.stringify({ savedAt: Date.now(), payload }));
+  } catch (_error) {
+    // Storage is best-effort only.
+  }
+}
+
 function textValue(value, fallback = '—') {
   if (value === undefined || value === null || value === '') return fallback;
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -1035,7 +1056,7 @@ export default function SportsPage() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [matchDetails, setMatchDetails] = useState(null);
-  const [overview, setOverview] = useState(null);
+  const [overview, setOverview] = useState(() => readCachedSportsOverview());
   const [viewMode, setViewMode] = useState(searchParams.get('mode') || 'live');
   const maxVisibleMatches = Math.max(12, Number(import.meta.env.VITE_SPORTS_PAGE_MATCH_LIMIT || 48));
 
@@ -1056,15 +1077,22 @@ export default function SportsPage() {
       ].filter((match) => selectedSport === 'all' || sportMetaFromMatch(match).key === selectedSport);
 
       if (overviewPayload) {
+        writeCachedSportsOverview(overviewPayload);
         setOverview(overviewPayload);
+        setStatus((current) => ({
+          ...(current || {}),
+          provider: overviewPayload?.provider || overviewPayload?.data?.provider || current?.provider,
+          events: overviewPayload?.summary?.events ?? current?.events,
+        }));
         setCategories(overviewPayload?.sports || overviewResponse?.data?.sports || []);
         if (overviewMatches.length) setMatches(overviewMatches);
         if (!silent) setLoading(false);
       }
 
-      const [matchesResponse, statusResponse, betResponse] = await Promise.allSettled([
+      // Public sportsbook pages should not call /sports/sync-status on every load.
+      // That endpoint is diagnostic/admin-style and performs count/log queries.
+      const [matchesResponse, betResponse] = await Promise.allSettled([
         withTimeout(SportsAPI.liveMatches(matchParams), 6500, 'sports matches'),
-        withTimeout(SportsAPI.syncStatus(), 4500, 'sports status'),
         user ? withTimeout(SportsAPI.myBets(), 4500, 'sports bets') : Promise.resolve(null),
       ]);
 
@@ -1075,7 +1103,6 @@ export default function SportsPage() {
         setMatches(overviewMatches);
       }
 
-      if (statusResponse.status === 'fulfilled') setStatus(statusResponse.value?.data?.data || null);
       if (user && betResponse.status === 'fulfilled') setBets(betResponse.value?.data?.data || betResponse.value?.data?.bets || []);
     } catch (error) {
       if (!silent) toast.error(getApiError(error, 'Unable to load sports data'));
@@ -1125,8 +1152,14 @@ export default function SportsPage() {
       });
     };
 
+    let lastRefreshHintAt = 0;
+    let refreshTimer = null;
     const onRefreshHint = () => {
-      load({ silent: true });
+      const now = Date.now();
+      if (now - lastRefreshHintAt < 12000) return;
+      lastRefreshHintAt = now;
+      window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => load({ silent: true }), 900);
     };
 
     socket.emit('sports:join');
@@ -1135,6 +1168,7 @@ export default function SportsPage() {
     if (!socket.connected) socket.connect();
 
     return () => {
+      window.clearTimeout(refreshTimer);
       socket.off('sports:score:update', onScoreUpdate);
       socket.off('sports:refresh:hint', onRefreshHint);
     };
