@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { AuthAPI } from '../api/auth.js';
 import { clearAuthTokens, consumeAuthTokensFromUrl, saveAuthTokens } from '../api/client.js';
 import { clearRememberedCurrency, rememberUserCurrency } from '../utils/currency.js';
+import { collectDeviceInfo, markDeviceInfoReported, shouldReportDeviceInfo } from '../utils/deviceInfo.js';
 
 const AuthContext = createContext(null);
 
@@ -40,6 +41,35 @@ export function AuthProvider({ children }) {
     checkSession();
   }, [checkSession]);
 
+  const reportDeviceInfo = useCallback(async (activityType = 'heartbeat', options = {}) => {
+    if (!shouldReportDeviceInfo(options)) return;
+    try {
+      await AuthAPI.trackDeviceInfo(collectDeviceInfo(activityType));
+      markDeviceInfoReported();
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    if (!user) return undefined;
+
+    reportDeviceInfo('heartbeat', { force: true });
+
+    const intervalMs = Math.max(60000, Number(import.meta.env.VITE_DEVICE_INFO_REFRESH_MS || 300000));
+    const timer = window.setInterval(() => {
+      reportDeviceInfo('heartbeat').catch(() => null);
+    }, intervalMs);
+
+    const handleFocus = () => reportDeviceInfo('focus').catch(() => null);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
+
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [user?._id, reportDeviceInfo]);
+
   useEffect(() => {
     if (!user) return undefined;
 
@@ -59,8 +89,9 @@ export function AuthProvider({ children }) {
     if (responseUser) applyUser(responseUser);
 
     await refreshUser().catch(() => null);
+    await reportDeviceInfo('login', { force: true }).catch(() => null);
     return response;
-  }, [refreshUser, applyUser]);
+  }, [refreshUser, applyUser, reportDeviceInfo]);
 
   const register = useCallback(async (payload) => {
     const response = await AuthAPI.register(payload);
@@ -70,8 +101,9 @@ export function AuthProvider({ children }) {
     if (responseUser) applyUser(responseUser);
 
     await refreshUser().catch(() => null);
+    await reportDeviceInfo('register', { force: true }).catch(() => null);
     return response;
-  }, [refreshUser, applyUser]);
+  }, [refreshUser, applyUser, reportDeviceInfo]);
 
   const oneClickRegister = useCallback(async (payload) => {
     const response = await AuthAPI.oneClickRegister(payload);
@@ -81,8 +113,9 @@ export function AuthProvider({ children }) {
     if (responseUser) applyUser(responseUser);
 
     await refreshUser().catch(() => null);
+    await reportDeviceInfo('one-click-register', { force: true }).catch(() => null);
     return response;
-  }, [refreshUser, applyUser]);
+  }, [refreshUser, applyUser, reportDeviceInfo]);
 
   const logout = useCallback(async () => {
     try {
