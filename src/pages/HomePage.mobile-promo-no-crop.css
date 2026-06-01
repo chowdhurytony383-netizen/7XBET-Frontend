@@ -1,0 +1,160 @@
+/* =========================================================
+   7XBET Home Promo Bar Mobile No-Crop Fix
+   Add this at the END of: src/pages/HomePage.css
+   Purpose: promo bar image will show full image, not cropped.
+   ========================================================= */
+
+/* Desktop/tablet safety: keep the promo image visible without cutting */
+.home-promo-bar-slide,
+.promo-bar-slide,
+.mobile-promo-slide,
+.home-promo-slide,
+.home-promo-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: linear-gradient(135deg, #07111f 0%, #101a33 55%, #07111f 100%) !important;
+}
+
+.home-promo-bar-slide img,
+.promo-bar-slide img,
+.mobile-promo-slide img,
+.home-promo-slide img,
+.home-promo-item img,
+.home-promo-bar-slide picture,
+.promo-bar-slide picture,
+.mobile-promo-slide picture,
+.home-promo-slide picture,
+.home-promo-item picture {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.home-promo-bar-slide img,
+.promo-bar-slide img,
+.mobile-promo-slide img,
+.home-promo-slide img,
+.home-promo-item img {
+  display: block !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: inherit !important;
+  background: linear-gradient(135deg, #07111f 0%, #101a33 55%, #07111f 100%) !important;
+}
+
+/* If your slide uses background-image instead of <img>, this stops cropping too */
+.home-promo-bar-slide,
+.promo-bar-slide,
+.mobile-promo-slide,
+.home-promo-slide,
+.home-promo-item {
+  background-size: contain !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+@media (max-width: 768px) {
+  .home-promo-bar,
+  .home-promo-slider,
+  .mobile-promo-bar,
+  .home-promo-bars,
+  .promo-bar-wrap,
+  .promo-slider,
+  .home-promo-rotator {
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    margin-left: max(8px, env(safe-area-inset-left)) !important;
+    margin-right: max(8px, env(safe-area-inset-right)) !important;
+    margin-top: 6px !important;
+    margin-bottom: 18px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    border-radius: 14px !important;
+  }
+
+  .home-promo-bar-track,
+  .promo-bar-track,
+  .home-promo-slider-track,
+  .promo-slider-track {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  .home-promo-bar-slide,
+  .promo-bar-slide,
+  .mobile-promo-slide,
+  .home-promo-slide,
+  .home-promo-item {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+    border-radius: 14px !important;
+  }
+
+  .home-promo-bar-slide img,
+  .promo-bar-slide img,
+  .mobile-promo-slide img,
+  .home-promo-slide img,
+  .home-promo-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+
+  .home-promo-bar-dots,
+  .promo-bar-dots,
+  .home-promo-dots {
+    right: 8px !important;
+    bottom: 4px !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .home-promo-bar,
+  .home-promo-slider,
+  .mobile-promo-bar,
+  .home-promo-bars,
+  .promo-bar-wrap,
+  .promo-slider,
+  .home-promo-rotator {
+    width: calc(100% - 14px) !important;
+    max-width: calc(100% - 14px) !important;
+    margin-left: max(7px, env(safe-area-inset-left)) !important;
+    margin-right: max(7px, env(safe-area-inset-right)) !important;
+    margin-top: 5px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .home-promo-bar-slide,
+  .promo-bar-slide,
+  .mobile-promo-slide,
+  .home-promo-slide,
+  .home-promo-item {
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .home-promo-bar-slide,
+  .promo-bar-slide,
+  .mobile-promo-slide,
+  .home-promo-slide,
+  .home-promo-item {
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+  }
+}
