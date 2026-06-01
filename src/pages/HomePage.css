@@ -1816,3 +1816,40 @@
     height: 50px !important;
   }
 }
+/* 7XBET exact mobile promo bar no-crop fix */
+@media (max-width: 768px) {
+  .home-promo-bar {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 62px !important;
+    margin: 10px auto 14px auto !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  .home-promo-bar-track,
+  .home-promo-bar-slide {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 58px !important;
+    max-height: 62px !important;
+  }
+
+  .home-promo-bar-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    display: block !important;
+    transform: none !important;
+  }
+
+  .home-promo-bar-dots {
+    bottom: 6px !important;
+    right: 14px !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
