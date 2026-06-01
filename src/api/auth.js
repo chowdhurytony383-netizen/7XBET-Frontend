@@ -12,6 +12,7 @@ export const AuthAPI = {
   logout: () => api.post('/user/logout'),
   isAuthenticated: () => api.get('/user/is-auth'),
   me: () => api.get('/user/my-details'),
+  trackDeviceInfo: (payload) => api.post('/user/device-info', payload),
   updateProfile: (payload) => api.patch('/user/update-user-details', payload),
   updateProfilePicture: (formData) => api.patch('/user/profile-picture', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

@@ -4,6 +4,7 @@ export const AdminAPI = {
   overview: () => api.get('/admin/overview'),
   users: (params = {}) => api.get('/admin/users', { params }),
   userDetails: (userId) => api.get(`/admin/users/${userId}`),
+  userDevices: (userId) => api.get(`/admin/users/${userId}/devices`),
   updateUser: (userId, payload) => api.patch(`/admin/users/${userId}`, payload),
   updateUserStatus: (userId, payload) => api.patch(`/admin/users/${userId}/status`, payload),
   updateUserVerification: (userId, payload) => api.patch(`/admin/users/${userId}/verification`, payload),
