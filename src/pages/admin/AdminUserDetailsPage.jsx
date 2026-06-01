@@ -7,9 +7,14 @@ import {
   Ban,
   CheckCircle2,
   FileCheck2,
+  Globe2,
+  Laptop,
+  MonitorSmartphone,
   RefreshCw,
   Save,
   ShieldAlert,
+  Smartphone,
+  Tablet,
   User,
   Wallet,
 } from 'lucide-react';
@@ -23,6 +28,108 @@ import './AdminUserDetailsPage.css';
 
 function isAllowed(value) {
   return value !== false;
+}
+
+
+function valueOrDash(value) {
+  if (value === undefined || value === null || value === '') return '—';
+  if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
+  return String(value);
+}
+
+function deviceIcon(deviceType = '') {
+  const type = String(deviceType || '').toLowerCase();
+  if (type.includes('mobile') || type.includes('phone')) return Smartphone;
+  if (type.includes('tablet')) return Tablet;
+  if (type.includes('desktop') || type.includes('laptop')) return Laptop;
+  return MonitorSmartphone;
+}
+
+function deviceTitle(device = {}) {
+  const os = [device.os?.name, device.os?.version].filter(Boolean).join(' ');
+  const browser = [device.browser?.name, device.browser?.version].filter(Boolean).join(' ');
+  return [device.model, os, browser].filter(Boolean).join(' • ') || 'Unknown device';
+}
+
+function connectionLabel(device = {}) {
+  const network = device.network || {};
+  const parts = [];
+  if (network.effectiveType) parts.push(network.effectiveType);
+  if (network.downlink) parts.push(`${network.downlink} Mbps`);
+  if (network.rtt) parts.push(`${network.rtt} ms`);
+  if (network.saveData) parts.push('Save data on');
+  return parts.join(' • ') || '—';
+}
+
+function UserDevicesCard({ devices = [] }) {
+  const sorted = [...devices].sort((a, b) => new Date(b.lastSeenAt || b.updatedAt || 0) - new Date(a.lastSeenAt || a.updatedAt || 0));
+
+  return (
+    <section className="card admin-device-card">
+      <div className="admin-device-header">
+        <div>
+          <span className="page-eyebrow">Security / device intelligence</span>
+          <h3>User device information</h3>
+          <p>Collected from authenticated sessions only. Shows device, browser, OS, IP and last activity for Main Admin review.</p>
+        </div>
+        <span className="pill">{sorted.length} device{sorted.length === 1 ? '' : 's'}</span>
+      </div>
+
+      {sorted.length ? (
+        <div className="admin-device-list">
+          {sorted.map((device, index) => {
+            const Icon = deviceIcon(device.deviceType);
+            const screenSize = device.screen?.width && device.screen?.height
+              ? `${device.screen.width} × ${device.screen.height}`
+              : '—';
+            const viewportSize = device.viewport?.width && device.viewport?.height
+              ? `${device.viewport.width} × ${device.viewport.height}`
+              : '—';
+            const isLatest = index === 0;
+
+            return (
+              <article className={`admin-device-item ${isLatest ? 'is-latest' : ''}`} key={device._id || device.id || device.deviceIdHash || index}>
+                <div className="admin-device-main">
+                  <div className="admin-device-icon"><Icon size={22} /></div>
+                  <div>
+                    <strong>{deviceTitle(device)}</strong>
+                    <span>{valueOrDash(device.deviceType)} device • ID ending {valueOrDash(device.deviceIdPreview)}</span>
+                  </div>
+                  {isLatest && <span className="pill pill-success">Latest</span>}
+                </div>
+
+                <dl className="admin-device-meta">
+                  <div><dt>IP address</dt><dd>{valueOrDash(device.ipAddress)}</dd></div>
+                  <div><dt>Last seen</dt><dd>{formatDateTime(device.lastSeenAt || device.updatedAt)}</dd></div>
+                  <div><dt>First seen</dt><dd>{formatDateTime(device.firstSeenAt || device.createdAt)}</dd></div>
+                  <div><dt>Last path</dt><dd>{valueOrDash(device.lastPath)}</dd></div>
+                  <div><dt>Timezone</dt><dd>{valueOrDash(device.client?.timezone)}</dd></div>
+                  <div><dt>Language</dt><dd>{valueOrDash(device.client?.language)}</dd></div>
+                  <div><dt>Screen</dt><dd>{screenSize}</dd></div>
+                  <div><dt>Viewport</dt><dd>{viewportSize}</dd></div>
+                  <div><dt>Network</dt><dd>{connectionLabel(device)}</dd></div>
+                  <div><dt>Hardware</dt><dd>{`${device.hardware?.concurrency || 0} cores • ${device.hardware?.deviceMemory || 0}GB RAM hint • ${device.hardware?.maxTouchPoints || 0} touch`}</dd></div>
+                  <div><dt>Cookies / online</dt><dd>{device.client?.cookiesEnabled ? 'Cookies on' : 'Cookies off'} • {device.client?.online ? 'Online' : 'Offline'}</dd></div>
+                  <div><dt>Login count</dt><dd>{device.loginCount || 0}</dd></div>
+                </dl>
+
+                <details className="admin-device-ua">
+                  <summary><Globe2 size={15} /> User agent</summary>
+                  <p>{valueOrDash(device.userAgent)}</p>
+                </details>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="admin-device-empty">
+          <MonitorSmartphone size={28} />
+          <strong>No device information recorded yet</strong>
+          <span>After this patch is deployed, device data will appear when the user logs in or opens the site while authenticated.</span>
+        </div>
+      )}
+    </section>
+  );
 }
 
 function PermissionRow({ title, description, enabled, disabled, onChange }) {
@@ -230,6 +337,7 @@ export default function AdminUserDetailsPage() {
   const verification = user?.verification || user?.kyc || user?.identityVerification || record?.verification || {};
   const bets = record?.bets || user?.bets || [];
   const transactions = record?.transactions || user?.transactions || [];
+  const devices = record?.devices || record?.userDevices || user?.devices || [];
   const gameplayRecords = resolveGameplayRecords(record, bets);
   const fallbackSummary = buildFallbackGameplaySummary(gameplayRecords);
   const gameplaySummary = record?.gameplaySummary || record?.gameplay?.summary || {
@@ -472,6 +580,8 @@ export default function AdminUserDetailsPage() {
           <div className="admin-detail-actions"><button className="btn btn-soft" disabled={saving} onClick={() => updateAccountStatus('active')}>Activate account</button><button className="btn btn-warning" disabled={saving} onClick={() => updateAccountStatus('suspended')}>Suspend account</button></div>
         </section>
       </div>
+      <UserDevicesCard devices={devices} />
+
       <section className="page-stack admin-gameplay-section">
         <PageHeader
           eyebrow="Records"
