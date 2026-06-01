@@ -1853,3 +1853,56 @@
     transform: none !important;
   }
 }
+
+/* 2026-06-02: Promo banner full-width fix
+   The promotion images are 1200x280. Keep the carousel at the same ratio so
+   left/right sides are not hidden and the image fills the full banner area. */
+.home-promo-bar {
+  aspect-ratio: 1200 / 280 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.home-promo-bar-track,
+.home-promo-bar-slide {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.home-promo-bar-slide img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+  transform: none !important;
+}
+
+@media (max-width: 768px) {
+  .home-promo-bar {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    aspect-ratio: 1200 / 280 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 10px auto 14px auto !important;
+    border-radius: 14px !important;
+  }
+
+  .home-promo-bar-track,
+  .home-promo-bar-slide {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .home-promo-bar-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+  }
+}
