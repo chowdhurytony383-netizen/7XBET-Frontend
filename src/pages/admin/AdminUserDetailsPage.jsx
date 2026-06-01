@@ -51,6 +51,23 @@ function deviceTitle(device = {}) {
   return [device.model, os, browser].filter(Boolean).join(' • ') || 'Unknown device';
 }
 
+
+function deviceFingerprintId(device = {}) {
+  const raw = String(
+    device.deviceFingerprintId
+      || device.fingerprintId
+      || device.deviceIdHash
+      || ''
+  ).trim();
+  if (raw) return raw.startsWith('fp_') ? raw : `fp_${raw.slice(0, 24)}`;
+  const preview = String(device.deviceIdPreview || '').trim();
+  return preview ? `fp_...${preview}` : '—';
+}
+
+function fullFingerprintHash(device = {}) {
+  return String(device.deviceIdHash || device.deviceFingerprintHash || '').trim() || '—';
+}
+
 function connectionLabel(device = {}) {
   const network = device.network || {};
   const parts = [];
@@ -93,12 +110,14 @@ function UserDevicesCard({ devices = [] }) {
                   <div className="admin-device-icon"><Icon size={22} /></div>
                   <div>
                     <strong>{deviceTitle(device)}</strong>
-                    <span>{valueOrDash(device.deviceType)} device • ID ending {valueOrDash(device.deviceIdPreview)}</span>
+                    <span>{valueOrDash(device.deviceType)} device • Fingerprint {deviceFingerprintId(device)}</span>
                   </div>
                   {isLatest && <span className="pill pill-success">Latest</span>}
                 </div>
 
                 <dl className="admin-device-meta">
+                  <div className="admin-device-fingerprint-row"><dt>Device Fingerprint ID</dt><dd>{deviceFingerprintId(device)}</dd></div>
+                  <div><dt>ID ending</dt><dd>{valueOrDash(device.deviceIdPreview)}</dd></div>
                   <div><dt>IP address</dt><dd>{valueOrDash(device.ipAddress)}</dd></div>
                   <div><dt>Last seen</dt><dd>{formatDateTime(device.lastSeenAt || device.updatedAt)}</dd></div>
                   <div><dt>First seen</dt><dd>{formatDateTime(device.firstSeenAt || device.createdAt)}</dd></div>
@@ -114,8 +133,9 @@ function UserDevicesCard({ devices = [] }) {
                 </dl>
 
                 <details className="admin-device-ua">
-                  <summary><Globe2 size={15} /> User agent</summary>
-                  <p>{valueOrDash(device.userAgent)}</p>
+                  <summary><Globe2 size={15} /> Full fingerprint hash & user agent</summary>
+                  <p><strong>Fingerprint hash:</strong> {fullFingerprintHash(device)}</p>
+                  <p><strong>User agent:</strong> {valueOrDash(device.userAgent)}</p>
                 </details>
               </article>
             );

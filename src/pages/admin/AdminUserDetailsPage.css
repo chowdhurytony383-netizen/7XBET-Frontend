@@ -302,3 +302,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.admin-device-fingerprint-row {
+  grid-column: 1 / -1;
+}
+
+.admin-device-fingerprint-row dd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  word-break: break-all;
+}
+
+.admin-device-ua p strong {
+  color: #d7f7ff;
+}
