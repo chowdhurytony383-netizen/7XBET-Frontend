@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Maximize2, RefreshCw, Rocket } from 'lucide-react';
 
-import api, { getApiError } from '../api/client.js';
+import api, { getApiError, getStoredRefreshToken, saveAuthTokens } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 import './CrashPage.css';
@@ -16,21 +16,55 @@ export default function CrashPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const requestLaunch = async () => {
+    const response = await api.post('/games/7x-crush/launch');
+    const payload = response.data?.data || response.data || {};
+    const url = payload.launchUrl || payload.url || payload.gameUrl || '';
+
+    if (!url) {
+      throw new Error('Crush provider did not return a launch URL.');
+    }
+
+    return { payload, url };
+  };
+
+  const refreshSession = async () => {
+    const refreshToken = getStoredRefreshToken();
+    const response = await api.post(
+      '/user/refresh-token',
+      refreshToken ? { refreshToken } : {},
+      { __skipAuthRefresh: true }
+    );
+    saveAuthTokens(response.data);
+  };
+
   const launchGame = async () => {
     if (!isAuthenticated) return;
 
     setLoading(true);
     setError('');
+    setLaunchUrl('');
+    setSessionId('');
+    setGameCode('');
 
     try {
-      const response = await api.post('/games/7x-crush/launch');
-      const payload = response.data?.data || response.data || {};
-      const url = payload.launchUrl || payload.url || payload.gameUrl || '';
+      let result;
 
-      if (!url) {
-        throw new Error('Crush provider did not return a launch URL.');
+      try {
+        result = await requestLaunch();
+      } catch (err) {
+        const message = getApiError(err, 'Unable to launch Crush Game.');
+        const status = err?.response?.status;
+
+        if (status === 401 || /jwt expired|session expired|token expired/i.test(message)) {
+          await refreshSession();
+          result = await requestLaunch();
+        } else {
+          throw err;
+        }
       }
 
+      const { payload, url } = result;
       setLaunchUrl(url);
       setSessionId(payload.sessionId || '');
       setGameCode(payload.gameCode || '7x-crush');
