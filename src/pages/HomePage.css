@@ -1906,3 +1906,44 @@
     object-position: center center !important;
   }
 }
+/* 2026-06-02: Final slim full-width promo banner fix */
+@media (max-width: 768px) {
+  .home-promo-bar {
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    max-height: 76px !important;
+    aspect-ratio: auto !important;
+
+    margin-left: 50% !important;
+    margin-right: 0 !important;
+    transform: translateX(-50%) !important;
+
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .home-promo-bar-track,
+  .home-promo-bar-slide {
+    width: 100% !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    max-height: 76px !important;
+  }
+
+  .home-promo-bar-slide img {
+    width: 100% !important;
+    height: 76px !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    display: block !important;
+    transform: none !important;
+  }
+
+  .home-promo-bar-dots {
+    right: 12px !important;
+    bottom: 5px !important;
+    transform: scale(0.82) !important;
+  }
+}
