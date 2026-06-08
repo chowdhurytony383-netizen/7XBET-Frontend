@@ -18,6 +18,7 @@ import BonusesPage from './pages/BonusesPage.jsx';
 import WelcomeBonusPage from './pages/WelcomeBonusPage.jsx';
 import CashbackPage from './pages/CashbackPage.jsx';
 import VipRewardsPage from './pages/VipRewardsPage.jsx';
+import FreeSpinPage from './pages/FreeSpinPage.jsx';
 import TournamentsPage from './pages/TournamentsPage.jsx';
 import OtherPage from './pages/OtherPage.jsx';
 import PromotionsPage from './pages/PromotionsPage.jsx';
@@ -109,6 +110,7 @@ export default function App() {
         <Route path="bonuses/welcome-bonus" element={<WelcomeBonusPage />} />
         <Route path="bonuses/cashback" element={<CashbackPage />} />
         <Route path="bonuses/vip" element={<VipRewardsPage />} />
+        <Route path="bonuses/free-spin" element={<Navigate to="/free-spin" replace />} />
         <Route path="tournaments" element={<TournamentsPage />} />
         <Route path="other" element={<OtherPage />} />
         <Route path="other/promotions" element={<PromotionsPage />} />
@@ -147,6 +149,7 @@ export default function App() {
           <Route path="jili/:gameId" element={<JiliGamePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="wallet" element={<WalletPage />} />
+          <Route path="free-spin" element={<FreeSpinPage />} />
           <Route path="deposit" element={<DepositPage />} />
           <Route path="withdraw" element={<WithdrawPage />} />
           <Route path="profile" element={<ProfilePage />} />
