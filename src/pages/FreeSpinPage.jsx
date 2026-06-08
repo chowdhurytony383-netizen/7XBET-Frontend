@@ -56,7 +56,6 @@ export default function FreeSpinPage() {
   const { user, refreshUser, setUser } = useAuth();
   const [account, setAccount] = useState(null);
   const [wheel, setWheel] = useState(FALLBACK_SEGMENTS);
-  const [odds, setOdds] = useState([]);
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [spinning, setSpinning] = useState(false);
@@ -94,7 +93,6 @@ export default function FreeSpinPage() {
       const payload = response.data?.data || {};
       setAccount(payload.account || null);
       setWheel(payload.wheel?.length ? payload.wheel : FALLBACK_SEGMENTS);
-      setOdds(payload.odds || []);
       setRecent(payload.recent || []);
     } catch (err) {
       setError(getApiError(err, 'Free spin status load failed'));
@@ -237,41 +235,24 @@ export default function FreeSpinPage() {
         </div>
       </section>
 
-      <section className="free-spin-result-card">
-        <div className="free-spin-result-icon">
-          {lastResult?.resultType === 'BOMB' ? <Bomb size={28} /> : <Sparkles size={28} />}
-        </div>
-        <div>
-          <h2>{resultTitle(lastResult, user)}</h2>
-          <p>{resultMessage(lastResult)}</p>
-        </div>
-      </section>
-
-      <section className="free-spin-info-grid">
-        <article className="free-spin-info-card">
-          <h3>Odds setup</h3>
-          <div className="odds-list">
-            {(odds.length ? odds : [
-              { label: '0 / Bomb / ×2', chance: 60 },
-              { label: '3 / 5 / 10 / 15 / 20', chance: 30 },
-              { label: '20 / 30 / 60', chance: 10 },
-            ]).map((item) => (
-              <div key={item.label} className="odds-row">
-                <span>{item.label}</span>
-                <strong>{item.chance}%</strong>
-              </div>
-            ))}
+      {lastResult && (
+        <section className="free-spin-result-card">
+          <div className="free-spin-result-icon">
+            {lastResult?.resultType === 'BOMB' ? <Bomb size={28} /> : <Sparkles size={28} />}
           </div>
-          <p className="free-spin-small-note">
-            5,000 / 25,000 / 50,000 segments currently inactive and have 0% chance in backend weights.
-          </p>
-        </article>
+          <div>
+            <h2>{resultTitle(lastResult, user)}</h2>
+            <p>{resultMessage(lastResult)}</p>
+          </div>
+        </section>
+      )}
 
+      <section className="free-spin-info-grid free-spin-info-grid--single">
         <article className="free-spin-info-card">
           <h3>Recent spins</h3>
           {recent.length ? (
             <div className="recent-spin-list">
-              {recent.slice(0, 6).map((item) => (
+              {recent.slice(0, 5).map((item) => (
                 <div key={item._id || item.createdAt} className="recent-spin-row">
                   <span>{item.label}</span>
                   <small>{formatDateTime(item.createdAt)}</small>
