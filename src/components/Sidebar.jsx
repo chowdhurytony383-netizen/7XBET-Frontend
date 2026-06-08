@@ -8,6 +8,7 @@ import {
   Dice5,
   Gamepad2,
   Globe,
+  Gift,
   Grid2X2,
   Home,
   LayoutDashboard,
@@ -129,6 +130,7 @@ const guestNavItems = [
 const userOnlyNavItems = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { to: '/wallet', label: 'Wallet', icon: Wallet },
+  { to: '/free-spin', label: 'Lucky Wheel', icon: Gift },
   { to: '/profile', label: 'Profile', icon: User },
   { to: '/profile/invite', label: 'My Invite', icon: Share2 },
   { to: '/affiliate/dashboard', label: 'Affiliate', icon: Handshake },
@@ -150,6 +152,7 @@ const bonusChildren = [
   { to: '/bonuses', label: 'All bonuses' },
   { to: '/bonuses/cashback', label: 'Cashback' },
   { to: '/bonuses/vip', label: 'VIP rewards' },
+  { to: '/bonuses/free-spin', label: 'Free spin' },
 ];
 
 const otherChildren = [
