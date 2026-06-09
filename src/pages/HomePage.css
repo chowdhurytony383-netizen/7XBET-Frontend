@@ -1947,3 +1947,340 @@
     transform: scale(0.82) !important;
   }
 }
+
+
+/* =========================================================
+   Home Free Spin premium banner
+   Place: under promo carousel, above sports categories
+   ========================================================= */
+.home-free-spin-section {
+  position: relative;
+  width: 100%;
+  margin: -2px 0 6px;
+  isolation: isolate;
+}
+
+.home-free-spin-card {
+  position: relative;
+  min-height: 106px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 214, 102, .38);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 214, 102, .22), transparent 11rem),
+    radial-gradient(circle at 86% 34%, rgba(34, 211, 238, .22), transparent 12rem),
+    linear-gradient(135deg, rgba(19, 32, 61, .98), rgba(7, 35, 49, .96) 52%, rgba(27, 19, 54, .98));
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, .32),
+    0 0 26px rgba(245, 158, 11, .12),
+    inset 0 0 0 1px rgba(255, 255, 255, .055);
+  transform: translateZ(0);
+}
+
+.home-free-spin-card::before {
+  content: '';
+  position: absolute;
+  inset: -70% -55%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, .08) 44%,
+    rgba(255, 255, 255, .66) 50%,
+    rgba(255, 255, 255, .12) 57%,
+    transparent 64%
+  );
+  transform: translateX(-72%) rotate(8deg);
+  mix-blend-mode: screen;
+  animation: home-free-spin-shine 4.6s ease-in-out infinite;
+}
+
+.home-free-spin-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), transparent 38%),
+    radial-gradient(circle at 74% 15%, rgba(255,255,255,.16), transparent 20%);
+}
+
+.home-free-spin-logo-wrap,
+.home-free-spin-copy,
+.home-free-spin-mini-wheel,
+.home-free-spin-card em {
+  position: relative;
+  z-index: 3;
+}
+
+.home-free-spin-logo-wrap {
+  width: 94px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  border: 1px solid rgba(34, 211, 238, .28);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(34, 211, 238, .24), transparent 4rem),
+    rgba(2, 6, 23, .24);
+  box-shadow: inset 0 0 18px rgba(255,255,255,.04);
+}
+
+.home-free-spin-logo-wrap img {
+  width: 86px;
+  max-height: 54px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 10px rgba(34, 211, 238, .44))
+    drop-shadow(0 8px 12px rgba(0, 0, 0, .25));
+}
+
+.home-free-spin-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.home-free-spin-copy span {
+  width: max-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 214, 102, .24);
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(255, 214, 102, .12);
+  color: #ffe18a;
+  font-size: .68rem;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.home-free-spin-copy strong {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: clamp(1.5rem, 4.6vw, 2.4rem);
+  line-height: .98;
+  font-weight: 1000;
+  letter-spacing: -.045em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 8px 22px rgba(0,0,0,.36);
+}
+
+.home-free-spin-copy small {
+  overflow: hidden;
+  color: #c7d2fe;
+  font-size: .82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-free-spin-mini-wheel {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border: 6px solid #facc15;
+  border-radius: 999px;
+  background:
+    conic-gradient(from -90deg,
+      #0ea5e9 0 45deg,
+      #1e293b 45deg 90deg,
+      #0f766e 90deg 135deg,
+      #0ea5e9 135deg 180deg,
+      #1e293b 180deg 225deg,
+      #0891b2 225deg 270deg,
+      #0f766e 270deg 315deg,
+      #0ea5e9 315deg 360deg);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.28),
+    inset 0 0 0 2px rgba(255,255,255,.16);
+}
+
+.home-free-spin-mini-wheel::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 28%, #ff8a8a, #e11d48 52%, #7f1024);
+  border: 3px solid #fde68a;
+  box-shadow: 0 0 12px rgba(253, 230, 138, .7);
+}
+
+.home-free-spin-mini-wheel i,
+.home-free-spin-mini-wheel b {
+  position: absolute;
+  z-index: 2;
+  color: #ffffff;
+  font-style: normal;
+  font-weight: 1000;
+  text-shadow: 1px 2px 0 rgba(0,0,0,.9);
+}
+
+.home-free-spin-mini-wheel i {
+  transform: translate(-20px, -20px) rotate(-18deg);
+  font-size: .8rem;
+}
+
+.home-free-spin-mini-wheel b {
+  transform: translate(22px, 22px) rotate(16deg);
+  font-size: .9rem;
+}
+
+.home-free-spin-card em {
+  min-width: 58px;
+  border-radius: 999px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  color: #231306;
+  font-size: .78rem;
+  font-style: normal;
+  font-weight: 1000;
+  letter-spacing: .08em;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, .28);
+}
+
+.home-free-spin-card:hover {
+  border-color: rgba(255, 214, 102, .64);
+  transform: translateY(-1px);
+}
+
+.home-free-spin-card:active {
+  transform: scale(.992);
+}
+
+@keyframes home-free-spin-shine {
+  0% { transform: translateX(-72%) rotate(8deg); opacity: 0; }
+  18% { opacity: .58; }
+  48% { opacity: .9; }
+  76% { opacity: 0; }
+  100% { transform: translateX(72%) rotate(8deg); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .home-free-spin-section {
+    margin: -4px 0 2px !important;
+  }
+
+  .home-free-spin-card {
+    min-height: 76px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    gap: 9px !important;
+    padding: 10px 11px !important;
+    border-radius: 16px !important;
+    box-shadow:
+      0 11px 26px rgba(0, 0, 0, .30),
+      0 0 18px rgba(245, 158, 11, .10),
+      inset 0 0 0 1px rgba(255, 255, 255, .05) !important;
+  }
+
+  .home-free-spin-logo-wrap {
+    width: 58px !important;
+    height: 48px !important;
+    border-radius: 15px !important;
+  }
+
+  .home-free-spin-logo-wrap img {
+    width: 54px !important;
+    max-height: 40px !important;
+  }
+
+  .home-free-spin-copy {
+    gap: 1px !important;
+  }
+
+  .home-free-spin-copy span {
+    padding: 3px 7px !important;
+    font-size: .52rem !important;
+    letter-spacing: .10em !important;
+  }
+
+  .home-free-spin-copy strong {
+    font-size: 1.25rem !important;
+    line-height: 1 !important;
+  }
+
+  .home-free-spin-copy small {
+    font-size: .62rem !important;
+  }
+
+  .home-free-spin-mini-wheel {
+    width: 48px !important;
+    height: 48px !important;
+    border-width: 4px !important;
+  }
+
+  .home-free-spin-mini-wheel::before {
+    width: 16px !important;
+    height: 16px !important;
+    border-width: 2px !important;
+  }
+
+  .home-free-spin-mini-wheel i {
+    transform: translate(-14px, -14px) rotate(-18deg) !important;
+    font-size: .55rem !important;
+  }
+
+  .home-free-spin-mini-wheel b {
+    transform: translate(14px, 14px) rotate(16deg) !important;
+    font-size: .6rem !important;
+  }
+
+  .home-free-spin-card em {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .home-free-spin-card {
+    min-height: 70px !important;
+    gap: 7px !important;
+    padding: 9px 9px !important;
+  }
+
+  .home-free-spin-logo-wrap {
+    width: 50px !important;
+    height: 43px !important;
+  }
+
+  .home-free-spin-logo-wrap img {
+    width: 48px !important;
+    max-height: 36px !important;
+  }
+
+  .home-free-spin-copy strong {
+    font-size: 1.12rem !important;
+  }
+
+  .home-free-spin-copy small {
+    font-size: .56rem !important;
+  }
+
+  .home-free-spin-mini-wheel {
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-free-spin-card::before {
+    animation: none;
+    display: none;
+  }
+}

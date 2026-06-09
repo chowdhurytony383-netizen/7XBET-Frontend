@@ -144,6 +144,32 @@ function HomePromoBarCarousel() {
   );
 }
 
+
+function HomeFreeSpinBanner() {
+  return (
+    <section className="home-free-spin-section" aria-label="Free spin lucky wheel">
+      <Link className="home-free-spin-card" to="/free-spin" aria-label="Open Free Spin Lucky Wheel">
+        <div className="home-free-spin-logo-wrap" aria-hidden="true">
+          <img src="/images/brand/7xbet-premium-logo.png" alt="" />
+        </div>
+
+        <div className="home-free-spin-copy">
+          <span>Lucky Wheel</span>
+          <strong>Free Spin</strong>
+          <small>Every 6 hours • Bonus rewards</small>
+        </div>
+
+        <div className="home-free-spin-mini-wheel" aria-hidden="true">
+          <i>×2</i>
+          <b>৳</b>
+        </div>
+
+        <em>PLAY</em>
+      </Link>
+    </section>
+  );
+}
+
 function pickJiliGameName(raw = {}) {
   const candidates = [
     raw.displayName,
@@ -672,6 +698,8 @@ export default function HomePage() {
         </section>
 
         <HomePromoBarCarousel />
+
+        <HomeFreeSpinBanner />
 
         <SportsCategoryStrip categories={sportsCategories} />
 
