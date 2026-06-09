@@ -60,6 +60,100 @@ function pointAtProgress(p, box) {
   return { x, y };
 }
 
+function drawRocketShape(ctx, x, y, angle, scale = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.scale(scale, scale);
+
+  const body = ctx.createLinearGradient(-14, 0, 18, 0);
+  body.addColorStop(0, '#f5f7fb');
+  body.addColorStop(0.45, '#ffffff');
+  body.addColorStop(1, '#cdd7e6');
+  ctx.fillStyle = body;
+  ctx.beginPath();
+  ctx.moveTo(-18, 0);
+  ctx.quadraticCurveTo(-8, -10, 10, -10);
+  ctx.lineTo(20, 0);
+  ctx.lineTo(10, 10);
+  ctx.quadraticCurveTo(-8, 10, -18, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#ff6737';
+  ctx.beginPath();
+  ctx.moveTo(10, -10);
+  ctx.lineTo(24, 0);
+  ctx.lineTo(10, 10);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.moveTo(-4, -8);
+  ctx.lineTo(-12, -17);
+  ctx.lineTo(-8, -4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-4, 8);
+  ctx.lineTo(-12, 17);
+  ctx.lineTo(-8, 4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#6ee7ff';
+  ctx.beginPath();
+  ctx.arc(1, 0, 4.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.8)';
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+
+  const flame = ctx.createLinearGradient(-30, 0, -8, 0);
+  flame.addColorStop(0, 'rgba(255, 70, 0, 0)');
+  flame.addColorStop(0.3, '#ff7b00');
+  flame.addColorStop(0.7, '#ffd44d');
+  flame.addColorStop(1, 'rgba(255, 240, 160, .85)');
+  ctx.fillStyle = flame;
+  ctx.beginPath();
+  ctx.moveTo(-18, 0);
+  ctx.quadraticCurveTo(-28, -10, -34, 0);
+  ctx.quadraticCurveTo(-28, 10, -18, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawCrashBurst(ctx, x, y, size = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size, size);
+  const burst = ctx.createRadialGradient(0, 0, 1, 0, 0, 24);
+  burst.addColorStop(0, '#fff6bf');
+  burst.addColorStop(0.35, '#ffd54d');
+  burst.addColorStop(0.72, '#ff8a00');
+  burst.addColorStop(1, 'rgba(255, 111, 0, 0)');
+  ctx.fillStyle = burst;
+  for (let i = 0; i < 8; i += 1) {
+    ctx.rotate(Math.PI / 4);
+    ctx.beginPath();
+    ctx.moveTo(0, -4);
+    ctx.lineTo(7, -18);
+    ctx.lineTo(0, -28);
+    ctx.lineTo(-7, -18);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.arc(0, 0, 9, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff7cf';
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawCrashCanvas(canvas, state) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -185,14 +279,13 @@ function drawCrashCanvas(canvas, state) {
 
     const rocket = points[points.length - 1];
     ctx.save();
-    ctx.translate(rocket.x, rocket.y);
-    ctx.rotate(-0.48);
-    ctx.font = `${Math.max(24, Math.min(50, w * 0.08))}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowColor = '#ff8a00';
-    ctx.shadowBlur = 18;
-    ctx.fillText(status === 'CRASHED' ? '💥' : '🚀', 0, 0);
+    ctx.shadowColor = 'rgba(255, 140, 0, .28)';
+    ctx.shadowBlur = 16;
+    if (status === 'CRASHED') {
+      drawCrashBurst(ctx, rocket.x, rocket.y, Math.max(0.75, Math.min(1.1, w / 420)));
+    } else {
+      drawRocketShape(ctx, rocket.x, rocket.y, -0.48, Math.max(0.88, Math.min(1.18, w / 390)));
+    }
     ctx.restore();
   }
 
@@ -502,7 +595,7 @@ export default function CrashNativePage() {
                 <div className="crush-control-block">
                   <div className="crush-control-label">
                     <span>Bet Amount</span>
-                    <small>{currency}</small>
+                    <small>{currency} currency</small>
                   </div>
                   <div className="crush-amount-control">
                     <button type="button" aria-label="Decrease bet amount" onClick={() => adjustAmount(seat, -1)} disabled={Boolean(bet?.status === 'ACTIVE')}>−</button>
@@ -515,7 +608,6 @@ export default function CrashNativePage() {
                       onChange={(event) => updateForm(seat, { amount: event.target.value })}
                     />
                     <button type="button" aria-label="Increase bet amount" onClick={() => adjustAmount(seat, 1)} disabled={Boolean(bet?.status === 'ACTIVE')}>+</button>
-                    <b>{currency}</b>
                   </div>
                 </div>
 
