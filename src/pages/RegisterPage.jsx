@@ -7,7 +7,7 @@ import Logo from '../components/Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { AuthAPI } from '../api/auth.js';
 import { getApiError } from '../api/client.js';
-import { countries, currencyLabel, defaultCountry } from '../utils/countries.js';
+import { countries, currencyForCountry, currencyLabel, defaultCountry } from '../utils/countries.js';
 import { getDefaultRegistrationCountry } from '../utils/currency.js';
 import { formatCurrency } from '../utils/format.js';
 import './AuthPages.css';
@@ -31,7 +31,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState(() => ({
     name: '',
     countryCode: detectedCountry.code,
-    currency: detectedCountry.currency,
+    currency: currencyForCountry(detectedCountry),
     email: '',
     password: '',
     confirmPassword: '',
@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
   const [quickForm, setQuickForm] = useState(() => ({
     countryCode: detectedCountry.code,
-    currency: detectedCountry.currency,
+    currency: currencyForCountry(detectedCountry),
     referralCode: acquisitionCodes.referralCode || acquisitionCodes.affiliateCode || '',
     affiliateCode: acquisitionCodes.affiliateCode,
     acceptedTerms: false,
@@ -70,7 +70,7 @@ export default function RegisterPage() {
       setForm((current) => ({
         ...current,
         countryCode: country.code,
-        currency: country.currency,
+        currency: currencyForCountry(country),
       }));
 
       return;
@@ -88,7 +88,7 @@ export default function RegisterPage() {
     setQuickForm((current) => ({
       ...current,
       countryCode: country.code,
-      currency: country.currency,
+      currency: currencyForCountry(country),
     }));
   };
 
