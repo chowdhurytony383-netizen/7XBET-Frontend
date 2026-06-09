@@ -25,6 +25,7 @@ import {
   User,
   UserPlus,
   Share2,
+  Sparkles,
   Wallet,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -117,6 +118,7 @@ const mainNavItems = [
   { to: '/jili-games?category=casino', label: 'Live Casino', icon: Dice5 },
   { to: '/jili-games?category=slots', label: 'Slots', icon: Cherry },
   { to: '/jili-games', label: 'JILI Games', icon: Cherry },
+  { to: '/pgsoft-games', label: 'PG SOFT', icon: Sparkles },
   { to: '/tournaments', label: 'Tournaments', icon: Medal },
   { to: '/customer-support', label: 'Customer Support', icon: MessageCircle },
   { to: '/live-support', label: 'Live Support', icon: MessageCircle },
