@@ -1,0 +1,198 @@
+.pgsoft-page {
+  gap: 18px;
+}
+
+.pgsoft-hero-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 26px;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(34, 211, 238, 0.22), transparent 34%),
+    linear-gradient(135deg, rgba(12, 33, 50, 0.98), rgba(9, 19, 32, 0.98));
+  box-shadow: var(--shadow);
+}
+
+.pgsoft-hero-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  color: #fef08a;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pgsoft-hero-card h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+}
+
+.pgsoft-hero-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pgsoft-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #bbf7d0;
+  font-weight: 900;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.pgsoft-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  min-height: 50px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.06);
+}
+
+.pgsoft-filter input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.pgsoft-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.pgsoft-game-card {
+  overflow: hidden;
+  display: grid;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(19,43,58,.96), rgba(9,22,32,.97));
+  box-shadow: var(--shadow);
+  transition: .22s ease;
+}
+
+.pgsoft-game-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(34,197,94,.5);
+}
+
+.pgsoft-game-media {
+  position: relative;
+  height: 170px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.pgsoft-game-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: .28s ease;
+}
+
+.pgsoft-game-card:hover .pgsoft-game-media img {
+  transform: scale(1.04);
+}
+
+.pgsoft-game-media span {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #bbf7d0;
+  background: rgba(8,19,27,.82);
+  border: 1px solid var(--border);
+}
+
+.pgsoft-game-body {
+  padding: 15px;
+  display: grid;
+  gap: 8px;
+}
+
+.pgsoft-game-body small {
+  color: #67e8f9;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.pgsoft-game-body h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.pgsoft-game-body p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.42;
+}
+
+.pgsoft-game-body strong {
+  color: #bbf7d0;
+}
+
+@media (max-width: 768px) {
+  .pgsoft-hero-card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .pgsoft-hero-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+  }
+
+  .pgsoft-hero-badge {
+    justify-content: center;
+  }
+
+  .pgsoft-games-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pgsoft-game-card {
+    border-radius: 16px;
+  }
+
+  .pgsoft-game-media {
+    height: 118px;
+  }
+
+  .pgsoft-game-body {
+    padding: 12px;
+  }
+
+  .pgsoft-game-body h3 {
+    font-size: 1rem;
+  }
+
+  .pgsoft-game-body p {
+    font-size: .82rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
