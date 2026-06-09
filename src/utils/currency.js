@@ -1,4 +1,4 @@
-import { countries, defaultCountry, findCountryByName } from './countries.js';
+import { countries, defaultCountry, findCountryByName, resolveAvailableCurrency, currencyForCountry } from './countries.js';
 
 export const CURRENCY_STORAGE_KEY = 'xbet_preferred_currency';
 export const COUNTRY_STORAGE_KEY = 'xbet_preferred_country';
@@ -138,22 +138,23 @@ export function getDefaultRegistrationCountry() {
 }
 
 export function resolveCurrencyCode(input) {
-  if (typeof input === 'string' && input.trim()) return input.trim().toUpperCase();
+  if (typeof input === 'string' && input.trim()) return resolveAvailableCurrency(input, 'USD');
 
   if (input && typeof input === 'object') {
-    if (input.currency) return String(input.currency).toUpperCase();
-    if (input.countryCode) return (lookupCountryByCode(input.countryCode)?.currency || defaultCountry.currency).toUpperCase();
-    if (input.country) return (findCountryByName(input.country)?.currency || defaultCountry.currency).toUpperCase();
+    if (input.currency) return resolveAvailableCurrency(input.currency, 'USD');
+    if (input.countryCode) return currencyForCountry(input.countryCode);
+    if (input.country) return currencyForCountry(input.country);
   }
 
   const storedCurrency = storageGet(CURRENCY_STORAGE_KEY);
-  if (storedCurrency) return storedCurrency.toUpperCase();
+  if (storedCurrency) return resolveAvailableCurrency(storedCurrency, 'USD');
 
   const storedCountry = storageGet(COUNTRY_STORAGE_KEY);
-  if (storedCountry) return (lookupCountryByCode(storedCountry)?.currency || defaultCountry.currency).toUpperCase();
+  if (storedCountry) return currencyForCountry(storedCountry);
 
-  return getDefaultRegistrationCountry().currency || defaultCountry.currency || 'BDT';
+  return currencyForCountry(getDefaultRegistrationCountry()) || 'USD';
 }
+
 
 export function currencyLocale(currency) {
   return currencyLocaleMap[resolveCurrencyCode(currency)] || 'en-US';
@@ -189,5 +190,5 @@ export function clearRememberedCurrency() {
 
 export function countryForCurrency(currency) {
   const code = resolveCurrencyCode(currency);
-  return countries.find((country) => country.currency === code) || defaultCountry;
+  return countries.find((country) => resolveAvailableCurrency(country.currency, 'USD') === code) || defaultCountry;
 }
