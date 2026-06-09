@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Bomb, Gift, RotateCw, Sparkles, Timer } from 'lucide-react';
+import { Bomb, Gift, RotateCw, Sparkles } from 'lucide-react';
 import { FreeSpinAPI } from '../api/freeSpin.js';
 import { getApiError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -52,6 +52,27 @@ function resultMessage(result) {
   return result.message || 'Spin finished.';
 }
 
+
+function getDisplayLabel(rawLabel) {
+  const normalized = String(rawLabel ?? '').trim();
+  if (!normalized) return normalized;
+  if (normalized === '50,000' || normalized === '50000') return '50K';
+  if (normalized === '25,000' || normalized === '25000') return '25K';
+  if (normalized === '5,000' || normalized === '5000') return '5K';
+  if (normalized.toLowerCase() === 'bomb') return '💣';
+  return normalized;
+}
+
+function getSegmentTone(segment) {
+  const label = String(segment?.label ?? '').toLowerCase();
+  if (segment?.locked || segment?.active === false) return 'locked';
+  if (label.includes('💣') || label.includes('bomb')) return 'bomb';
+  if (label.includes('×2') || label.includes('x2')) return 'boost';
+  if (label === '0') return 'zero';
+  if (label.includes('k') || label.includes(',')) return 'jackpot';
+  return 'cash';
+}
+
 export default function FreeSpinPage() {
   const { user, refreshUser, setUser } = useAuth();
   const [account, setAccount] = useState(null);
@@ -74,14 +95,19 @@ export default function FreeSpinPage() {
   const countdownMs = account?.nextFreeSpinAt ? new Date(account.nextFreeSpinAt).getTime() - now : 0;
 
   const wheelGradient = useMemo(() => {
-    const activeA = '#0f75bc';
-    const activeB = '#07538f';
-    const locked = '#1a2b3f';
+    const activeA = '#1a86d4';
+    const activeB = '#0c5f9e';
+    const locked = '#1a2941';
+    const dark = '#12385f';
 
     return segments.map((segment, index) => {
       const start = index * slice;
       const end = (index + 1) * slice;
-      const color = segment.locked || !segment.active ? locked : (index % 2 === 0 ? activeA : activeB);
+      let color = index % 2 === 0 ? activeA : activeB;
+      if (segment.locked || segment.active === false) color = locked;
+      const labelText = String(segment.label).toLowerCase();
+      if (labelText.includes('bomb') || labelText.includes('💣')) color = index % 2 === 0 ? '#113759' : '#0b2a43';
+      if (String(segment.label) === '0') color = dark;
       return `${color} ${start}deg ${end}deg`;
     }).join(', ');
   }, [segments, slice]);
@@ -165,29 +191,20 @@ export default function FreeSpinPage() {
 
   return (
     <main className="free-spin-page">
-      <section className="free-spin-hero">
-        <div className="free-spin-hero-copy">
-          <span className="free-spin-eyebrow"><Gift size={16} /> Lucky Wheel</span>
-          <h1>Free Spin</h1>
-          <p>
-            প্রতি ৬ ঘণ্টা পর ১টি free spin পাবেন। ×2 এ পড়লে আরও ২টি free spin যোগ হবে।
-            Cash reward হলে সাথে সাথে main wallet-এ যোগ হবে।
-          </p>
+      <section className="free-spin-board">
+        <div className="free-spin-headline">
+          <div className="free-spin-title-wrap">
+            <span className="free-spin-badge"><Gift size={15} /> Lucky Wheel</span>
+            <h1>Free Spin</h1>
+          </div>
         </div>
 
-        <div className="free-spin-wallet-card">
-          <span>Wallet balance</span>
-          <strong>{formatCurrency(user?.wallet || 0, user)}</strong>
-        </div>
-      </section>
-
-      <section className="free-spin-game-card">
-        <div className="free-spin-top-row">
-          <div>
+        <div className="free-spin-top-row compact">
+          <div className="stat-box">
             <span className="free-spin-label">Available spins</span>
             <strong>{account?.spinsAvailable ?? (loading ? '…' : 0)}</strong>
           </div>
-          <div>
+          <div className="stat-box">
             <span className="free-spin-label">Next free spin</span>
             <strong>{Number(account?.spinsAvailable || 0) > 0 ? 'Ready' : formatCountdown(countdownMs)}</strong>
           </div>
@@ -204,13 +221,15 @@ export default function FreeSpinPage() {
           >
             {segments.map((segment, index) => {
               const angle = index * slice + slice / 2;
+              const displayLabel = getDisplayLabel(segment.label);
+              const tone = getSegmentTone(segment);
               return (
                 <span
                   key={segment.id || `${segment.label}-${index}`}
-                  className={`wheel-segment-text ${segment.locked || !segment.active ? 'is-locked' : ''}`}
-                  style={{ transform: `rotate(${angle}deg) translateY(-122px) rotate(${-angle}deg)` }}
+                  className={`wheel-segment-text ${segment.locked || !segment.active ? 'is-locked' : ''} tone-${tone}`}
+                  style={{ transform: `rotate(${angle}deg) translateY(calc(var(--label-distance) * -1)) rotate(${-angle}deg)` }}
                 >
-                  {segment.label}
+                  <span className="wheel-segment-chip">{displayLabel}</span>
                 </span>
               );
             })}
@@ -220,15 +239,8 @@ export default function FreeSpinPage() {
         </div>
 
         <div className="free-spin-action-area">
-          {Number(account?.spinsAvailable || 0) <= 0 && (
-            <div className="free-spin-countdown-pill">
-              <Timer size={16} />
-              <span>Spin for free in: {formatCountdown(countdownMs)}</span>
-            </div>
-          )}
-
           <button type="button" className="free-spin-button" disabled={!canSpin} onClick={handleSpin}>
-            {spinning ? <><RotateCw size={20} className="spin-icon" /> Spinning...</> : 'SPIN FOR FREE'}
+            {spinning ? <><RotateCw size={18} className="spin-icon" /> Spinning...</> : 'SPIN FOR FREE'}
           </button>
 
           {error && <p className="free-spin-error">{error}</p>}
@@ -238,7 +250,7 @@ export default function FreeSpinPage() {
       {lastResult && (
         <section className="free-spin-result-card">
           <div className="free-spin-result-icon">
-            {lastResult?.resultType === 'BOMB' ? <Bomb size={28} /> : <Sparkles size={28} />}
+            {lastResult?.resultType === 'BOMB' ? <Bomb size={24} /> : <Sparkles size={24} />}
           </div>
           <div>
             <h2>{resultTitle(lastResult, user)}</h2>
@@ -247,23 +259,21 @@ export default function FreeSpinPage() {
         </section>
       )}
 
-      <section className="free-spin-info-grid free-spin-info-grid--single">
-        <article className="free-spin-info-card">
-          <h3>Recent spins</h3>
-          {recent.length ? (
+      {recent.length > 0 && (
+        <section className="free-spin-info-grid free-spin-info-grid--single">
+          <article className="free-spin-info-card compact-card">
+            <h3>Recent spins</h3>
             <div className="recent-spin-list">
-              {recent.slice(0, 5).map((item) => (
+              {recent.slice(0, 3).map((item) => (
                 <div key={item._id || item.createdAt} className="recent-spin-row">
-                  <span>{item.label}</span>
+                  <span className="recent-spin-value">{getDisplayLabel(item.label)}</span>
                   <small>{formatDateTime(item.createdAt)}</small>
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="free-spin-small-note">No spin history yet.</p>
-          )}
-        </article>
-      </section>
+          </article>
+        </section>
+      )}
     </main>
   );
 }
