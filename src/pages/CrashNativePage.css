@@ -817,3 +817,304 @@
     font-size: 11px;
   }
 }
+
+
+/* 7XBET premium compact mobile update: removed duplicate top strip and redesigned seat controls */
+.crush-page-shell {
+  margin-top: 0;
+}
+
+.crush-machine {
+  margin-top: 0;
+}
+
+.crush-bet-grid {
+  gap: 12px;
+}
+
+.crush-bet-card {
+  position: relative;
+  padding: 14px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 201, 81, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(23, 24, 29, 0.98), rgba(5, 6, 8, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 12px 28px rgba(0,0,0,.30);
+}
+
+.crush-seat-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.crush-seat-title span {
+  color: var(--crush-gold-2);
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.crush-seat-title em {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(50, 243, 111, .20);
+  background: rgba(50, 243, 111, .10);
+  color: #bbf7d0;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 1000;
+  letter-spacing: .08em;
+}
+
+.crush-control-block {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.crush-control-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.crush-control-label span {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+.crush-control-label small {
+  color: var(--crush-muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.crush-amount-control,
+.crush-auto-control {
+  display: grid;
+  align-items: center;
+  gap: 7px;
+}
+
+.crush-amount-control {
+  grid-template-columns: 42px minmax(0, 1fr) 42px 58px;
+}
+
+.crush-auto-control {
+  grid-template-columns: minmax(0, 1fr) 68px;
+}
+
+.crush-amount-control input,
+.crush-auto-control input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid rgba(255,178,28,.42);
+  border-radius: 12px;
+  outline: none;
+  padding: 0 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  color: #fff;
+  font-size: 17px;
+  font-weight: 1000;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+}
+
+.crush-auto-control input {
+  text-align: left;
+  padding-left: 14px;
+}
+
+.crush-amount-control button,
+.crush-auto-control button,
+.crush-amount-control b {
+  min-height: 44px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.07));
+  color: #fff;
+  font-size: 17px;
+  font-weight: 1000;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.crush-amount-control b {
+  background: linear-gradient(180deg, #ffca55, #be6f17);
+  color: #160b03;
+  font-size: 13px;
+  letter-spacing: .03em;
+}
+
+.crush-auto-control button {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+}
+
+.crush-auto-control button.toggle-on {
+  color: #120903;
+  background: linear-gradient(180deg, #ffe477, #ff9f18);
+  border-color: rgba(255, 206, 84, .72);
+  box-shadow: 0 0 16px rgba(255,178,28,.22), inset 0 1px 0 rgba(255,255,255,.32);
+}
+
+.crush-seat-meta {
+  min-height: 20px;
+  margin: 2px 0 9px;
+  overflow: hidden;
+  color: var(--crush-muted);
+  font-size: 11px;
+  line-height: 1.25;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .crush-page-shell {
+    margin-top: 0;
+  }
+
+  .crush-machine {
+    padding-top: 7px;
+  }
+
+  .crush-bet-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .crush-bet-card {
+    padding: 9px;
+    border-radius: 12px;
+  }
+
+  .crush-seat-title {
+    margin-bottom: 7px;
+  }
+
+  .crush-seat-title span {
+    font-size: 10px;
+  }
+
+  .crush-seat-title em {
+    min-height: 18px;
+    padding: 0 6px;
+    font-size: 7px;
+  }
+
+  .crush-control-block {
+    gap: 5px;
+    margin-bottom: 7px;
+  }
+
+  .crush-control-label span {
+    font-size: 10px;
+  }
+
+  .crush-control-label small {
+    font-size: 8px;
+  }
+
+  .crush-amount-control {
+    grid-template-columns: 30px minmax(0, 1fr) 30px 44px;
+    gap: 4px;
+  }
+
+  .crush-auto-control {
+    grid-template-columns: minmax(0, 1fr) 48px;
+    gap: 4px;
+  }
+
+  .crush-amount-control input,
+  .crush-auto-control input,
+  .crush-amount-control button,
+  .crush-auto-control button,
+  .crush-amount-control b {
+    min-height: 34px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .crush-amount-control input,
+  .crush-auto-control input {
+    padding: 0 6px;
+  }
+
+  .crush-auto-control input {
+    padding-left: 9px;
+  }
+
+  .crush-amount-control b {
+    font-size: 10px;
+  }
+
+  .crush-seat-meta {
+    min-height: 16px;
+    margin: 0 0 6px;
+    font-size: 8.5px;
+  }
+
+  .crush-action-btn {
+    min-height: 46px;
+    border-radius: 10px;
+  }
+
+  .crush-action-btn span {
+    font-size: 14px;
+  }
+
+  .crush-action-btn small {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .crush-bet-card {
+    padding: 7px 6px;
+  }
+
+  .crush-amount-control {
+    grid-template-columns: 27px minmax(0, 1fr) 27px 38px;
+    gap: 3px;
+  }
+
+  .crush-auto-control {
+    grid-template-columns: minmax(0, 1fr) 42px;
+    gap: 3px;
+  }
+
+  .crush-amount-control input,
+  .crush-auto-control input,
+  .crush-amount-control button,
+  .crush-auto-control button,
+  .crush-amount-control b {
+    min-height: 31px;
+    font-size: 11px;
+  }
+
+  .crush-control-label span {
+    font-size: 9px;
+  }
+
+  .crush-seat-title em {
+    display: none;
+  }
+}

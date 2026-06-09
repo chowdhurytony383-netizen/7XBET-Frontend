@@ -459,20 +459,6 @@ export default function CrashNativePage() {
 
   return (
     <main className="crush-page-shell">
-      <section className="crush-topbar panel-frame">
-        <div>
-          <h1>7X Crush</h1>
-          <p>Real wallet crash game · cash out before the rocket crashes</p>
-        </div>
-        <div className="crush-top-actions">
-          <span className={`crush-connection ${connected ? 'online' : ''}`}>{connected ? 'LIVE' : 'SYNC'}</span>
-          <div className="crush-wallet-box">
-            <span>Main Balance</span>
-            <strong>{currency} {money(walletBalance)}</strong>
-          </div>
-        </div>
-      </section>
-
       <section className="crush-machine panel-frame">
         <div className="crush-chart-card">
           <canvas ref={canvasRef} className="crush-canvas" aria-label="7X Crush graph" />
@@ -508,40 +494,56 @@ export default function CrashNativePage() {
             const action = getSeatAction(seat);
             return (
               <section className="crush-bet-card" key={seat}>
-                <div className="crush-seat-title">Seat {seat}</div>
-                <div className="crush-field-line">
-                  <label>Bet</label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={form.amount}
-                    disabled={Boolean(bet?.status === 'ACTIVE')}
-                    onChange={(event) => updateForm(seat, { amount: event.target.value })}
-                  />
-                  <button type="button" onClick={() => adjustAmount(seat, -1)} disabled={Boolean(bet?.status === 'ACTIVE')}>−</button>
-                  <button type="button" onClick={() => adjustAmount(seat, 1)} disabled={Boolean(bet?.status === 'ACTIVE')}>+</button>
-                  <b>{currency}</b>
+                <div className="crush-seat-title">
+                  <span>Seat {seat}</span>
+                  <em>{bet?.status === 'ACTIVE' ? 'ACTIVE' : 'READY'}</em>
                 </div>
-                <div className="crush-field-line">
-                  <label>Payout</label>
-                  <input
-                    type="number"
-                    min="1.01"
-                    step="0.01"
-                    value={form.autoCashout}
-                    disabled={!form.autoEnabled || Boolean(bet?.status === 'ACTIVE')}
-                    onChange={(event) => updateForm(seat, { autoCashout: event.target.value })}
-                  />
-                  <button
-                    type="button"
-                    className={form.autoEnabled ? 'toggle-on' : ''}
-                    disabled={Boolean(bet?.status === 'ACTIVE')}
-                    onClick={() => updateForm(seat, { autoEnabled: !form.autoEnabled })}
-                  >
-                    {form.autoEnabled ? 'ON' : 'OFF'}
-                  </button>
+
+                <div className="crush-control-block">
+                  <div className="crush-control-label">
+                    <span>Bet Amount</span>
+                    <small>{currency}</small>
+                  </div>
+                  <div className="crush-amount-control">
+                    <button type="button" aria-label="Decrease bet amount" onClick={() => adjustAmount(seat, -1)} disabled={Boolean(bet?.status === 'ACTIVE')}>−</button>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={form.amount}
+                      disabled={Boolean(bet?.status === 'ACTIVE')}
+                      onChange={(event) => updateForm(seat, { amount: event.target.value })}
+                    />
+                    <button type="button" aria-label="Increase bet amount" onClick={() => adjustAmount(seat, 1)} disabled={Boolean(bet?.status === 'ACTIVE')}>+</button>
+                    <b>{currency}</b>
+                  </div>
                 </div>
+
+                <div className="crush-control-block">
+                  <div className="crush-control-label">
+                    <span>Auto Cashout</span>
+                    <small>{form.autoEnabled ? 'Enabled' : 'Disabled'}</small>
+                  </div>
+                  <div className="crush-auto-control">
+                    <input
+                      type="number"
+                      min="1.01"
+                      step="0.01"
+                      value={form.autoCashout}
+                      disabled={!form.autoEnabled || Boolean(bet?.status === 'ACTIVE')}
+                      onChange={(event) => updateForm(seat, { autoCashout: event.target.value })}
+                    />
+                    <button
+                      type="button"
+                      className={form.autoEnabled ? 'toggle-on' : ''}
+                      disabled={Boolean(bet?.status === 'ACTIVE')}
+                      onClick={() => updateForm(seat, { autoEnabled: !form.autoEnabled })}
+                    >
+                      {form.autoEnabled ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="crush-seat-meta">
                   {bet?.status === 'ACTIVE'
                     ? `Active bet: ${currency} ${money(bet.amount)}${bet.autoCashout ? ` · Auto ${multiplier(bet.autoCashout)}` : ''}`
