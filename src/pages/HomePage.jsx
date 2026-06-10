@@ -287,11 +287,11 @@ function collectImageCandidates(raw = {}) {
 
 function buildJiliImageSources(raw = {}, gameId) {
   const id = String(gameId || '').trim();
-  const sources = [...collectImageCandidates(raw)];
+  const sources = [];
 
   if (id) {
-    // Put official JILI icons here after downloading from the ICON folder:
-    // public/images/jili/49.webp, public/images/jili/49.png, etc.
+    // Prefer local official JILI images first. This protects the UI if the database
+    // image was overwritten by a generic fallback during provider sync.
     sources.push(
       `/images/jili/${id}.webp`,
       `/images/jili/${id}.png`,
@@ -302,6 +302,7 @@ function buildJiliImageSources(raw = {}, gameId) {
     );
   }
 
+  sources.push(...collectImageCandidates(raw));
   return sources.filter((item, index, all) => item && all.indexOf(item) === index);
 }
 

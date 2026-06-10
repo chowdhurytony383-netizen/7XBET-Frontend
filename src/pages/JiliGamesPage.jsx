@@ -67,7 +67,16 @@ function isUsableImageValue(value) {
 function buildJiliImageSources(raw = {}, gameId) {
   const providerGame = raw.config?.providerGame || {};
   const id = normalizeImageGameId(gameId);
+  const localCandidates = id ? [
+    `/images/jili/${id}.webp`,
+    `/images/jili/${id}.png`,
+    `/images/jili/${id}.jpg`,
+    `/images/jili/jili-${id}.webp`,
+    `/images/jili/jili-${id}.png`,
+    `/images/jili/jili-${id}.jpg`,
+  ] : [];
   const candidates = [
+    ...localCandidates,
     raw.image,
     raw.Image,
     raw.icon,
@@ -100,17 +109,6 @@ function buildJiliImageSources(raw = {}, gameId) {
     providerGame.GameIcon,
     providerGame.gameIcon,
   ].filter(isUsableImageValue).map((item) => String(item).trim());
-
-  if (id) {
-    candidates.push(
-      `/images/jili/${id}.webp`,
-      `/images/jili/${id}.png`,
-      `/images/jili/${id}.jpg`,
-      `/images/jili/jili-${id}.webp`,
-      `/images/jili/jili-${id}.png`,
-      `/images/jili/jili-${id}.jpg`
-    );
-  }
 
   return candidates.filter((item, index, all) => item && all.indexOf(item) === index);
 }
