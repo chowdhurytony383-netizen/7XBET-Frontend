@@ -2,6 +2,7 @@ import api from './client.js';
 
 export const GamesAPI = {
   all: () => api.get('/games/get-all-games'),
+  homeSections: () => api.get('/games/home-sections', { params: { limit: 20, t: Date.now() }, headers: { 'Cache-Control': 'no-cache' } }),
   rollDice: (payload) => api.post('/games/dice/roll-dice', payload),
   startMines: (payload) => api.post('/games/mines/start-mine', payload),
   revealMineTile: (payload) => api.patch('/games/mines/reveal-tile', payload),
