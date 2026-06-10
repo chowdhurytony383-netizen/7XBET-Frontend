@@ -2663,3 +2663,53 @@
     font-size: .58rem;
   }
 }
+
+
+/* FINAL FIX: remove ranking badges and bottom empty space in Home New/Popular rails */
+.home-game-rail-media b,
+.home-game-rail-card small {
+  display: none !important;
+}
+
+.home-game-rail-card {
+  min-height: 0 !important;
+  height: auto !important;
+  align-content: start !important;
+  gap: 7px !important;
+  padding-bottom: 8px !important;
+}
+
+.home-game-rail-card strong {
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 1px !important;
+}
+
+@media (max-width: 720px) {
+  .home-game-rail-card {
+    min-height: 0 !important;
+    height: auto !important;
+    gap: 5px !important;
+    padding: 6px 5px 7px !important;
+  }
+
+  .home-game-rail-media {
+    height: 70px !important;
+  }
+
+  .home-game-rail-card strong {
+    min-height: 0 !important;
+    line-height: 1.08 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .home-game-rail-card {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .home-game-rail-media {
+    height: 66px !important;
+  }
+}

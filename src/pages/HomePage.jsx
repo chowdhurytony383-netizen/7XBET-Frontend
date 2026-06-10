@@ -427,12 +427,8 @@ function HomeGameRail({ eyebrow, title, games = [], className = '' }) {
           >
             <div className="home-game-rail-media">
               <HomeRailGameImage game={game} />
-              <b>{String(index + 1).padStart(2, '0')}</b>
             </div>
             <strong>{getHomeRailGameTitle(game)}</strong>
-            {Number(game?.playCount || 0) > 0 && (
-              <small>{Number(game.playCount).toLocaleString('en-US')} plays</small>
-            )}
           </Link>
         ))}
       </div>
