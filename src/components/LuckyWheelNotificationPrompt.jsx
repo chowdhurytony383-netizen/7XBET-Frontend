@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import {
   enableLuckyWheelPushNotifications,
   shouldShowLuckyWheelNotificationPrompt,
+  startForegroundPushNotifications,
 } from '../utils/pushNotifications.js';
 import './LuckyWheelNotificationPrompt.css';
 
@@ -22,6 +23,15 @@ export default function LuckyWheelNotificationPrompt() {
     setVisible(!hidden && shouldShowLuckyWheelNotificationPrompt(user));
   }, [user, loading]);
 
+  useEffect(() => {
+    if (!user) return;
+    if (typeof window === 'undefined') return;
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    startForegroundPushNotifications().catch(() => null);
+  }, [user]);
+
   const handleClose = () => {
     localStorage.setItem(HIDE_KEY, 'true');
     setVisible(false);
@@ -34,6 +44,7 @@ export default function LuckyWheelNotificationPrompt() {
       const result = await enableLuckyWheelPushNotifications();
 
       if (result.enabled) {
+        await startForegroundPushNotifications().catch(() => null);
         toast.success('Lucky Wheel notification enabled');
         setVisible(false);
         return;
