@@ -16,6 +16,7 @@ export const AdminAPI = {
   updateWithdrawalStatus: (transactionId, payload) => api.patch(`/admin/withdrawals/${transactionId}/status`, payload),
   transactions: (params = {}) => api.get('/admin/transactions', { params }),
   games: () => api.get('/admin/games'),
+  syncJiliGames: () => api.post('/jili/sync-games'),
   updateGame: (gameId, payload) => api.patch(`/admin/games/${gameId}`, payload),
   agents: (params = {}) => api.get('/admin/agents', { params }),
   createAgent: (payload) => api.post('/admin/agents', payload),
