@@ -7,3 +7,5 @@ export const NotificationsAPI = {
 };
 
 export default NotificationsAPI;
+
+export const NotificationAPI = NotificationsAPI;
