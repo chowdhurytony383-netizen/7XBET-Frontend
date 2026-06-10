@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, ArrowUpFromLine, Crown, Gamepad2, Handshake, RefreshCw, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Crown, Gamepad2, Handshake, RefreshCw, ShieldCheck, Users, Wallet, Shield, Wifi, WifiOff } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency } from '../../utils/format.js';
