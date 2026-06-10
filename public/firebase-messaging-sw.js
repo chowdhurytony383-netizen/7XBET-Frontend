@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyBrtBb2c2mtDWem7bdAGhdw6FPFWU-PmM',
+  apiKey: 'AIzaSyBrtBb2c2mtDWem7bdAGghdw6FPFWU-PmM',
   authDomain: 'xbet-3aac9.firebaseapp.com',
   projectId: 'xbet-3aac9',
   storageBucket: 'xbet-3aac9.firebasestorage.app',
