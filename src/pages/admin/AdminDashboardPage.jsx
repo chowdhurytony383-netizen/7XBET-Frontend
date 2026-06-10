@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
         <StatCard icon={ArrowDownToLine} label="Pending deposits" value={stats.pendingDeposits ?? 0} />
         <StatCard icon={ArrowUpFromLine} label="Pending withdrawals" value={stats.pendingWithdrawals ?? 0} />
         <StatCard icon={Shield} label="Agents" value={stats.totalAgents ?? 0} />
-        <StatCard icon={UserCheck} label="Online users" value={presenceCounts.onlineUsers ?? onlineUsers.length ?? 0} />
+        <StatCard icon={Users} label="Online users" value={presenceCounts.onlineUsers ?? onlineUsers.length ?? 0} />
         <StatCard icon={Wifi} label="Online agents" value={presenceCounts.onlineAgents ?? onlineAgents.length ?? 0} />
         <StatCard icon={WifiOff} label="Offline agents" value={presenceCounts.offlineAgents ?? offlineAgents.length ?? 0} />
       </div>
