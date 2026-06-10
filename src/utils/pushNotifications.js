@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, isSupported } from 'firebase/messaging';
+import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 import { NotificationsAPI } from '../api/notifications.js';
 
 const TOKEN_STORAGE_KEY = '7xbet.webPushTokenSaved';
@@ -82,3 +82,48 @@ export function shouldShowLuckyWheelNotificationPrompt(user) {
   if (localStorage.getItem(TOKEN_STORAGE_KEY) === 'true' && Notification.permission === 'granted') return false;
   return true;
 }
+
+let foregroundListenerStarted = false;
+
+export async function startForegroundPushNotifications() {
+  if (foregroundListenerStarted) return { started: true, alreadyStarted: true };
+  if (typeof window === 'undefined') return { started: false, reason: 'browser-unavailable' };
+  if (!hasFirebaseConfig()) return { started: false, reason: 'firebase-config-missing' };
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    return { started: false, reason: 'notification-not-granted' };
+  }
+
+  const firebaseMessaging = await loadFirebaseMessaging();
+  if (!firebaseMessaging) return { started: false, reason: 'firebase-messaging-unsupported' };
+
+  onMessage(firebaseMessaging.messaging, (payload = {}) => {
+    const notification = payload.notification || {};
+    const data = payload.data || {};
+    const title = notification.title || data.title || '7XBET Notification';
+    const body = notification.body || data.body || '';
+    const targetUrl = data.url || payload.fcmOptions?.link || '/notifications';
+
+    try {
+      const browserNotification = new Notification(title, {
+        body,
+        icon: notification.icon || '/icons/notification-icon.png',
+        badge: notification.badge || '/icons/notification-badge.png',
+        tag: data.tag || data.type || '7xbet-notification',
+        data: { url: targetUrl },
+      });
+
+      browserNotification.onclick = () => {
+        window.focus();
+        if (targetUrl) window.location.href = targetUrl;
+        browserNotification.close();
+      };
+    } catch (_) {
+      // Browser notification display is best-effort. In-site bell notifications
+      // are delivered separately by socket/API.
+    }
+  });
+
+  foregroundListenerStarted = true;
+  return { started: true };
+}
+
