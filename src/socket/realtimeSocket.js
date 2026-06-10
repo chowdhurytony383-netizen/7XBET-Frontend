@@ -1,15 +1,28 @@
 import { io } from 'socket.io-client';
-import { API_ORIGIN, getStoredAccessToken } from '../api/client.js';
+import { API_ORIGIN, getStoredAccessToken, getStoredAgentToken } from '../api/client.js';
 
 let socket;
 let lastAuthToken = '';
+let lastAgentToken = '';
 
 function currentToken() {
   return getStoredAccessToken() || '';
 }
 
+function currentAgentToken() {
+  return getStoredAgentToken() || '';
+}
+
+function socketAuthPayload() {
+  return {
+    token: currentToken(),
+    agentToken: currentAgentToken(),
+  };
+}
+
 export function getRealtimeSocket() {
   const token = currentToken();
+  const agentToken = currentAgentToken();
 
   if (!socket) {
     socket = io(API_ORIGIN, {
@@ -21,27 +34,30 @@ export function getRealtimeSocket() {
       reconnectionAttempts: Infinity,
       reconnectionDelay: 500,
       reconnectionDelayMax: 3000,
-      auth: { token },
+      auth: socketAuthPayload(),
     });
     lastAuthToken = token;
+    lastAgentToken = agentToken;
   }
 
-  socket.auth = { token };
+  socket.auth = socketAuthPayload();
   return socket;
 }
 
 export function connectRealtimeSocket() {
   const token = currentToken();
+  const agentToken = currentAgentToken();
   const instance = getRealtimeSocket();
 
   // Socket auth is read on connection handshake. If login token changed after the
-  // socket was created, reconnect so support/notification rooms join correctly.
-  if (instance.connected && token !== lastAuthToken) {
+  // socket was created, reconnect so support/notification/presence rooms join correctly.
+  if (instance.connected && (token !== lastAuthToken || agentToken !== lastAgentToken)) {
     instance.disconnect();
   }
 
-  instance.auth = { token };
+  instance.auth = socketAuthPayload();
   lastAuthToken = token;
+  lastAgentToken = agentToken;
 
   if (!instance.connected) {
     instance.connect();
@@ -57,5 +73,6 @@ export function closeRealtimeSocket() {
     socket.disconnect();
     socket = null;
     lastAuthToken = '';
+    lastAgentToken = '';
   }
 }
