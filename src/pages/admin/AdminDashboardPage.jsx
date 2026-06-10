@@ -81,7 +81,9 @@ export default function AdminDashboardPage() {
             Fetch latest JILI provider game list and add newly released games to website.
             {jiliSyncResult && (
               <span className="admin-sync-result">
-                Synced: {jiliSyncResult.syncedCount ?? 0} · New: {jiliSyncResult.inserted ?? 0} · Updated: {jiliSyncResult.updated ?? 0}
+                <b>New Games:</b> {jiliSyncResult.inserted ?? 0}
+                <b>Total JILI Games:</b> {jiliSyncResult.totalActiveGames ?? jiliSyncResult.syncedCount ?? 0}
+                <b>Updated:</b> {jiliSyncResult.updated ?? 0}
               </span>
             )}
           </p>
