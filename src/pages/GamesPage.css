@@ -85,3 +85,12 @@
     border-radius: 3px !important;
   }
 }
+
+/* UI fix: hide game card description text */
+.game-card-body p,
+.game-card .game-description,
+.game-card .card-description,
+.source-game-card p,
+.provider-game-card p {
+  display: none !important;
+}

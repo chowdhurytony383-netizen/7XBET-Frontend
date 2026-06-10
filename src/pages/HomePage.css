@@ -2284,3 +2284,67 @@
     display: none;
   }
 }
+
+
+/* UI fix: make Home Hot Games images taller and move game names slightly down */
+.home-hot-games .game-card-media,
+.home-hot-games .hot-game-card-media,
+.hot-games .game-card-media,
+.hot-games .hot-game-card-media,
+.hot-games-grid .game-card-media,
+.hot-games-grid .hot-game-card-media,
+.home-page .jili-game-card-media,
+.home-page .game-card-media {
+  min-height: 84px !important;
+  height: 84px !important;
+}
+
+.home-hot-games .game-card-media img,
+.home-hot-games .hot-game-card-media img,
+.hot-games .game-card-media img,
+.hot-games .hot-game-card-media img,
+.hot-games-grid .game-card-media img,
+.hot-games-grid .hot-game-card-media img,
+.home-page .jili-game-card-media img,
+.home-page .game-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-hot-games .game-card-body,
+.home-hot-games .hot-game-card-body,
+.hot-games .game-card-body,
+.hot-games .hot-game-card-body,
+.hot-games-grid .game-card-body,
+.hot-games-grid .hot-game-card-body,
+.home-page .jili-game-card-body,
+.home-page .game-card-body {
+  padding-top: 12px !important;
+}
+
+.home-hot-games .game-card-body h3,
+.home-hot-games .hot-game-card-body h3,
+.hot-games .game-card-body h3,
+.hot-games .hot-game-card-body h3,
+.hot-games-grid .game-card-body h3,
+.hot-games-grid .hot-game-card-body h3,
+.home-page .jili-game-card-body h3,
+.home-page .game-card-body h3 {
+  margin-top: 6px !important;
+  transform: translateY(4px);
+}
+
+@media (max-width: 680px) {
+  .home-hot-games .game-card-media,
+  .home-hot-games .hot-game-card-media,
+  .hot-games .game-card-media,
+  .hot-games .hot-game-card-media,
+  .hot-games-grid .game-card-media,
+  .hot-games-grid .hot-game-card-media,
+  .home-page .jili-game-card-media,
+  .home-page .game-card-media {
+    min-height: 96px !important;
+    height: 96px !important;
+  }
+}
