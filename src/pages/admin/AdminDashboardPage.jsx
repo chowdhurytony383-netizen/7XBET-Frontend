@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownToLine, ArrowUpFromLine, Crown, Handshake, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { ArrowDownToLine, ArrowUpFromLine, Crown, Gamepad2, Handshake, RefreshCw, ShieldCheck, Users, Wallet, Shield } from 'lucide-react';
 import { AdminAPI } from '../../api/admin.js';
 import { getApiError } from '../../api/client.js';
 import { formatCurrency } from '../../utils/format.js';
@@ -14,6 +15,8 @@ export default function AdminDashboardPage() {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [syncingJiliGames, setSyncingJiliGames] = useState(false);
+  const [jiliSyncResult, setJiliSyncResult] = useState(null);
 
   const load = useCallback(async ({ silent = false } = {}) => {
     if (!silent) {
@@ -31,6 +34,22 @@ export default function AdminDashboardPage() {
       if (!silent) setLoading(false);
     }
   }, []);
+
+  const syncJiliProviderGames = async () => {
+    setSyncingJiliGames(true);
+    setJiliSyncResult(null);
+
+    try {
+      const response = await AdminAPI.syncJiliGames();
+      const data = response.data?.data || {};
+      setJiliSyncResult(data);
+      toast.success(response.data?.message || 'JILI games synced successfully');
+    } catch (err) {
+      toast.error(getApiError(err, 'Unable to sync JILI games'));
+    } finally {
+      setSyncingJiliGames(false);
+    }
+  };
 
   useEffect(() => { load(); }, [load]);
   useAutoRefresh(load, { intervalMs: 1000 });
@@ -55,6 +74,18 @@ export default function AdminDashboardPage() {
         <Link className="card admin-quick-card" to="/admin/agents"><Shield size={28} /><h3>Agent Admin</h3><p>Create agent accounts, send balance by Agent ID and control agent access.</p></Link>
         <Link className="card admin-quick-card" to="/admin/affiliates"><Handshake size={28} /><h3>Affiliate Partners</h3><p>Approve affiliates, set 30%–40% GGR revenue share, calculate periods and manage carryover.</p></Link>
         <Link className="card admin-quick-card" to="/admin/vip-rewards"><Crown size={28} /><h3>VIP Rewards</h3><p>Calculate monthly VIP cashback, approve rewards and track user claims.</p></Link>
+        <button type="button" className="card admin-quick-card admin-sync-card" onClick={syncJiliProviderGames} disabled={syncingJiliGames}>
+          {syncingJiliGames ? <RefreshCw size={28} className="admin-spin" /> : <Gamepad2 size={28} />}
+          <h3>{syncingJiliGames ? 'Syncing JILI Games...' : 'Sync JILI Games'}</h3>
+          <p>
+            Fetch latest JILI provider game list and add newly released games to website.
+            {jiliSyncResult && (
+              <span className="admin-sync-result">
+                Synced: {jiliSyncResult.syncedCount ?? 0} · New: {jiliSyncResult.inserted ?? 0} · Updated: {jiliSyncResult.updated ?? 0}
+              </span>
+            )}
+          </p>
+        </button>
         <div className="card admin-quick-card"><ShieldCheck size={28} /><h3>Verification review</h3><p>User verification data is available from the user details screen.</p></div>
       </section>
       {loading && <div className="card admin-loading"><div className="loader" /></div>}
