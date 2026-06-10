@@ -2,6 +2,7 @@ import api from './client.js';
 
 export const AdminAPI = {
   overview: () => api.get('/admin/overview'),
+  presence: () => api.get('/admin/presence'),
   users: (params = {}) => api.get('/admin/users', { params }),
   userDetails: (userId) => api.get(`/admin/users/${userId}`),
   userDevices: (userId) => api.get(`/admin/users/${userId}/devices`),
