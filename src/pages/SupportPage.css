@@ -53,3 +53,232 @@
 .support-attachment small { display: block; margin-top: 3px; color: #94a3b8; }
 @media (max-width: 1100px) { .support-layout { grid-template-columns: 1fr; } .support-ticket-list { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: none; } .support-chat-panel { min-height: 560px; } }
 @media (max-width: 720px) { .support-sidebar-panel, .support-chat-panel, .support-create-card { padding: 16px; border-radius: 18px; } .support-ticket-list, .support-form-grid { grid-template-columns: 1fr; } .support-chat-head { flex-direction: column; } .support-chat-head button { width: 100%; } .support-message { max-width: 94%; } .support-reply-form { grid-template-columns: 1fr; } .support-reply-form button { width: 100%; } .support-attachment.image { grid-template-columns: 76px minmax(0, 1fr); } .support-attachment img { width: 76px; height: 56px; } }
+
+
+/* MOBILE COMPACT FIX: Live Support page */
+@media (max-width: 720px) {
+  .support-page {
+    gap: 10px !important;
+    padding-bottom: 18px !important;
+  }
+
+  .support-page .page-header {
+    gap: 8px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .support-page .page-header h1 {
+    font-size: clamp(1.55rem, 8vw, 2.25rem) !important;
+    margin: 3px 0 4px !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  .support-page .page-header p {
+    font-size: .84rem !important;
+    line-height: 1.38 !important;
+    max-width: 100% !important;
+  }
+
+  .support-page .page-eyebrow {
+    font-size: .68rem !important;
+    letter-spacing: .075em !important;
+  }
+
+  .support-layout {
+    gap: 10px !important;
+  }
+
+  .support-sidebar-panel,
+  .support-chat-panel,
+  .support-create-card {
+    padding: 11px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.18) !important;
+  }
+
+  .support-panel-head {
+    margin-bottom: 8px !important;
+    font-size: .92rem !important;
+  }
+
+  .support-ticket-list {
+    gap: 7px !important;
+    max-height: 240px !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+  }
+
+  .support-ticket-item {
+    gap: 4px !important;
+    padding: 9px 10px !important;
+    border-radius: 13px !important;
+  }
+
+  .support-ticket-item strong {
+    font-size: .88rem !important;
+    line-height: 1.18 !important;
+    padding-right: 24px !important;
+  }
+
+  .support-ticket-item small {
+    font-size: .72rem !important;
+  }
+
+  .support-ticket-item p {
+    font-size: .75rem !important;
+    line-height: 1.25 !important;
+    -webkit-line-clamp: 1 !important;
+  }
+
+  .support-ticket-item em {
+    top: 8px !important;
+    right: 8px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 10px !important;
+  }
+
+  .support-status {
+    padding: 3px 7px !important;
+    font-size: .66rem !important;
+  }
+
+  .support-chat-panel {
+    min-height: 430px !important;
+    grid-template-rows: auto minmax(250px, 1fr) auto !important;
+    gap: 9px !important;
+  }
+
+  .support-chat-head {
+    gap: 7px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .support-chat-head h2 {
+    font-size: 1rem !important;
+    margin: 5px 0 2px !important;
+    line-height: 1.15 !important;
+  }
+
+  .support-chat-head p {
+    font-size: .76rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .support-chat-head button,
+  .support-create-card button,
+  .support-reply-form button {
+    min-height: 38px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    font-size: .82rem !important;
+  }
+
+  .support-messages {
+    gap: 8px !important;
+    padding-right: 2px !important;
+  }
+
+  .support-message {
+    max-width: 96% !important;
+    padding: 8px 10px !important;
+    border-radius: 13px !important;
+  }
+
+  .support-message > div:first-child {
+    margin-bottom: 4px !important;
+    gap: 8px !important;
+  }
+
+  .support-message strong {
+    font-size: .82rem !important;
+  }
+
+  .support-message small {
+    font-size: .66rem !important;
+  }
+
+  .support-message p {
+    font-size: .82rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .support-reply-form {
+    gap: 8px !important;
+  }
+
+  .support-input-stack {
+    gap: 7px !important;
+  }
+
+  .support-reply-form textarea,
+  .support-create-card textarea {
+    min-height: 74px !important;
+  }
+
+  .support-reply-form textarea,
+  .support-create-card input,
+  .support-create-card textarea,
+  .support-create-card select {
+    padding: 9px 10px !important;
+    border-radius: 12px !important;
+    font-size: .86rem !important;
+  }
+
+  .support-create-card form,
+  .support-form-grid {
+    gap: 9px !important;
+  }
+
+  .support-create-card label {
+    gap: 5px !important;
+    font-size: .82rem !important;
+  }
+
+  .support-attach-btn {
+    padding: 7px 9px !important;
+    border-radius: 10px !important;
+    font-size: .78rem !important;
+  }
+
+  .support-selected-files {
+    gap: 5px !important;
+  }
+
+  .support-selected-files span {
+    padding: 4px 6px !important;
+    font-size: .68rem !important;
+  }
+
+  .support-attachments {
+    gap: 6px !important;
+    margin-top: 7px !important;
+  }
+
+  .support-attachment {
+    padding: 7px 8px !important;
+    border-radius: 11px !important;
+    gap: 8px !important;
+  }
+
+  .support-attachment.image {
+    grid-template-columns: 58px minmax(0, 1fr) !important;
+  }
+
+  .support-attachment img {
+    width: 58px !important;
+    height: 44px !important;
+    border-radius: 9px !important;
+  }
+
+  .support-empty {
+    padding: 13px !important;
+    border-radius: 14px !important;
+    font-size: .82rem !important;
+  }
+
+  .support-empty.large {
+    min-height: 260px !important;
+  }
+}

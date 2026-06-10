@@ -292,3 +292,186 @@
   .invite-share-btn { width: 100%; }
   .invite-section-head { align-items: flex-start; flex-direction: column; }
 }
+
+
+/* MOBILE COMPACT FIX: My Invite page */
+@media (max-width: 768px) {
+  .invite-page {
+    gap: 10px !important;
+    padding-bottom: 18px !important;
+  }
+
+  .invite-page .page-header {
+    gap: 8px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .invite-page .page-header h1 {
+    font-size: clamp(1.45rem, 7.5vw, 2.15rem) !important;
+    margin: 3px 0 4px !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  .invite-page .page-header p {
+    font-size: .82rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .invite-page .page-eyebrow {
+    font-size: .66rem !important;
+    letter-spacing: .075em !important;
+  }
+
+  .invite-hero-card,
+  .invite-rules-card,
+  .invite-summary-card,
+  .invite-table-card {
+    padding: 11px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.18) !important;
+  }
+
+  .invite-hero-card {
+    gap: 10px !important;
+  }
+
+  .invite-label {
+    font-size: .66rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .invite-hero-card strong {
+    font-size: clamp(1.15rem, 5.8vw, 1.55rem) !important;
+    line-height: 1.05 !important;
+  }
+
+  .invite-hero-card p {
+    font-size: .75rem !important;
+    line-height: 1.28 !important;
+    margin-top: 5px !important;
+    max-height: 38px !important;
+    overflow: hidden !important;
+  }
+
+  .invite-hero-actions {
+    gap: 7px !important;
+  }
+
+  .invite-copy-btn,
+  .invite-share-btn {
+    min-height: 38px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    font-size: .82rem !important;
+  }
+
+  .invite-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .invite-content-grid {
+    gap: 10px !important;
+  }
+
+  .invite-rules-card h2,
+  .invite-summary-card h2,
+  .invite-table-card h2 {
+    font-size: 1rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.15 !important;
+  }
+
+  .invite-rules-card ul {
+    padding-left: 16px !important;
+    line-height: 1.42 !important;
+    font-size: .80rem !important;
+  }
+
+  .invite-rules-card li {
+    margin-bottom: 4px !important;
+  }
+
+  .invite-summary-list {
+    gap: 7px !important;
+  }
+
+  .invite-summary-list > div {
+    padding: 9px 10px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+  }
+
+  .invite-summary-list span {
+    font-size: .74rem !important;
+  }
+
+  .invite-summary-list strong {
+    font-size: .86rem !important;
+  }
+
+  .invite-section-head {
+    margin-bottom: 8px !important;
+    gap: 6px !important;
+  }
+
+  .invite-section-head span {
+    font-size: .76rem !important;
+  }
+
+  .invite-mobile-list {
+    gap: 8px !important;
+  }
+
+  .invite-mobile-card {
+    padding: 10px !important;
+    border-radius: 13px !important;
+  }
+
+  .invite-mobile-top {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .invite-mobile-top strong {
+    font-size: .86rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .invite-mobile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .invite-mobile-grid span {
+    font-size: .66rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .invite-mobile-grid strong {
+    font-size: .78rem !important;
+    line-height: 1.22 !important;
+  }
+
+  .invite-status {
+    padding: 3px 7px !important;
+    font-size: .66rem !important;
+  }
+
+  .invite-empty-state {
+    padding: 12px !important;
+    border-radius: 13px !important;
+    font-size: .80rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .invite-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .invite-mobile-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
