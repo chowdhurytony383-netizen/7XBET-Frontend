@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Bomb, Gift, RotateCw, Sparkles } from 'lucide-react';
 import { FreeSpinAPI } from '../api/freeSpin.js';
 import { getApiError } from '../api/client.js';
+import { enableLuckyWheelPushNotifications } from '../utils/pushNotifications.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCurrency, formatDateTime } from '../utils/format.js';
 import './FreeSpinPage.css';
@@ -133,7 +135,18 @@ export default function FreeSpinPage() {
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
+  
+  const enableSpinReadyNotification = async () => {
+    try {
+      const result = await enableLuckyWheelPushNotifications();
+      if (result.enabled) toast.success('Lucky Wheel notification enabled');
+      else toast.error('Notification could not be enabled');
+    } catch (error) {
+      toast.error(error?.message || 'Notification permission failed');
+    }
+  };
+
+  return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => () => {
