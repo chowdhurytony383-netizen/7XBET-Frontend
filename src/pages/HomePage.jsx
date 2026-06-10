@@ -820,8 +820,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <HomePromoBarCarousel />
-
         <HomeFreeSpinBanner />
 
         <SportsCategoryStrip categories={sportsCategories} />
@@ -920,6 +918,8 @@ export default function HomePage() {
           games={popularHomeGames}
           className="home-popular-games-rail"
         />
+
+        <HomePromoBarCarousel />
 
         {error && <div className="auth-message">{error}</div>}
 

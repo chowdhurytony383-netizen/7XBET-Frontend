@@ -2713,3 +2713,21 @@
     height: 66px !important;
   }
 }
+
+
+/* UI MOVE FIX: Promo banner moved below Most Popular Games */
+.home-popular-games-rail + .home-promo-bar {
+  margin-top: -2px;
+}
+
+.home-popular-games-rail + .home-promo-bar + .auth-message,
+.home-popular-games-rail + .home-promo-bar + .grid-4,
+.home-popular-games-rail + .home-promo-bar + .home-section {
+  margin-top: 0;
+}
+
+@media (max-width: 680px) {
+  .home-popular-games-rail + .home-promo-bar {
+    margin-top: -4px;
+  }
+}
