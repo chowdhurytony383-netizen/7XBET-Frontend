@@ -326,6 +326,121 @@ function JiliHotGameImage({ game }) {
   );
 }
 
+
+function getHomeRailGameId(game = {}) {
+  const value = game?.config?.gameId || game?.config?.providerGame?.GameId || game?.gameId || game?.jiliGameId || game?.gameCode || game?._id || game?.id;
+  return String(value || '').replace(/^jili-?/i, '').trim();
+}
+
+function getHomeRailGameTitle(game = {}) {
+  return String(game?.displayName || game?.Name || game?.name || game?.title || 'Game').replace(/^JILI\s+/i, '').trim();
+}
+
+function getHomeRailGamePath(game = {}) {
+  const provider = String(game?.provider || game?.config?.provider || '').toUpperCase();
+  const gameId = getHomeRailGameId(game);
+  const title = getHomeRailGameTitle(game);
+
+  if (provider === 'JILI' && gameId) {
+    return `/jili/${gameId}?title=${encodeURIComponent(title)}`;
+  }
+
+  if (game?.route) return game.route;
+
+  if (game?.type === 'source' || game?.distribution === 'source') {
+    return `/source-games/${game?.gameCode || game?.slug || game?.name || ''}`;
+  }
+
+  const normalized = String(game?.gameCode || game?.slug || game?.name || '').toLowerCase();
+  if (normalized.includes('crash')) return '/crash';
+  if (normalized.includes('mine')) return '/games/mines';
+  if (normalized.includes('dice')) return '/games/dice';
+
+  return '/games';
+}
+
+function buildHomeRailImageSources(game = {}) {
+  const provider = String(game?.provider || game?.config?.provider || '').toUpperCase();
+  const gameId = getHomeRailGameId(game);
+  const sources = [];
+
+  if (provider === 'JILI' && gameId) {
+    sources.push(...buildJiliImageSources(game, gameId));
+  }
+
+  sources.push(
+    game?.image,
+    game?.assetPath,
+    game?.thumbnail,
+    game?.icon,
+    game?.config?.image,
+    game?.config?.providerGame?.Image,
+    game?.config?.providerGame?.image,
+    '/images/others/banner1.png'
+  );
+
+  return sources
+    .filter(isUsableImageValue)
+    .map((item) => String(item).trim())
+    .filter((item, index, all) => all.indexOf(item) === index);
+}
+
+function HomeRailGameImage({ game }) {
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const sources = buildHomeRailImageSources(game);
+  const src = sources[sourceIndex];
+
+  if (!src) return <span className="home-game-rail-fallback">🎮</span>;
+
+  return (
+    <img
+      src={src}
+      alt={getHomeRailGameTitle(game)}
+      loading="lazy"
+      decoding="async"
+      onError={() => setSourceIndex((index) => index + 1)}
+    />
+  );
+}
+
+function HomeGameRail({ eyebrow, title, games = [], className = '' }) {
+  const items = Array.isArray(games) ? games.slice(0, 20) : [];
+
+  if (!items.length) return null;
+
+  return (
+    <section className={`home-game-rail-section ${className}`}>
+      <div className="home-game-rail-heading">
+        <div>
+          <span>{eyebrow}</span>
+          <h3>{title}</h3>
+        </div>
+        <Link to="/games">View all ›</Link>
+      </div>
+
+      <div className="home-game-rail-scroll" aria-label={title}>
+        {items.map((game, index) => (
+          <Link
+            className="home-game-rail-card"
+            key={`${title}-${game?._id || game?.id || game?.gameCode || game?.name || index}`}
+            to={getHomeRailGamePath(game)}
+          >
+            <div className="home-game-rail-media">
+              <HomeRailGameImage game={game} />
+              <b>{String(index + 1).padStart(2, '0')}</b>
+            </div>
+            <strong>{getHomeRailGameTitle(game)}</strong>
+            {Number(game?.playCount || 0) > 0 && (
+              <small>{Number(game.playCount).toLocaleString('en-US')} plays</small>
+            )}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
 function normalizeJiliGame(raw = {}) {
   const gameId = pickJiliGameId(raw);
   const name = pickJiliGameName(raw) || `JILI Game ${gameId}`;
@@ -389,6 +504,7 @@ export default function HomePage() {
   const { user, refreshUser } = useAuth();
 
   const [games, setGames] = useState([]);
+  const [homeGameSections, setHomeGameSections] = useState({ newGames: [], popularGames: [] });
   const [jiliGames, setJiliGames] = useState([]);
   const [jiliLoading, setJiliLoading] = useState(true);
   const [sportsCategories, setSportsCategories] = useState([]);
@@ -406,11 +522,19 @@ export default function HomePage() {
       setError('');
 
       try {
-        const gamesResponse = await GamesAPI.all();
+        const [gamesResponse, homeSectionsResponse] = await Promise.all([
+          GamesAPI.all(),
+          GamesAPI.homeSections().catch(() => null),
+        ]);
 
         if (!active) return;
 
         setGames(normalizeList(gamesResponse.data, ['games']));
+        const sectionData = homeSectionsResponse?.data?.data || homeSectionsResponse?.data || {};
+        setHomeGameSections({
+          newGames: Array.isArray(sectionData.newGames) ? sectionData.newGames : [],
+          popularGames: Array.isArray(sectionData.popularGames) ? sectionData.popularGames : [],
+        });
       } catch (err) {
         if (active) {
           setError(getApiError(err, 'Unable to load games from backend'));
@@ -637,6 +761,8 @@ export default function HomePage() {
   };
 
   const featuredGames = useMemo(() => games.slice(0, 4), [games]);
+  const newestHomeGames = useMemo(() => (homeGameSections.newGames || []).slice(0, 20), [homeGameSections]);
+  const popularHomeGames = useMemo(() => (homeGameSections.popularGames || []).slice(0, 20), [homeGameSections]);
   const hotJiliGames = useMemo(() => pickHotJiliGames(jiliGames), [jiliGames]);
 
   return (
@@ -731,6 +857,13 @@ export default function HomePage() {
           </Link>
         </section>
 
+        <HomeGameRail
+          eyebrow="New"
+          title="New Game"
+          games={newestHomeGames}
+          className="home-new-games-rail"
+        />
+
         <section className="casino-lobby-section casino-lobby-section-hot-only">
           <div className="casino-hot-panel">
             <div className="casino-hot-heading">
@@ -784,6 +917,13 @@ export default function HomePage() {
             <span className="home-slot-banner-cta">View live casino</span>
           </Link>
         </div>
+
+        <HomeGameRail
+          eyebrow="Popular"
+          title="Most Popular Games"
+          games={popularHomeGames}
+          className="home-popular-games-rail"
+        />
 
         {error && <div className="auth-message">{error}</div>}
 
