@@ -74,6 +74,7 @@ import SeoManager from './components/SeoManager.jsx';
 import { initGA, trackPageView } from './utils/analytics.js';
 import AppInstallBanner from './components/AppInstallBanner.jsx';
 import LuckyWheelNotificationPrompt from './components/LuckyWheelNotificationPrompt.jsx';
+import AgentPresenceConnector from './components/AgentPresenceConnector.jsx';
 
 function GoogleAnalyticsTracker() {
   const location = useLocation();
@@ -138,9 +139,9 @@ export default function App() {
 
       <Route path="/verify-user" element={<VerifyEmailPage />} />
       <Route path="/agent/login" element={<AgentLoginPage />} />
-      <Route path="/agent/dashboard" element={<AgentDashboardPage />} />
-      <Route path="/agent/payment-methods" element={<AgentPaymentMethodsPage />} />
-      <Route path="/agent/requests/:type" element={<AgentRequestsPage />} />
+      <Route path="/agent/dashboard" element={<><AgentPresenceConnector /><AgentDashboardPage /></>} />
+      <Route path="/agent/payment-methods" element={<><AgentPresenceConnector /><AgentPaymentMethodsPage /></>} />
+      <Route path="/agent/requests/:type" element={<><AgentPresenceConnector /><AgentRequestsPage /></>} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
