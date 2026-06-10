@@ -2348,3 +2348,68 @@
     height: 96px !important;
   }
 }
+
+
+/* FINAL UI FIX: Home Hot Games mobile image + title spacing */
+.hot-grid .hot-card {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.hot-grid .hot-card .hot-media,
+.hot-card .hot-media {
+  height: 112px !important;
+  min-height: 112px !important;
+  max-height: none !important;
+  flex: 0 0 112px !important;
+  border-radius: 14px 14px 0 0 !important;
+  overflow: hidden !important;
+}
+
+.hot-grid .hot-card .hot-media img,
+.hot-card .hot-media img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+
+.hot-grid .hot-card .hot-card-title,
+.hot-card .hot-card-title,
+.hot-grid .hot-card h3,
+.hot-card h3 {
+  display: block !important;
+  margin: 12px 10px 0 !important;
+  padding-top: 4px !important;
+  line-height: 1.18 !important;
+  transform: translateY(6px) !important;
+}
+
+/* keep card height balanced after image increase */
+.hot-grid .hot-card,
+.hot-card {
+  min-height: 176px !important;
+}
+
+@media (max-width: 680px) {
+  .hot-grid .hot-card .hot-media,
+  .hot-card .hot-media {
+    height: 118px !important;
+    min-height: 118px !important;
+    flex-basis: 118px !important;
+  }
+
+  .hot-grid .hot-card,
+  .hot-card {
+    min-height: 190px !important;
+  }
+
+  .hot-grid .hot-card .hot-card-title,
+  .hot-card .hot-card-title,
+  .hot-grid .hot-card h3,
+  .hot-card h3 {
+    margin-top: 13px !important;
+    transform: translateY(7px) !important;
+  }
+}

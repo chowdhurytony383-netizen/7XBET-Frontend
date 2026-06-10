@@ -627,3 +627,12 @@
 .jili-game-card-body .card-description {
   display: none !important;
 }
+
+
+/* FINAL UI FIX: hide JILI/provider game card descriptions */
+.jili-game-card-body p,
+.jili-game-card p,
+.provider-game-card p,
+.source-game-card p {
+  display: none !important;
+}

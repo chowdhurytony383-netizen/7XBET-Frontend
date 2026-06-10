@@ -94,3 +94,14 @@
 .provider-game-card p {
   display: none !important;
 }
+
+
+/* FINAL UI FIX: hide game card descriptions everywhere */
+.game-card p,
+.game-card-body p,
+.game-card-content p,
+.game-description,
+.game-card-desc,
+.card-description {
+  display: none !important;
+}
