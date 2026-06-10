@@ -46,8 +46,6 @@ import MinesPage from './pages/MinesPage.jsx';
 import SourceGamePage from './pages/SourceGamePage.jsx';
 import JiliGamesPage from './pages/JiliGamesPage.jsx';
 import JiliGamePage from './pages/JiliGamePage.jsx';
-import PgsoftGamesPage from './pages/PgsoftGamesPage.jsx';
-import PgsoftGamePage from './pages/PgsoftGamePage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import WalletPage from './pages/WalletPage.jsx';
 import DepositPage from './pages/DepositPage.jsx';
@@ -75,6 +73,7 @@ import OneClickCredentialModal from './components/OneClickCredentialModal.jsx';
 import SeoManager from './components/SeoManager.jsx';
 import { initGA, trackPageView } from './utils/analytics.js';
 import AppInstallBanner from './components/AppInstallBanner.jsx';
+import LuckyWheelNotificationPrompt from './components/LuckyWheelNotificationPrompt.jsx';
 
 function GoogleAnalyticsTracker() {
   const location = useLocation();
@@ -108,7 +107,6 @@ export default function App() {
         <Route path="live-casino" element={<Navigate to="/jili-games?category=casino" replace />} />
         <Route path="slots" element={<Navigate to="/jili-games?category=slots" replace />} />
         <Route path="jili-games" element={<JiliGamesPage />} />
-        <Route path="pgsoft-games" element={<PgsoftGamesPage />} />
         <Route path="bonuses" element={<BonusesPage />} />
         <Route path="bonuses/welcome-bonus" element={<WelcomeBonusPage />} />
         <Route path="bonuses/cashback" element={<CashbackPage />} />
@@ -150,7 +148,6 @@ export default function App() {
           <Route path="games/mines" element={<MinesPage />} />
           <Route path="source-games/:gameCode" element={<SourceGamePage />} />
           <Route path="jili/:gameId" element={<JiliGamePage />} />
-          <Route path="pgsoft/:gameId" element={<PgsoftGamePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="wallet" element={<WalletPage />} />
           <Route path="free-spin" element={<FreeSpinPage />} />
@@ -186,6 +183,7 @@ export default function App() {
 
       <OneClickCredentialModal />
       <AppInstallBanner />
+      <LuckyWheelNotificationPrompt />
     </>
   );
 }
