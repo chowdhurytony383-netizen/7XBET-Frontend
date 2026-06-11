@@ -32,7 +32,7 @@ import { connectRealtimeSocket } from '../socket/realtimeSocket.js';
 import FooterSection from '../components/FooterSection.jsx';
 
 import './HomePage.css';
-import FootballStaticImageBanner from '../components/home/FootballStaticImageBanner.jsx';
+import WorldCupCountdownBanner from '../components/home/WorldCupCountdownBanner.jsx';
 
 function normalizeList(payload, keys = []) {
   if (Array.isArray(payload)) return payload;
@@ -821,7 +821,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <FootballStaticImageBanner />
+        <WorldCupCountdownBanner />
 
         <HomeFreeSpinBanner />
 
