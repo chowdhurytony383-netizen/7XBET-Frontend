@@ -1,0 +1,161 @@
+.sports-utility-page {
+  gap: 16px;
+}
+
+.sports-utility-nav {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(148,163,184,.14);
+  background: rgba(2,6,23,.42);
+}
+
+.sports-utility-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #dbeafe;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid rgba(148,163,184,.16);
+  background: rgba(15,23,42,.72);
+  font-weight: 900;
+}
+
+.sports-results-groups,
+.sports-stat-sports-list,
+.sports-provider-health {
+  display: grid;
+  gap: 10px;
+}
+
+.sports-results-group,
+.sports-provider-health,
+.sports-stat-sports-list {
+  padding: 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(148,163,184,.15);
+  background: rgba(15,23,42,.78);
+  box-shadow: var(--shadow);
+}
+
+.sports-results-group h3,
+.sports-provider-health h3,
+.sports-stat-sports-list h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.sports-results-group h3 span,
+.sports-stat-sports-list a span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+}
+
+.sports-result-row,
+.sports-stat-sports-list a,
+.sports-provider-health div {
+  min-width: 0;
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(148,163,184,.12);
+  background: rgba(2,6,23,.36);
+  color: #e5edf7;
+  text-decoration: none;
+}
+
+.sports-result-row {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.sports-result-row > div:last-child {
+  text-align: right;
+}
+
+.sports-result-row strong,
+.sports-result-row small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sports-result-row small,
+.sports-provider-health span {
+  color: #94a3b8;
+}
+
+.sports-result-row b {
+  color: #d9ff99;
+  font-size: 1.1rem;
+}
+
+.sports-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sports-stat-grid article {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(34,197,94,.16);
+  background: rgba(34,197,94,.08);
+}
+
+.sports-stat-grid article span,
+.sports-stat-sports-list a em {
+  color: #94a3b8;
+  font-size: .84rem;
+}
+
+.sports-stat-grid article strong {
+  color: #d9ff99;
+  font-size: 1.7rem;
+}
+
+.sports-provider-health div {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.sports-stat-sports-list a {
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+}
+
+.sports-stat-sports-list a b {
+  color: #d9ff99;
+}
+
+.sports-utility-empty {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed rgba(148,163,184,.2);
+  color: #94a3b8;
+  background: rgba(2,6,23,.30);
+}
+
+@media (max-width: 760px) {
+  .sports-utility-page { gap: 10px; }
+  .sports-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sports-results-group, .sports-provider-health, .sports-stat-sports-list { padding: 10px; border-radius: 18px; }
+  .sports-result-row { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); padding: 8px; }
+  .sports-result-row b { font-size: .92rem; }
+  .sports-stat-sports-list a { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .sports-stat-sports-list a em { display: none; }
+}

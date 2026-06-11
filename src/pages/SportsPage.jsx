@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Activity, BarChart3, Clock, Info, ListChecks, MapPin, Radio, ShieldCheck, Ticket, Trophy, Users, Wallet, X } from 'lucide-react';
+import { Activity, BarChart3, CalendarDays, ChevronRight, Clock, Flame, Info, Layers, ListChecks, MapPin, Radio, Search, ShieldCheck, Star, Ticket, Trophy, Users, Wallet, X } from 'lucide-react';
 import { SportsAPI } from '../api/sports.js';
 import { getApiError } from '../api/client.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
@@ -929,6 +929,35 @@ function selectPrimaryCardOdds(match) {
   return preferred.slice(0, 3);
 }
 
+
+function kickoffText(match = {}) {
+  const raw = match.commenceTime || match.startTime || match.dateTime || match.kickoffTime || match.raw?.starting_at || '';
+  const timestamp = Date.parse(raw);
+  if (!Number.isFinite(timestamp)) return raw || '—';
+  return new Intl.DateTimeFormat(undefined, { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(timestamp));
+}
+
+function leagueTitleFor(match = {}) {
+  const country = textValue(match.country?.name || match.country || match.raw?.country?.name || '', '');
+  const league = textValue(match.league?.name || match.league || match.tournament || match.categoryName || match.raw?.league?.name || match.sportTitle || match.sport || '', 'Sports');
+  return [country, league].filter(Boolean).join(' · ') || 'Sports';
+}
+
+function marketCountFor(match = {}) {
+  const odds = normalizeMatchOdds(match);
+  if (!odds.length) return 0;
+  const keys = new Set(odds.map((odd) => `${odd.marketKey || ''}:${odd.marketName || odd.marketDisplayName || ''}`));
+  return keys.size || odds.length;
+}
+
+function providerNameFor(match = {}) {
+  const provider = String(match.provider || match.oddsProvider || match.raw?.provider || '').trim().toLowerCase();
+  if (provider.includes('sportmonks')) return 'Sportmonks';
+  if (provider.includes('optic')) return 'OpticOdds';
+  if (provider.includes('api')) return 'API';
+  return provider ? provider.replace(/(^|\s)\S/g, (item) => item.toUpperCase()) : '7XBET';
+}
+
 function MatchCard({ match, onSelect, selectedIds, onDetails }) {
   const homeTeam = match.homeTeam || match.home;
   const awayTeam = match.awayTeam || match.away;
@@ -938,9 +967,11 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
   const sportMeta = sportMetaFromMatch(match);
   const matchId = getMatchId(match);
   const disabled = match.completed || statusClass(status) === 'finished';
+  const marketCount = marketCountFor(match);
+  const isLive = statusClass(status) === 'live';
 
   return (
-    <article className="sports-live-card">
+    <article className={`sports-live-card sports-book-card ${isLive ? 'is-live' : ''}`}>
       <div
         className="sports-live-card-top sports-live-card-top-clickable"
         role="button"
@@ -956,13 +987,12 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
         <div className="sports-card-title-block">
           <span className={`sports-competition ${sportMeta.className}`}><span>{sportMeta.icon}</span>{match.sport || match.sportTitle || sportMeta.name}</span>
           <h3>{getTeamName(homeTeam)} <span>vs</span> {getTeamName(awayTeam)}</h3>
-          <p>{match.league || match.tournament || sportMeta.name} · {match.startTime || 'Auto sync'}</p>
+          <p>{leagueTitleFor(match)} · {kickoffText(match)}</p>
         </div>
         <div className="sports-card-actions">
+          <button type="button" className="sports-favorite-button" aria-label="Add to favorites" onClick={(event) => event.stopPropagation()}><Star size={14} /></button>
           <span className={`sports-status-pill ${statusClass(status)}`}>{status}</span>
-          <button type="button" className="sports-details-button" onClick={(event) => { event.stopPropagation(); onDetails(match); }}>
-            <Info size={15} /> Details
-          </button>
+          <span className="sports-provider-tag">{providerNameFor(match)}</span>
         </div>
       </div>
 
@@ -971,7 +1001,10 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
         <MatchTeam team={awayTeam} sportKey={match.sportKey} score={getScore(match, 'away')} />
       </div>
 
-      <div className="sports-market-label">{marketLabel}</div>
+      <div className="sports-market-label sports-market-label-premium">
+        <span>{marketLabel}</span>
+        <button type="button" onClick={() => onDetails(match)}>{marketCount ? `+${marketCount} markets` : 'Match center'} <ChevronRight size={14} /></button>
+      </div>
 
       <div className="sports-odds-grid">
         {odds.length ? odds.map((odd) => {
@@ -989,7 +1022,7 @@ function MatchCard({ match, onSelect, selectedIds, onDetails }) {
             </button>
           );
         }) : (
-          <span className="sports-no-odds">Markets opening soon</span>
+          <button type="button" className="sports-no-odds" onClick={() => onDetails(match)}>Markets opening soon</button>
         )}
       </div>
     </article>
@@ -1057,7 +1090,7 @@ export default function SportsPage() {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [matchDetails, setMatchDetails] = useState(null);
   const [overview, setOverview] = useState(() => readCachedSportsOverview());
-  const [viewMode, setViewMode] = useState(searchParams.get('mode') || 'live');
+  const [viewMode, setViewMode] = useState(['live', 'prematch', 'finished'].includes(searchParams.get('mode')) ? searchParams.get('mode') : 'live');
   const maxVisibleMatches = Math.max(12, Number(import.meta.env.VITE_SPORTS_PAGE_MATCH_LIMIT || 48));
 
   const load = useCallback(async ({ silent = false } = {}) => {
@@ -1178,7 +1211,7 @@ export default function SportsPage() {
     const sportFromUrl = searchParams.get('sport') || 'all';
     const modeFromUrl = searchParams.get('mode') || 'live';
     setSelectedSport(sportFromUrl);
-    setViewMode(modeFromUrl === 'prematch' ? 'prematch' : 'live');
+    setViewMode(['live', 'prematch', 'finished'].includes(modeFromUrl) ? modeFromUrl : 'live');
   }, [searchParams]);
 
   const sports = useMemo(() => {
@@ -1215,13 +1248,33 @@ export default function SportsPage() {
     const groups = new Map();
     renderMatches.forEach((match) => {
       const meta = sportMetaFromMatch(match);
-      if (!groups.has(meta.key)) groups.set(meta.key, { meta, items: [] });
-      groups.get(meta.key).items.push(match);
+      const sportGroup = groups.get(meta.key) || { meta, items: [], leagues: new Map() };
+      sportGroup.items.push(match);
+      const leagueName = leagueTitleFor(match);
+      const leagueKey = `${meta.key}:${leagueName}`.toLowerCase();
+      const leagueGroup = sportGroup.leagues.get(leagueKey) || { name: leagueName, items: [] };
+      leagueGroup.items.push(match);
+      sportGroup.leagues.set(leagueKey, leagueGroup);
+      groups.set(meta.key, sportGroup);
     });
-    return Array.from(groups.values()).sort((a, b) => sortSportMetas([a.meta, b.meta])[0]?.key === a.meta.key ? -1 : 1);
+
+    return Array.from(groups.values())
+      .map((group) => ({
+        ...group,
+        leagues: Array.from(group.leagues.values()).sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+      .sort((a, b) => sortSportMetas([a.meta, b.meta])[0]?.key === a.meta.key ? -1 : 1);
   }, [renderMatches]);
 
   const selectedIds = useMemo(() => new Set(betSlipItems.map((item) => item.id)), [betSlipItems]);
+
+  const modeTitle = viewMode === 'prematch' ? 'Pre-match Sports' : viewMode === 'finished' ? 'Sports Results' : 'Live Sports';
+  const modeHint = viewMode === 'prematch'
+    ? 'Upcoming events grouped by sport, league and start time.'
+    : viewMode === 'finished'
+      ? 'Finished matches and settled scoreboards.'
+      : 'In-play events with live score updates and fast market access.';
+
 
   const changeSport = (key) => {
     setSelectedSport(key);
@@ -1233,7 +1286,7 @@ export default function SportsPage() {
   };
 
   const changeMode = (mode) => {
-    const normalized = mode === 'prematch' ? 'prematch' : 'live';
+    const normalized = ['live', 'prematch', 'finished'].includes(mode) ? mode : 'live';
     setViewMode(normalized);
     const next = new URLSearchParams(searchParams);
     next.set('mode', normalized);
@@ -1333,27 +1386,38 @@ export default function SportsPage() {
   return (
     <div className="page-stack sports-page">
       <PageHeader
-        eyebrow="7XBET Sports"
-        title="Premium Live & Pre-match Sports"
-        description="Fast-loading 7XBET sports markets with live scores, match cards, and mobile-first betting flow."
+        eyebrow="7XBET Sportsbook"
+        title="Live, Pre-match & Match Center"
+        description="1xBet-style sportsbook flow with 7XBET branding: sport rail, league groups, live scoreboards, markets, details and mobile bet slip."
       />
 
-      <section className="sports-hero-panel">
+      <section className="sports-hero-panel sports-book-hero">
         <div>
-          <span className="page-eyebrow">7XBET auto update</span>
-          <h2>Live & pre-match markets</h2>
-          <p>Quick sports list, fast match cards, live scores and protected real-price betting.</p>
+          <span className="page-eyebrow">7XBET sportsbook</span>
+          <h2>{modeTitle}</h2>
+          <p>{modeHint}</p>
+          <div className="sports-book-nav">
+            <Link to="/sports?mode=live"><Radio size={16} /> Live</Link>
+            <Link to="/sports?mode=prematch"><CalendarDays size={16} /> Sports</Link>
+            <Link to="/esports"><Trophy size={16} /> Esports</Link>
+            <Link to="/sports?mode=finished"><ListChecks size={16} /> Results</Link>
+            <Link to="/sports/statistics"><BarChart3 size={16} /> Statistics</Link>
+            <Link to="/bet-slip"><Ticket size={16} /> Bet history</Link>
+          </div>
         </div>
         <div className="sports-hero-stats">
           <div><Activity size={18} /><span>Events</span><strong>{status?.events ?? matches.length}</strong></div>
-          <div><Ticket size={18} /><span>Open bets</span><strong>{status?.openBets ?? 0}</strong></div>
+          <div><Flame size={18} /><span>Live</span><strong>{overview?.summary?.live ?? sports.reduce((sum, item) => sum + Number(item.live || 0), 0)}</strong></div>
+          <div><Layers size={18} /><span>Markets</span><strong>{renderMatches.reduce((sum, item) => sum + marketCountFor(item), 0)}</strong></div>
+          <div><Ticket size={18} /><span>Selections</span><strong>{betSlipItems.length}</strong></div>
           <div><Wallet size={18} /><span>Balance</span><strong>{formatCurrency(user?.wallet, user)}</strong></div>
         </div>
       </section>
 
       <div className="sports-mode-switch" role="tablist" aria-label="Sports mode">
-        <button type="button" className={viewMode === 'live' ? 'active' : ''} onClick={() => changeMode('live')}>LIVE</button>
-        <button type="button" className={viewMode === 'prematch' ? 'active' : ''} onClick={() => changeMode('prematch')}>Pre-match</button>
+        <button type="button" className={viewMode === 'live' ? 'active' : ''} onClick={() => changeMode('live')}><Radio size={15} /> LIVE</button>
+        <button type="button" className={viewMode === 'prematch' ? 'active' : ''} onClick={() => changeMode('prematch')}><CalendarDays size={15} /> Pre-match</button>
+        <button type="button" className={viewMode === 'finished' ? 'active' : ''} onClick={() => changeMode('finished')}><ListChecks size={15} /> Results</button>
       </div>
 
       <div className="sports-toolbar sports-toolbar-premium">
@@ -1366,7 +1430,10 @@ export default function SportsPage() {
             </button>
           ))}
         </div>
-        <span className="sports-live-sync-pill"><Radio size={16} /> Auto update</span>
+        <div className="sports-toolbar-actions">
+          <span className="sports-live-sync-pill"><Radio size={16} /> Auto update</span>
+          <span className="sports-search-pill"><Search size={15} /> Search</span>
+        </div>
       </div>
 
 
@@ -1379,7 +1446,7 @@ export default function SportsPage() {
       <div className="sports-layout-grid">
         <section className="sports-live-list">
           <div className="section-row-title sports-live-title-row">
-            <h2><Clock size={20} /> {viewMode === 'prematch' ? 'Pre-match Sports' : 'Live Sports'} </h2>
+            <h2><Clock size={20} /> {modeTitle}</h2>
             <span>{renderMatches.length}{visibleMatches.length > renderMatches.length ? ` / ${visibleMatches.length}` : ''} matches</span>
           </div>
           {visibleMatches.length > renderMatches.length ? (
@@ -1390,16 +1457,29 @@ export default function SportsPage() {
             <div className="sports-empty-panel">Loading 7XBET sports feed...</div>
           ) : groupedMatches.length ? (
             groupedMatches.map((group) => (
-              <div className="sports-category-block" key={group.meta.key}>
+              <div className="sports-category-block sports-book-sport-block" key={group.meta.key}>
                 <div className="sports-category-heading">
                   <span className={`sports-category-icon ${group.meta.className}`}>{group.meta.icon}</span>
                   <div>
                     <h3>{group.meta.name}</h3>
-                    <small>{group.items.length} event{group.items.length === 1 ? '' : 's'}</small>
+                    <small>{group.items.length} event{group.items.length === 1 ? '' : 's'} · {group.leagues.length} league{group.leagues.length === 1 ? '' : 's'}</small>
                   </div>
                 </div>
-                {group.items.map((match) => (
-                  <MatchCard key={getMatchId(match)} match={match} onSelect={addSelection} selectedIds={selectedIds} onDetails={openDetails} />
+                {group.leagues.map((league) => (
+                  <div className="sports-league-block" key={`${group.meta.key}-${league.name}`}>
+                    <div className="sports-league-heading">
+                      <div>
+                        <span>{group.meta.icon}</span>
+                        <strong>{league.name}</strong>
+                      </div>
+                      <small>{league.items.length} event{league.items.length === 1 ? '' : 's'}</small>
+                    </div>
+                    <div className="sports-league-match-list">
+                      {league.items.map((match) => (
+                        <MatchCard key={getMatchId(match)} match={match} onSelect={addSelection} selectedIds={selectedIds} onDetails={openDetails} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             ))
@@ -1409,6 +1489,14 @@ export default function SportsPage() {
         </section>
 
         <aside className="sports-side-panel">
+          <div className="sports-side-card sports-quick-card">
+            <h3>Sportsbook menu</h3>
+            <Link to="/sports?mode=live"><Radio size={16} /> Live betting</Link>
+            <Link to="/sports?mode=prematch"><CalendarDays size={16} /> Pre-match</Link>
+            <Link to="/sports?mode=finished"><ListChecks size={16} /> Results</Link>
+            <Link to="/sports/statistics"><BarChart3 size={16} /> Statistics</Link>
+            <Link to="/esports"><Trophy size={16} /> Esports</Link>
+          </div>
           <div className="sports-side-card">
             <h3>My Sports Bets</h3>
             <BetHistory bets={bets} />
