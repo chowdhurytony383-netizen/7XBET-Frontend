@@ -50,7 +50,30 @@ export function categoryKeyFromText(value = '') {
   if (clean.includes('table tennis')) return 'table_tennis';
   if (clean.includes('darts')) return 'darts';
   if (clean.includes('golf')) return 'golf';
-  if (clean.includes('esport')) return 'esports';
+  if (clean.includes('esport')
+    || clean.includes('e-sport')
+    || clean.includes('dota')
+    || clean.includes('league of legends')
+    || clean === 'lol'
+    || clean.includes(' lol ')
+    || clean.includes('counter strike')
+    || clean.includes('counter-strike')
+    || clean.includes('counterstrike')
+    || clean.includes('cs2')
+    || clean.includes('csgo')
+    || clean.includes('valorant')
+    || clean.includes('rainbow six')
+    || clean.includes('rainbowsix')
+    || clean.includes(' r6')
+    || clean.includes('overwatch')
+    || clean.includes('starcraft')
+    || clean.includes('call of duty')
+    || clean.includes('pubg')
+    || clean.includes('mobile legends')
+    || clean.includes('wild rift')
+    || clean.includes('arena of valor')
+    || clean.includes('king of glory')
+    || clean.includes('rocket league')) return 'esports';
   if (clean.includes('mma')) return 'mma';
   if (clean.includes('boxing')) return 'boxing';
   return 'sports';
