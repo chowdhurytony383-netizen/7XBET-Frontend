@@ -1,0 +1,175 @@
+.wc-countdown-banner {
+  position: relative;
+  width: 100%;
+  height: clamp(154px, 31vw, 288px);
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 7px 0 10px;
+  border: 1px solid rgba(251, 191, 36, .32);
+  background: #061425;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, .36);
+  isolation: isolate;
+}
+
+.wc-countdown-banner-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.wc-countdown-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(2, 6, 23, .10), rgba(2, 6, 23, .02) 45%, rgba(2, 6, 23, .10)),
+    linear-gradient(180deg, rgba(2, 6, 23, 0) 0 58%, rgba(2, 6, 23, .36) 100%);
+  z-index: 1;
+}
+
+/* Covers the static fake countdown printed in the image and replaces it with live countdown */
+.wc-countdown-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(10px, 2.6vw, 22px);
+  z-index: 2;
+  width: min(46%, 520px);
+  transform: translateX(-50%);
+  padding: clamp(7px, 1.25vw, 13px);
+  border-radius: clamp(13px, 2vw, 22px);
+  border: 1px solid rgba(251, 191, 36, .62);
+  background:
+    linear-gradient(180deg, rgba(8, 18, 34, .95), rgba(4, 11, 22, .96)),
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, .15), transparent 62%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .06) inset,
+    0 14px 36px rgba(0, 0, 0, .44),
+    0 0 22px rgba(251, 191, 36, .16);
+  backdrop-filter: blur(8px);
+}
+
+.wc-countdown-label {
+  margin-bottom: clamp(5px, .9vw, 10px);
+  color: #fde68a;
+  text-align: center;
+  font-size: clamp(.46rem, 1.25vw, .86rem);
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: clamp(.12em, .42vw, .42em);
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(251, 191, 36, .34);
+}
+
+.wc-countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, .85vw, 12px);
+}
+
+.wc-countdown-box {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: clamp(5px, 1vw, 12px) 3px clamp(4px, .75vw, 9px);
+  border-radius: clamp(8px, 1.25vw, 14px);
+  border: 1px solid rgba(251, 191, 36, .50);
+  background: linear-gradient(180deg, rgba(15, 23, 42, .82), rgba(2, 6, 23, .92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    0 8px 20px rgba(0, 0, 0, .26);
+}
+
+.wc-countdown-box strong {
+  color: #f8d789;
+  font-size: clamp(1rem, 3.4vw, 3.1rem);
+  font-weight: 1000;
+  line-height: .9;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px rgba(251, 191, 36, .26);
+}
+
+.wc-countdown-box span {
+  display: block;
+  margin-top: clamp(3px, .55vw, 8px);
+  color: rgba(248, 250, 252, .88);
+  font-size: clamp(.42rem, 1.02vw, .76rem);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: .04em;
+}
+
+.wc-countdown-live {
+  display: grid;
+  place-items: center;
+  min-height: clamp(32px, 5vw, 62px);
+  color: #bbf7d0;
+  font-size: clamp(1.1rem, 3.8vw, 3rem);
+  font-weight: 1000;
+  letter-spacing: .08em;
+  text-shadow: 0 0 16px rgba(34, 197, 94, .38);
+}
+
+@media (max-width: 680px) {
+  .wc-countdown-banner {
+    height: 156px;
+    border-radius: 18px;
+    margin: 6px 0 9px;
+  }
+
+  .wc-countdown-banner-image {
+    object-position: center center;
+  }
+
+  .wc-countdown-overlay {
+    bottom: 8px;
+    width: 62%;
+    padding: 6px;
+    border-radius: 12px;
+  }
+
+  .wc-countdown-label {
+    margin-bottom: 5px;
+    font-size: .44rem;
+    letter-spacing: .16em;
+  }
+
+  .wc-countdown-grid {
+    gap: 4px;
+  }
+
+  .wc-countdown-box {
+    padding: 5px 2px 4px;
+    border-radius: 8px;
+  }
+
+  .wc-countdown-box strong {
+    font-size: clamp(.95rem, 5vw, 1.45rem);
+  }
+
+  .wc-countdown-box span {
+    margin-top: 3px;
+    font-size: .40rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .wc-countdown-banner {
+    height: 142px;
+  }
+
+  .wc-countdown-overlay {
+    width: 64%;
+    bottom: 7px;
+    padding: 5px;
+  }
+
+  .wc-countdown-box strong {
+    font-size: 1.05rem;
+  }
+}
