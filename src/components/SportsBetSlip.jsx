@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Ticket, Trash2, X } from 'lucide-react';
+import { Layers, Ticket, Trash2, X } from 'lucide-react';
 import { formatCurrency } from '../utils/format.js';
 import './SportsBetSlip.css';
 
@@ -21,8 +21,8 @@ export default function SportsBetSlip({
     <aside className="sports-bet-slip-panel" aria-label="Sports bet slip">
       <div className="sports-bet-slip-head">
         <div>
-          <span className="page-eyebrow">Bet Slip</span>
-          <h3>{items.length} selection{items.length === 1 ? '' : 's'}</h3>
+          <span className="page-eyebrow">7XBET Bet Slip</span>
+          <h3><Layers size={16} /> {items.length} selection{items.length === 1 ? '' : 's'}</h3>
         </div>
         <button type="button" className="sports-slip-clear" onClick={onClear} aria-label="Clear bet slip"><X size={18} /></button>
       </div>
@@ -46,7 +46,7 @@ export default function SportsBetSlip({
               <div className="sports-slip-item-meta">
                 <span>{item.marketName}</span>
                 <strong>{item.selectionName} @ {Number(item.odds || 0).toFixed(2)}</strong>
-                <small>7XBET live market</small>
+                <small>Real odds · Protected selection</small>
               </div>
 
               <label className="sports-slip-stake-field">

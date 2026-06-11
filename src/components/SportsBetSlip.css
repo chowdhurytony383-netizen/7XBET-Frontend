@@ -501,3 +501,29 @@
     padding: 7px 9px !important;
   }
 }
+
+
+/* Sportsbook bet slip polish */
+.sports-bet-slip-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sports-bet-slip-panel {
+  border-color: rgba(180, 255, 47, .28);
+  background:
+    radial-gradient(circle at top right, rgba(180,255,47,.10), transparent 38%),
+    linear-gradient(145deg, rgba(15, 23, 42, .98), rgba(2, 6, 23, .98));
+}
+
+.sports-slip-total-box div:last-child strong {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 720px) {
+  .sports-bet-slip-panel {
+    height: min(72dvh, calc(100dvh - 92px));
+    border-radius: 18px 18px 0 0;
+  }
+}
