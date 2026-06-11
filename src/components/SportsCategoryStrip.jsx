@@ -13,9 +13,6 @@ function getCategoryName(category) {
   return category?.displayName || category?.name || category?.title || meta.name;
 }
 
-function countFor(category) {
-  return Number(category?.live ?? category?.prematch ?? category?.matchCount ?? category?.eventCount ?? category?.count ?? 0);
-}
 
 export default function SportsCategoryStrip({ categories = [] }) {
   return (
@@ -33,7 +30,6 @@ export default function SportsCategoryStrip({ categories = [] }) {
             const sportKey = meta.key || getCategoryKey(category);
             const image = category?.image || category?.logo;
             const liveCount = Number(category?.live || 0);
-            const total = countFor(category);
 
             return (
               <Link className="seven-sport-pill-card" key={getCategoryKey(category)} to={`/sports?mode=${liveCount ? 'live' : 'prematch'}&sport=${encodeURIComponent(sportKey)}`}>
@@ -41,7 +37,6 @@ export default function SportsCategoryStrip({ categories = [] }) {
                   {image ? <img src={image} alt="" /> : meta.icon}
                 </span>
                 <strong title={name}>{name}</strong>
-                <small>{total}</small>
               </Link>
             );
           })}

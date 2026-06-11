@@ -31,7 +31,7 @@
   min-width: 0;
   min-height: 74px;
   display: grid;
-  grid-template-columns: auto minmax(0,1fr) auto;
+  grid-template-columns: auto minmax(0,1fr);
   align-items: center;
   gap: 12px;
   border-radius: 999px;
@@ -138,7 +138,7 @@
 
   .seven-sport-pill-card {
     min-height: 50px !important;
-    grid-template-columns: 32px minmax(0, 1fr) 28px !important;
+    grid-template-columns: 32px minmax(0, 1fr) !important;
     gap: 6px !important;
     padding: 7px 8px !important;
     border-radius: 999px !important;
@@ -263,5 +263,22 @@
   .sports-strip-section.seven-sport-strip-section,
   .seven-sport-strip-section {
     --seven-mobile-safe-x: 10px;
+  }
+}
+
+
+/* 7XBET request fix: remove sports category count bubbles from Home page */
+.seven-sport-pill-card small {
+  display: none !important;
+}
+
+.seven-sport-pill-card {
+  grid-template-columns: auto minmax(0, 1fr) !important;
+}
+
+@media (max-width: 720px) {
+  .seven-sport-pill-card {
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    padding-right: 12px !important;
   }
 }
