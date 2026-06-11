@@ -32,6 +32,7 @@ import { connectRealtimeSocket } from '../socket/realtimeSocket.js';
 import FooterSection from '../components/FooterSection.jsx';
 
 import './HomePage.css';
+import FootballWorldFeverCanvas from '../components/home/FootballWorldFeverCanvas.jsx';
 
 function normalizeList(payload, keys = []) {
   if (Array.isArray(payload)) return payload;
@@ -819,6 +820,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <FootballWorldFeverCanvas />
 
         <HomeFreeSpinBanner />
 
