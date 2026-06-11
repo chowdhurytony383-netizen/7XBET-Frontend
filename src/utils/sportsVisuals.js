@@ -1,6 +1,5 @@
 export const SPORT_META = {
   football: { key: 'football', name: 'Football', icon: '⚽', className: 'sport-football' },
-  soccer: { key: 'soccer', name: 'Football', icon: '⚽', className: 'sport-football' },
   cricket: { key: 'cricket', name: 'Cricket', icon: '🏏', className: 'sport-cricket' },
   basketball: { key: 'basketball', name: 'Basketball', icon: '🏀', className: 'sport-basketball' },
   tennis: { key: 'tennis', name: 'Tennis', icon: '🎾', className: 'sport-tennis' },
@@ -22,7 +21,6 @@ export const SPORT_META = {
 
 const SPORT_PRIORITY = {
   cricket: 0,
-  soccer: 1,
   football: 1,
   basketball: 2,
   tennis: 3,
@@ -39,7 +37,7 @@ export function categoryKeyFromText(value = '') {
   const clean = String(value || '').toLowerCase();
   if (clean.includes('americanfootball') || clean.includes('american football') || clean.includes('nfl') || clean.includes('ncaaf')) return 'americanfootball';
   if (clean.includes('americanfootball') || clean.includes('american football') || clean.includes('nfl') || clean.includes('ncaaf')) return 'americanfootball';
-  if (clean.includes('soccer') || clean.includes('football') || clean.includes('uefa') || clean.includes('epl')) return clean.includes('soccer') ? 'soccer' : 'football';
+  if (clean.includes('soccer') || clean.includes('football') || clean.includes('uefa') || clean.includes('epl') || clean.includes('fifa') || clean.includes('world cup')) return 'football';
   if (clean.includes('cricket')) return 'cricket';
   if (clean.includes('basket')) return 'basketball';
   if (clean.includes('tennis')) return 'tennis';
@@ -85,9 +83,10 @@ export function sportMetaFrom(value = '', fallbackTitle = '') {
 }
 
 export function sportMetaFromMatch(match = {}) {
-  if (match.category?.key && SPORT_META[match.category.key]) return SPORT_META[match.category.key];
-  if (match.categoryKey && SPORT_META[match.categoryKey]) return SPORT_META[match.categoryKey];
-  return sportMetaFrom(`${match.sportKey || ''} ${match.sport || ''} ${match.sportTitle || ''} ${match.categoryName || ''}`);
+  const rawCategoryKey = String(match.category?.key || match.categoryKey || '').toLowerCase();
+  if (rawCategoryKey === 'soccer') return SPORT_META.football;
+  if (rawCategoryKey && SPORT_META[rawCategoryKey]) return SPORT_META[rawCategoryKey];
+  return sportMetaFrom(`${match.sportKey || ''} ${match.sport || ''} ${match.sportTitle || ''} ${match.categoryName || ''} ${match.league || ''} ${match.tournament || ''}`);
 }
 
 function safeString(value, fallback = '') {
