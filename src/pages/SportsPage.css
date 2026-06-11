@@ -3871,3 +3871,60 @@
   .sports-market-label-premium { margin: 3px 0 6px; font-size: .78rem; }
   .sports-market-label-premium button { padding: 4px 6px; font-size: .64rem; }
 }
+
+
+/* Phase-2 clean sportsbook details/count fix */
+.sports-tabs-counts button b {
+  min-width: 22px;
+  text-align: center;
+}
+
+.sports-live-situation-card strong,
+.sports-detail-item strong,
+.sports-detail-stat strong,
+.sports-detail-list-row strong,
+.sports-detail-lineup strong,
+.sports-detail-list-row small,
+.sports-detail-lineup small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.sports-detail-lineup small:empty,
+.sports-detail-list-row small:empty {
+  display: none;
+}
+
+.sports-detail-body > .sports-detail-section {
+  min-width: 0;
+}
+
+.sports-detail-body .sports-detail-section:empty {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .sports-live-situation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .sports-live-situation-card {
+    padding: 7px 8px !important;
+    border-radius: 11px !important;
+    min-height: 46px;
+  }
+
+  .sports-live-situation-card span {
+    margin-bottom: 3px !important;
+    font-size: .62rem !important;
+  }
+
+  .sports-live-situation-card strong {
+    font-size: .76rem !important;
+    line-height: 1.12 !important;
+    max-height: 2.3em;
+  }
+}

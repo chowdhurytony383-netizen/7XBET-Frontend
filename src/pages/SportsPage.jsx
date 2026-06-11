@@ -88,14 +88,68 @@ function textValue(value, fallback = '—') {
       ?? value.title
       ?? value.value;
     if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
-    try {
-      const json = JSON.stringify(value);
-      return json && json !== '{}' ? json : fallback;
-    } catch (_error) {
-      return fallback;
-    }
+    return fallback;
   }
   return fallback;
+}
+
+function compactText(value, fallback = '', maxLength = 72) {
+  const text = textValue(value, fallback);
+  if (!text || text === '—') return fallback;
+  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+}
+
+function cleanInlineValue(value, fallback = '') {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return compactText(value, fallback, 80);
+  if (Array.isArray(value)) return value.map((item) => cleanInlineValue(item, '')).filter(Boolean).slice(0, 4).join(' · ') || fallback;
+  if (typeof value === 'object') {
+    const direct = value.display_name
+      ?? value.displayName
+      ?? value.full_name
+      ?? value.fullName
+      ?? value.fullname
+      ?? value.name
+      ?? value.short_name
+      ?? value.shortName
+      ?? value.label
+      ?? value.title
+      ?? value.description
+      ?? value.value
+      ?? value.type?.name
+      ?? value.player?.display_name
+      ?? value.player?.displayName
+      ?? value.player?.full_name
+      ?? value.player?.fullName
+      ?? value.player?.fullname
+      ?? value.player?.name
+      ?? value.team?.name
+      ?? value.participant?.name
+      ?? value.competitor?.name
+      ?? value.data?.name
+      ?? value.data?.value;
+    if (direct !== undefined && direct !== null && direct !== value) return cleanInlineValue(direct, fallback);
+    if (value.firstname || value.lastname) return compactText(`${value.firstname || ''} ${value.lastname || ''}`.trim(), fallback, 80);
+    if (value.player?.firstname || value.player?.lastname) return compactText(`${value.player.firstname || ''} ${value.player.lastname || ''}`.trim(), fallback, 80);
+  }
+  return fallback;
+}
+
+function formatSportDateTime(value) {
+  if (!value) return '';
+  const time = Date.parse(value);
+  if (!Number.isFinite(time)) return compactText(value, '', 42);
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(time));
+}
+
+function hasRows(value) {
+  return asArray(value).length > 0;
 }
 
 function scoreText(value, fallback = '0') {
@@ -220,7 +274,7 @@ function LineupsList({ items = [] }) {
         <div className="sports-detail-lineup" key={item.id || `${item.player_id || 'player'}-${index}`}>
           <span>{item.jersey_number || item.number || index + 1}</span>
           <strong>{textValue(item.player?.display_name || item.player?.name || item.player_name || item.name, 'Player')}</strong>
-          <small>{textValue(item.position?.name || item.position_id || item.type || item.formation_position, '')}</small>
+          <small>{cleanInlineValue(item.position?.name || item.position_id || item.type?.name || item.type || item.formation_position, '')}</small>
         </div>
       ))}
     </div>
@@ -252,13 +306,14 @@ function valueLooksUseful(value) {
 
 function personValue(value, fallback = '') {
   if (!valueLooksUseful(value)) return fallback;
-  if (typeof value === 'string' || typeof value === 'number') return textValue(value, fallback);
+  if (typeof value === 'string' || typeof value === 'number') return compactText(value, fallback, 64);
   if (Array.isArray(value)) return value.map((item) => personValue(item, '')).filter(Boolean).slice(0, 3).join(', ') || fallback;
   if (typeof value === 'object') {
     const direct = value.display_name
       ?? value.displayName
       ?? value.full_name
       ?? value.fullName
+      ?? value.fullname
       ?? value.player_name
       ?? value.playerName
       ?? value.name
@@ -271,12 +326,20 @@ function personValue(value, fallback = '') {
       ?? value.player?.displayName
       ?? value.player?.full_name
       ?? value.player?.fullName
+      ?? value.player?.fullname
       ?? value.player?.name
+      ?? value.data?.display_name
+      ?? value.data?.full_name
+      ?? value.data?.fullname
+      ?? value.data?.name
       ?? value.team?.name
+      ?? value.participant?.name
       ?? value.competitor?.name;
-    if (direct !== undefined && direct !== null && direct !== value) return textValue(direct, fallback);
+    if (direct !== undefined && direct !== null && direct !== value) return compactText(direct, fallback, 64);
+    if (value.firstname || value.lastname) return compactText(`${value.firstname || ''} ${value.lastname || ''}`.trim(), fallback, 64);
+    if (value.player?.firstname || value.player?.lastname) return compactText(`${value.player.firstname || ''} ${value.player.lastname || ''}`.trim(), fallback, 64);
   }
-  return textValue(value, fallback);
+  return fallback;
 }
 
 function findDeep(root, candidateKeys = [], options = {}) {
@@ -327,7 +390,8 @@ function normalizeLiveState(details = {}, event = {}) {
   const rows = [];
   const add = (label, value, formatter = textValue) => {
     if (!valueLooksUseful(value)) return;
-    const text = formatter(value, '');
+    const rawText = formatter(value, '');
+    const text = compactText(rawText, '', label === 'Balls' || label === 'Last ball / play' ? 96 : 64);
     if (!valueLooksUseful(text)) return;
     if (rows.some((row) => row.label === label && row.value === text)) return;
     rows.push({ label, value: text });
@@ -403,8 +467,8 @@ function GenericDataList({ items = [], empty = 'Not available yet' }) {
       {limited.map((item, index) => (
         <div className="sports-detail-list-row" key={item.id || item.player_id || item.team_id || `${item.name || 'row'}-${index}`}>
           <span>{item.minute ?? item.time ?? item.position ?? item.rank ?? index + 1}</span>
-          <strong>{textValue(item.name || item.player?.name || item.team?.name || item.type?.name || item.type || item.description || item.group || item.league?.name, 'Item')}</strong>
-          <small>{textValue(item.value ?? item.total ?? item.points ?? item.score ?? item.result ?? item.country?.name ?? item.info ?? compactJson(item.data), '')}</small>
+          <strong>{cleanInlineValue(item.name || item.player?.name || item.team?.name || item.type?.name || item.type || item.description || item.group || item.league?.name, 'Item')}</strong>
+          <small>{cleanInlineValue(item.value ?? item.total ?? item.points ?? item.score ?? item.result ?? item.country?.name ?? item.info ?? item.data, '')}</small>
         </div>
       ))}
     </div>
@@ -756,6 +820,10 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betS
   const market = data?.market || data?.data?.market;
   const details = data?.details || data?.data?.details;
   const showRawProviderPayload = String(import.meta.env.VITE_SPORTS_SHOW_RAW_PROVIDER || '').toLowerCase() === 'true';
+  const hasMainOdds = asArray(market?.selections).some((selection) => priceNumber(selection) > 1);
+  const hasPremiumMarkets = buildProviderMarketRows(details?.markets || details?.dbMarkets, details?.odds).length > 0;
+  const hasCatalog = hasRows(details?.activeMarkets);
+  const hasLeagueTeamCatalog = hasRows(details?.leagues) || hasRows(details?.teamsCatalog);
 
   return (
     <div className="sports-detail-backdrop" role="dialog" aria-modal="true">
@@ -783,10 +851,10 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betS
           <div className="sports-detail-body">
             <DetailsSection icon={<Info size={18} />} title="Basic information">
               <div className="sports-detail-grid">
-                <DetailsItem label="Sport" value={event.sportTitle || event.sport} />
+                <DetailsItem label="Sport" value={sportMetaFromMatch(event).name} />
                 <DetailsItem label="League" value={details?.league?.name || event.league} />
                 <DetailsItem label="Status" value={getStrictMatchStatus(event)} />
-                <DetailsItem label="Start time" value={details?.startingAt || event.startTime} />
+                <DetailsItem label="Start time" value={formatSportDateTime(details?.startingAt || event.startTime)} />
                 <DetailsItem label="Result" value={scoreLineFor(event, details)} />
                 <DetailsItem label="Round" value={details?.round?.name || details?.round?.id} />
               </div>
@@ -815,61 +883,89 @@ function MatchDetailsModal({ data, loading, onClose, onSelect, selectedIds, betS
               </div>
             </DetailsSection>
 
-            <DetailsSection icon={<Ticket size={18} />} title="Betting odds">
-              <OddsList market={market} event={event} onSelect={onSelect} selectedIds={selectedIds} />
-            </DetailsSection>
+            {hasMainOdds ? (
+              <DetailsSection icon={<Ticket size={18} />} title="Betting odds">
+                <OddsList market={market} event={event} onSelect={onSelect} selectedIds={selectedIds} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Ticket size={18} />} title="Premium sportsbook markets">
-              <AllOddsMarketsPanel markets={details?.markets || details?.dbMarkets} odds={details?.odds} event={event} onSelect={onSelect} selectedIds={selectedIds} />
-            </DetailsSection>
+            {hasPremiumMarkets ? (
+              <DetailsSection icon={<Ticket size={18} />} title="Premium sportsbook markets">
+                <AllOddsMarketsPanel markets={details?.markets || details?.dbMarkets} odds={details?.odds} event={event} onSelect={onSelect} selectedIds={selectedIds} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
-              <ActiveMarketsPanel items={details?.activeMarkets} />
-            </DetailsSection>
+            {hasCatalog ? (
+              <DetailsSection icon={<Activity size={18} />} title="Active market catalog">
+                <ActiveMarketsPanel items={details?.activeMarkets} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Trophy size={18} />} title="Futures / outright markets">
-              <GenericDataList items={details?.futures} />
-            </DetailsSection>
+            {hasRows(details?.futures) ? (
+              <DetailsSection icon={<Trophy size={18} />} title="Futures / outright markets">
+                <GenericDataList items={details?.futures} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Ticket size={18} />} title="Futures odds">
-              <GenericDataList items={details?.futuresOdds} />
-            </DetailsSection>
+            {hasRows(details?.futuresOdds) ? (
+              <DetailsSection icon={<Ticket size={18} />} title="Futures odds">
+                <GenericDataList items={details?.futuresOdds} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Info size={18} />} title="League / team catalog">
-              <GenericDataList items={[...(asArray(details?.leagues).slice(0, 10)), ...(asArray(details?.teamsCatalog).slice(0, 10))]} empty="No league/team catalog returned for this fixture." />
-            </DetailsSection>
+            {hasLeagueTeamCatalog ? (
+              <DetailsSection icon={<Info size={18} />} title="League / team catalog">
+                <GenericDataList items={[...(asArray(details?.leagues).slice(0, 10)), ...(asArray(details?.teamsCatalog).slice(0, 10))]} empty="No league/team catalog returned for this fixture." />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
-              <EventList items={details?.events} />
-            </DetailsSection>
+            {hasRows(details?.events) ? (
+              <DetailsSection icon={<ListChecks size={18} />} title="Match events / commentary">
+                <EventList items={details?.events} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<BarChart3 size={18} />} title="Statistics">
-              <StatisticsList items={details?.statistics} />
-            </DetailsSection>
+            {hasRows(details?.statistics) ? (
+              <DetailsSection icon={<BarChart3 size={18} />} title="Statistics">
+                <StatisticsList items={details?.statistics} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Users size={18} />} title="Lineups / players">
-              <LineupsList items={details?.lineups} />
-            </DetailsSection>
+            {hasRows(details?.lineups) ? (
+              <DetailsSection icon={<Users size={18} />} title="Lineups / players">
+                <LineupsList items={details?.lineups} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
-              <ScoresPanel scores={details?.scores || event?.scores || event?.score} />
-            </DetailsSection>
+            {(details?.scores || event?.scores || event?.score) ? (
+              <DetailsSection icon={<BarChart3 size={18} />} title="Scores / periods">
+                <ScoresPanel scores={details?.scores || event?.scores || event?.score} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Users size={18} />} title="Player statistics">
-              <GenericDataList items={details?.players} />
-            </DetailsSection>
+            {hasRows(details?.players) ? (
+              <DetailsSection icon={<Users size={18} />} title="Player statistics">
+                <GenericDataList items={details?.players} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Users size={18} />} title="Squads / rosters">
-              <GenericDataList items={details?.squads} />
-            </DetailsSection>
+            {hasRows(details?.squads) ? (
+              <DetailsSection icon={<Users size={18} />} title="Squads / rosters">
+                <GenericDataList items={details?.squads} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<ShieldCheck size={18} />} title="Injuries / availability">
-              <GenericDataList items={details?.injuries} />
-            </DetailsSection>
+            {hasRows(details?.injuries) ? (
+              <DetailsSection icon={<ShieldCheck size={18} />} title="Injuries / availability">
+                <GenericDataList items={details?.injuries} />
+              </DetailsSection>
+            ) : null}
 
-            <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
-              <GenericDataList items={details?.standings} />
-            </DetailsSection>
+            {hasRows(details?.standings) ? (
+              <DetailsSection icon={<Trophy size={18} />} title="Standings / table">
+                <GenericDataList items={details?.standings} />
+              </DetailsSection>
+            ) : null}
 
             {showRawProviderPayload ? (
               <DetailsSection icon={<Info size={18} />} title="Raw feed payload">
@@ -1216,24 +1312,51 @@ export default function SportsPage() {
 
   const sports = useMemo(() => {
     const unique = new Map();
+
+    const mergeSport = (meta, extra = {}) => {
+      if (!meta?.key) return;
+      const current = unique.get(meta.key) || {};
+      unique.set(meta.key, {
+        ...current,
+        ...meta,
+        ...extra,
+        name: extra?.displayName || extra?.name || current.name || meta.name,
+      });
+    };
+
     (overview?.sports || []).forEach((sport) => {
       const meta = sportMetaFrom(`${sport?.key || sport?.slug || ''} ${sport?.name || sport?.displayName || ''}`);
-      unique.set(meta.key, { ...meta, ...sport, name: sport?.displayName || sport?.name || meta.name });
+      mergeSport(meta, sport);
     });
+
     categories.forEach((category) => {
       const meta = category?.key
         ? sportMetaFrom(`${category.key} ${category.name || category.title || category.slug || ''}`)
         : sportMetaFrom(category?.name || category?.title || category?.slug || '');
-      unique.set(meta.key, {
-        ...meta,
-        name: category?.name || category?.title || meta.name,
-      });
+      mergeSport(meta, { name: category?.name || category?.title || meta.name });
     });
+
     matches.forEach((match) => {
       const meta = sportMetaFromMatch(match);
-      unique.set(meta.key, meta);
+      const current = unique.get(meta.key) || meta;
+      const className = statusClass(getStrictMatchStatus(match));
+      const loadedCount = Number(current._loadedCount || 0) + 1;
+      const loadedLive = Number(current._loadedLive || 0) + (className === 'live' ? 1 : 0);
+      const loadedPrematch = Number(current._loadedPrematch || 0) + (className === 'upcoming' ? 1 : 0);
+      const loadedFinished = Number(current._loadedFinished || 0) + (className === 'finished' ? 1 : 0);
+      mergeSport(meta, {
+        _loadedCount: loadedCount,
+        _loadedLive: loadedLive,
+        _loadedPrematch: loadedPrematch,
+        _loadedFinished: loadedFinished,
+        count: loadedCount,
+        live: loadedLive,
+        prematch: loadedPrematch,
+        finished: loadedFinished,
+      });
     });
-    return sortSportMetas(Array.from(unique.values()));
+
+    return sortSportMetas(Array.from(unique.values()).filter((sport) => sport.key !== 'sports' || Number(sport.count || 0) > 0));
   }, [categories, matches, overview]);
 
   const visibleMatches = useMemo(() => {
@@ -1422,7 +1545,7 @@ export default function SportsPage() {
 
       <div className="sports-toolbar sports-toolbar-premium">
         <div className="sports-tabs sports-tabs-counts">
-          <button type="button" className={selectedSport === 'all' ? 'active' : ''} onClick={() => changeSport('all')}>All <b>{overview?.summary?.[viewMode] || visibleMatches.length}</b></button>
+          <button type="button" className={selectedSport === 'all' ? 'active' : ''} onClick={() => changeSport('all')}>All <b>{visibleMatches.length || overview?.summary?.[viewMode] || 0}</b></button>
           {sports.map((sport) => (
             <button type="button" key={sport.key} className={selectedSport === sport.key ? `active ${sport.className}` : ''} onClick={() => changeSport(sport.key)}>
               <span>{sport.icon}</span> {sport.name}
