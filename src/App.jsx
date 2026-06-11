@@ -10,6 +10,8 @@ import AppLayout from './layouts/AppLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import GamesPage from './pages/GamesPage.jsx';
 import SportsPage from './pages/SportsPage.jsx';
+import SportsResultsPage from './pages/SportsResultsPage.jsx';
+import SportsStatisticsPage from './pages/SportsStatisticsPage.jsx';
 import EsportsPage from './pages/EsportsPage.jsx';
 import BetSlipPage from './pages/BetSlipPage.jsx';
 import CrashPage from './pages/CrashPage.jsx';
@@ -101,6 +103,8 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="games" element={<GamesPage />} />
         <Route path="sports" element={<SportsPage />} />
+        <Route path="sports/results" element={<SportsResultsPage />} />
+        <Route path="sports/statistics" element={<SportsStatisticsPage />} />
         <Route path="esports" element={<EsportsPage />} />
         <Route path="bet-slip" element={<BetSlipPage />} />
         <Route path="crash" element={<CrashPage />} />
