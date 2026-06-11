@@ -1,21 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import './WorldCupCountdownBanner.css';
 
-// First match target: Mexico v South Africa, 11 June 2026, 19:00 UTC.
-// This keeps countdown consistent for every visitor timezone.
+// First match countdown target.
+// Kept in UTC so every visitor sees the same countdown moment.
 const FIRST_MATCH_UTC = '2026-06-11T19:00:00Z';
 
 function getCountdownParts(targetTime) {
-  const now = Date.now();
-  const diffMs = Math.max(0, targetTime - now);
-
+  const diffMs = Math.max(0, targetTime - Date.now());
   const totalSeconds = Math.floor(diffMs / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
 
-  return { days, hours, minutes, seconds, isStarted: diffMs <= 0 };
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+    isStarted: diffMs <= 0,
+  };
 }
 
 function pad(value) {
@@ -38,12 +38,13 @@ export default function WorldCupCountdownBanner() {
     <section className="wc-countdown-banner" aria-label="FIFA World Cup 2026 countdown">
       <img
         className="wc-countdown-banner-image"
-        src="/images/promos/fifa-world-cup-2026-premium-countdown.png"
+        src="/images/promos/fifa-world-cup-2026-clean-live-countdown-bg.png"
         alt="FIFA World Cup 2026"
-        loading="lazy"
+        loading="eager"
+        decoding="async"
       />
 
-      <div className="wc-countdown-overlay" aria-live="polite">
+      <div className="wc-countdown-live-panel" aria-live="polite">
         <div className="wc-countdown-label">
           {timeLeft.isStarted ? 'MATCH STARTED' : 'FIRST MATCH STARTS IN'}
         </div>
