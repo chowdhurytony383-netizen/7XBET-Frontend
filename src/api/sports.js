@@ -4,6 +4,8 @@ export const SportsAPI = {
   overview: (params = {}) => api.get('/sports/overview', { params }),
   categories: () => api.get('/sports/categories'),
   liveMatches: (params = {}) => api.get('/sports/live-matches', { params }),
+  results: (params = {}) => api.get('/sports/matches', { params: { status: 'finished', ...params } }),
+  statistics: (params = {}) => api.get('/sports/overview', { params }),
   matchOfTheDay: () => api.get('/sports/match-of-the-day'),
   eventDetails: (eventId) => api.get(`/sports/events/${eventId}`),
   syncStatus: () => api.get('/sports/sync-status'),
