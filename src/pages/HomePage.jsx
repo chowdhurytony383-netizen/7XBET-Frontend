@@ -496,7 +496,44 @@ function mergeSportsScoreUpdateIntoMatches(list = [], payload = {}) {
   return changed ? sortMatchesBySportPriority(next) : list;
 }
 
-export default function HomePage() {
+export default 
+function HomeFootballFeverBanner() {
+  return (
+    <section className="football-fever-banner" aria-label="World football fever 2026">
+      <div className="football-fever-bg" />
+      <div className="football-fever-glow left" />
+      <div className="football-fever-glow right" />
+
+      <div className="football-fever-player football-fever-player-left">
+        <div className="football-player-head">😄</div>
+        <div className="football-player-kit left-kit">
+          <span>10</span>
+        </div>
+        <div className="football-player-leg leg-one" />
+        <div className="football-player-leg leg-two" />
+      </div>
+
+      <div className="football-fever-ball" aria-hidden="true">⚽</div>
+
+      <div className="football-fever-copy">
+        <span>2026 Football Fever</span>
+        <h2>Pass, Play & Win the Moment</h2>
+        <p>Funny football action is coming. Pick your side and enjoy the match vibe.</p>
+      </div>
+
+      <div className="football-fever-player football-fever-player-right">
+        <div className="football-player-head">😆</div>
+        <div className="football-player-kit right-kit">
+          <span>07</span>
+        </div>
+        <div className="football-player-leg leg-one" />
+        <div className="football-player-leg leg-two" />
+      </div>
+    </section>
+  );
+}
+
+function HomePage() {
   const { user, refreshUser } = useAuth();
 
   const [games, setGames] = useState([]);
@@ -821,6 +858,8 @@ export default function HomePage() {
         </section>
 
         <HomeFreeSpinBanner />
+
+        <HomeFootballFeverBanner />
 
         <SportsCategoryStrip categories={sportsCategories} />
 
