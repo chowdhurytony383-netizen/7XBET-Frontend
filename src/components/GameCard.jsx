@@ -59,6 +59,12 @@ function resolveGameKey(game) {
 }
 
 function getGamePath(game, key) {
+  const provider = String(game?.provider || game?.config?.provider || '').toUpperCase();
+  if (provider === 'PGSOFT' || provider === 'PG SOFT') {
+    const gameId = game?.config?.gameId || game?.config?.providerGame?.GameId || game?.pgsoftGameId || game?.gameId || game?.gameCode?.replace(/^pgsoft-?/i, '');
+    if (gameId) return `/pgsoft/${encodeURIComponent(gameId)}`;
+  }
+
   if (game?.provider === 'JILI' || game?.config?.provider === 'JILI') {
     const gameId = game?.config?.gameId || game?.jiliGameId || game?.gameId || game?.gameCode?.replace(/^jili-?/i, '');
     if (gameId) return `/jili/${gameId}?title=${encodeURIComponent(game?.displayName || game?.name || 'JILI Game')}`;
