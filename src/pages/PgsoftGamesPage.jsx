@@ -20,6 +20,7 @@ export default function PgsoftGamesPage() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [integration, setIntegration] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -29,7 +30,10 @@ export default function PgsoftGamesPage() {
       setError('');
       try {
         const response = await PgsoftAPI.games();
-        if (mounted) setGames(normalizeGames(response.data));
+        if (mounted) {
+          setGames(normalizeGames(response.data));
+          setIntegration(response.data?.integration || null);
+        }
       } catch (err) {
         if (mounted) setError(getApiError(err, 'Unable to load PG SOFT games'));
       } finally {
@@ -64,6 +68,10 @@ export default function PgsoftGamesPage() {
         </div>
         <span className="pgsoft-hero-badge"><ShieldCheck size={17} /> Seamless Wallet</span>
       </section>
+
+      {integration && !integration.configured && (
+        <div className="auth-message">PG SOFT provider credentials are still pending. The lobby will become playable after the backend environment values are added.</div>
+      )}
 
       <div className="pgsoft-filter">
         <Search size={18} />
