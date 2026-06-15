@@ -48,6 +48,8 @@ import MinesPage from './pages/MinesPage.jsx';
 import SourceGamePage from './pages/SourceGamePage.jsx';
 import JiliGamesPage from './pages/JiliGamesPage.jsx';
 import JiliGamePage from './pages/JiliGamePage.jsx';
+import PgsoftGamesPage from './pages/PgsoftGamesPage.jsx';
+import PgsoftGamePage from './pages/PgsoftGamePage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import WalletPage from './pages/WalletPage.jsx';
 import DepositPage from './pages/DepositPage.jsx';
@@ -112,6 +114,7 @@ export default function App() {
         <Route path="live-casino" element={<Navigate to="/jili-games?category=casino" replace />} />
         <Route path="slots" element={<Navigate to="/jili-games?category=slots" replace />} />
         <Route path="jili-games" element={<JiliGamesPage />} />
+        <Route path="pgsoft-games" element={<PgsoftGamesPage />} />
         <Route path="bonuses" element={<BonusesPage />} />
         <Route path="bonuses/welcome-bonus" element={<WelcomeBonusPage />} />
         <Route path="bonuses/cashback" element={<CashbackPage />} />
@@ -148,6 +151,7 @@ export default function App() {
       <Route path="/agent/requests/:type" element={<><AgentPresenceConnector /><AgentRequestsPage /></>} />
 
       <Route element={<ProtectedRoute />}>
+        <Route path="pgsoft/:gameId" element={<PgsoftGamePage />} />
         <Route element={<AppLayout />}>
           <Route path="games/dice" element={<DicePage />} />
           <Route path="games/mines" element={<MinesPage />} />
